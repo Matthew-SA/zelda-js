@@ -1,0 +1,31 @@
+{
+  "name": "zelda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "zelda.js",
+  "scripts": {
+    "start": "webpack-dev-server --config ./webpack.config.js --mode development",
+    "watch": "webpack --progress --config webpack.config.js",
+    "watch2": "webpack --watch --mode=development",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Matthew-SA/Zelda.git"
+  },
+  "keywords": [],
+  "author": "Matthew Andresen <surfsnow1@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Matthew-SA/Zelda/issues"
+  },
+  "homepage": "https://github.com/Matthew-SA/Zelda#readme",
+  "dependencies": {
+    "keymaster": "^1.6.2"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
+  }
+}
