@@ -5,8 +5,7 @@
   "main": "zelda.js",
   "scripts": {
     "start": "webpack-dev-server --config ./webpack.config.js --mode development",
-    "watch": "webpack --progress --config webpack.config.js",
-    "watch2": "webpack --watch --mode=development",
+    "watch": "webpack --watch --mode=development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
