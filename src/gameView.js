@@ -1,23 +1,31 @@
 import key from 'keymaster'
+import Menu from './menu.js'
 import Player from './player'
+import World from './world.js'
 
 const FPS = 60;
 
 class GameView {
-  constructor(ctx) {
+  constructor(menuCtx, spriteCtx, worldCtx) {
     // this.game = game;
-    this.ctx = ctx;
-    this.player = new Player(ctx)
+    this.menuCtx = menuCtx;
+    this.spriteCtx = spriteCtx;
+    this.worldCtx = worldCtx;
+    this.menu = new Menu;
+    this.player = new Player;
+    this.world = new World;
     this.lastInput ={'a': null, 'w': null, 'd': null, 's': null};
     this.currentInput = null;
   }
 
   init() {
     setTimeout(() => {
-      this.player.drawPlayer(this.ctx);
+      this.world.drawWorld(this.worldCtx)
+      this.menu.drawMenu(this.menuCtx)
+      this.player.drawPlayer(this.spriteCtx);
       console.log('start!')
       this.start();
-    }, 30);
+    }, 10)
   }
 
   start() {
@@ -26,8 +34,8 @@ class GameView {
       this.checkKey();
       if (this.currentInput) {
         this.player.runCycle ++; 
-        this.player.clearPlayer(this.ctx);
-        this.player.drawPlayer(this.ctx);
+        this.player.clearPlayer(this.spriteCtx);
+        this.player.drawPlayer(this.spriteCtx);
         console.log("animating!")
       }
     }, 1000 / FPS)
@@ -83,12 +91,11 @@ class GameView {
     }
     if (key.isPressed('/')) {
       this.currentInput = 'attack'
-      this.player.drawSword(this.ctx);
+      this.player.drawSword(this.spriteCtx);
       setTimeout(() => {
-        this.player.clearPlayer(this.ctx);
-        this.player.drawPlayer(this.ctx);
+        this.player.clearPlayer(this.spriteCtx);
+        this.player.drawPlayer(this.spriteCtx);
       }, 250)
-      console.log('attack!');
     }
   }
 }

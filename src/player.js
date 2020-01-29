@@ -1,7 +1,7 @@
 class Player {
   constructor() {
-    this.lastPos = [0,0]
-    this.pos = [0,0]
+    this.lastPos = [350, 450];
+    this.pos = [350, 450];
     this.sprite = new Image();
     this.sprite.src = "../images/link.png"
     this.runCycle = 0;
