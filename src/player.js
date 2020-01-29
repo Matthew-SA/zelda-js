@@ -8,11 +8,9 @@ class Player {
     this.direction = 0
     this.frame = 0;
     this.attacking = false;
-    this.drawFrame = this.drawFrame.bind(this);
-    this.that = this;
   }
 
-  drawFrame(ctx, direction, frame) {
+  drawFrame(ctx) {
     ctx.drawImage(
       this.sprite,
       this.direction,
@@ -26,7 +24,7 @@ class Player {
       )
   }
 
-  stepPlayer(ctx) {
+  drawPlayer(ctx) {
     if (this.runCycle < 9) {
       this.frame = 0;
     } else {
@@ -36,7 +34,7 @@ class Player {
     if (this.attacking) {
       this.frame = 153; 
     }
-    this.drawFrame(ctx, this.direction, this.frame)
+    this.drawFrame(ctx)
     this.lastPos[0] = this.pos[0];
     this.lastPos[1] = this.pos[1];
   }
@@ -47,7 +45,7 @@ class Player {
   }
   
 
-  attack(ctx) {
+  drawSword(ctx) {
     this.attacking = true;
     let swordX = this.pos[0]
     let swordY = this.pos[1]

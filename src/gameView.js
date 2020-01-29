@@ -13,26 +13,21 @@ class GameView {
   }
 
   init() {
-    // this.player.draw(this.ctx, this.playerDirection);
-    // console.log("ctx", this.ctx)
-    // console.log("playerDirection", this.playerDirection)
     setTimeout(() => {
-      this.player.stepPlayer(this.ctx);
+      this.player.drawPlayer(this.ctx);
       console.log('start!')
       this.start();
     }, 30);
-    // this.player.draw(this.ctx, this.playerDirection);
   }
 
   start() {
     const gameLoop = setInterval(() => {
       this.getLastInput();
       this.checkKey();
-      // if (this.player.attacking) {}
       if (this.currentInput) {
         this.player.runCycle ++; 
         this.player.clearPlayer(this.ctx);
-        this.player.stepPlayer(this.ctx);
+        this.player.drawPlayer(this.ctx);
         console.log("animating!")
       }
     }, 1000 / FPS)
@@ -88,10 +83,10 @@ class GameView {
     }
     if (key.isPressed('/')) {
       this.currentInput = 'attack'
-      this.player.attack(this.ctx);
+      this.player.drawSword(this.ctx);
       setTimeout(() => {
         this.player.clearPlayer(this.ctx);
-        this.player.stepPlayer(this.ctx);
+        this.player.drawPlayer(this.ctx);
       }, 250)
       console.log('attack!');
     }
