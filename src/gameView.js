@@ -88,8 +88,8 @@ class GameView {
     }
     if (key.isPressed('/')) {
       this.currentInput = 'attack'
-      this.player.attack();
-      setTimeout((ctx) => {
+      this.player.attack(this.ctx);
+      setTimeout(() => {
         this.player.clearPlayer(this.ctx);
         this.player.stepPlayer(this.ctx);
       }, 250)

@@ -34,6 +34,19 @@ class Player {
       )
   }
 
+  drawSword(ctx) {
+    ctx.drawImage(
+      this.sprite,
+      this.direction,
+      204,
+      48,
+      48,
+      this.pos[0] + 48,
+      this.pos[1],
+      48,
+      48
+    )
+  }
 
   stepPlayer(ctx) {
     if (this.runCycle < 9) {
@@ -54,11 +67,35 @@ class Player {
     ctx.beginPath();
     ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
   }
+  
 
   attack(ctx) {
     this.attacking = true;
-    setTimeout((ctx) => {
+    let swordX = this.pos[0]
+    let swordY = this.pos[1]
+    if (this.direction === 0) {
+      swordY += 48;
+    } else if (this.direction === 51) {
+      swordX -= 48;
+    } else if (this.direction === 102) {
+      swordY -= 48
+    } else if (this.direction === 153) {
+      swordX += 48;
+    }
+    ctx.drawImage(
+      this.sprite,
+      this.direction,
+      204,
+      48,
+      48,
+      swordX,
+      swordY,
+      48,
+      48
+    )
+    setTimeout(() => {
       this.attacking = false;
+      ctx.clearRect(swordX, swordY, 48, 48);
     },250)
   }
 }
