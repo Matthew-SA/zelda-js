@@ -12,14 +12,6 @@ class Player {
     this.that = this;
   }
 
-  // draw(ctx, direction) {
-  //   ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
-  //   ctx.beginPath()
-  //   ctx.drawImage(this.sprite, direction, 0, 48, 48, this.pos[0], this.pos[1], 48, 48)
-  //   this.lastPos[0] = this.pos[0];
-  //   this.lastPos[1] = this.pos[1];
-  // }
-
   drawFrame(ctx, direction, frame) {
     ctx.drawImage(
       this.sprite,
@@ -32,20 +24,6 @@ class Player {
       48,
       48
       )
-  }
-
-  drawSword(ctx) {
-    ctx.drawImage(
-      this.sprite,
-      this.direction,
-      204,
-      48,
-      48,
-      this.pos[0] + 48,
-      this.pos[1],
-      48,
-      48
-    )
   }
 
   stepPlayer(ctx) {
