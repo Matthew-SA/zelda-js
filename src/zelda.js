@@ -5,17 +5,17 @@ import GameView from './gameView'
 const menuCanvas = document.getElementById('menu-canvas');
 const menuCtx = menuCanvas.getContext('2d');
 menuCanvas.width = 768
-menuCanvas.height = 672
+menuCanvas.height = 696
 
 const spriteCanvas = document.getElementById('sprite-canvas');
 const spriteCtx = spriteCanvas.getContext('2d');
 spriteCanvas.width = 768
-spriteCanvas.height = 672
+spriteCanvas.height = 696
 
 const mapCanvas = document.getElementById('map-canvas');
 const worldCtx = mapCanvas.getContext('2d')
 mapCanvas.width = 768
-mapCanvas.height = 672
+mapCanvas.height = 696
 
 
 // const background = new Image();

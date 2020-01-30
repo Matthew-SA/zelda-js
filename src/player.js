@@ -3,7 +3,7 @@ class Player {
     this.lastPos = [350, 450];
     this.pos = [350, 450];
     this.sprite = new Image();
-    this.sprite.src = "../images/link.png"
+    this.sprite.src = "../assets/images/link.png"
     this.runCycle = 0;
     this.direction = 0
     this.frame = 0;

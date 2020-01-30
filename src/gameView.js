@@ -2,8 +2,10 @@ import key from 'keymaster'
 import Menu from './menu.js'
 import Player from './player'
 import World from './world.js'
+import * as constants from './constants'
 
-const FPS = 60;
+// gameView is 16 x 14.5 'tiles
+// gameplay is in 16 x 11 tiles
 
 class GameView {
   constructor(menuCtx, spriteCtx, worldCtx) {
@@ -14,8 +16,10 @@ class GameView {
     this.menu = new Menu;
     this.player = new Player;
     this.world = new World;
-    this.lastInput ={'a': null, 'w': null, 'd': null, 's': null};
+    this.lastInput = {'a': null, 'w': null, 'd': null, 's': null};
     this.currentInput = null;
+    this.playerPosition = [this.player.pos[0] + 24, this.player.pos[1] + 24]
+    this.freezePlayer = false;
   }
 
   init() {
@@ -36,10 +40,28 @@ class GameView {
         this.player.runCycle ++; 
         this.player.clearPlayer(this.spriteCtx);
         this.player.drawPlayer(this.spriteCtx);
-        console.log("animating!")
+        // console.log(this.playerPosition)
       }
-    }, 1000 / FPS)
+      if (this.player.pos[1] < constants.BORDERTOP) {
+        this.world.pos[1] -= 5;
+        this.world.drawWorld(this.worldCtx)
+      }
+      if (this.player.pos[0] > constants.BORDERRIGHT) {
+        this.world.pos[0] += 5;
+        this.world.drawWorld(this.worldCtx)
+      }
+      if (this.player.pos[0] < constants.BORDERLEFT) {
+        this.world.pos[0] -= 5;
+        this.world.drawWorld(this.worldCtx)
+      }
+      if (this.player.pos[1] > constants.BORDERBOTTOM) {
+        this.world.pos[1] += 5;
+        this.world.drawWorld(this.worldCtx)
+      }
+    }, 1000 / constants.FPS)
   }
+
+
 
   getLastInput() {
     if (key.isPressed('w') && this.lastInput.w === null) {
@@ -75,18 +97,22 @@ class GameView {
     this.currentInput = entry[0]
     if (this.currentInput === 'w') {
       this.player.pos[1] -= 3
+      // this.playerPosition[1] -= 3  // track center of player position?
       this.player.direction = 102 // 'up'
     }
     if (this.currentInput === 'a') {
       this.player.pos[0] -= 3
+      // this.playerPosition[0] -= 3  // track center of player position?
       this.player.direction = 51 // 'left'
     }
     if (this.currentInput === 's') {
       this.player.pos[1] += 3
+      // this.playerPosition[1] += 3  // track center of player position?
       this.player.direction = 0 // 'down'
     }
     if (this.currentInput === 'd') {
       this.player.pos[0] += 3
+      // this.playerPosition[0] += 3  // track center of player position?
       this.player.direction = 153 // 'right'
     }
     if (key.isPressed('/')) {
