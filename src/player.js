@@ -1,13 +1,14 @@
 class Player {
   constructor() {
-    this.lastPos = [350, 450];
-    this.pos = [350, 450];
+    this.lastPos = [336, 432];
+    this.pos = [336, 432];
     this.sprite = new Image();
     this.sprite.src = "../assets/images/link.png"
     this.runCycle = 0;
     this.direction = 0
     this.frame = 0;
     this.attacking = false;
+    this.frozen = false;
   }
 
   drawFrame(ctx) {
@@ -74,6 +75,14 @@ class Player {
       ctx.clearRect(swordX, swordY, 48, 48);
     },250)
   }
+
+  freezePlayer(time) {
+    this.frozen = true;
+    setTimeout(() => {
+      this.frozen = false;
+    }, time)
+  }
+  
 }
 
 export default Player;

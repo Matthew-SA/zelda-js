@@ -1,6 +1,6 @@
 export const FPS = 60;
 
-export const BORDERTOP = 168;
-export const BORDERLEFT = 0;
-export const BORDERRIGHT = 720;
-export const BORDERBOTTOM = 648;
+export const BORDERTOP = 124;
+export const BORDERLEFT = -48;
+export const BORDERRIGHT = 768;
+export const BORDERBOTTOM = 696;

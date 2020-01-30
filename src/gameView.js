@@ -17,9 +17,10 @@ class GameView {
     this.player = new Player;
     this.world = new World;
     this.lastInput = {'a': null, 'w': null, 'd': null, 's': null};
+    this.playerScrolling = {'north': false, 'east': false, 'south': false, 'west': false};
     this.currentInput = null;
-    this.playerPosition = [this.player.pos[0] + 24, this.player.pos[1] + 24]
-    this.freezePlayer = false;
+    this.moveQueueX = 768;
+    this.moveQueueY = 528;
   }
 
   init() {
@@ -40,28 +41,65 @@ class GameView {
         this.player.runCycle ++; 
         this.player.clearPlayer(this.spriteCtx);
         this.player.drawPlayer(this.spriteCtx);
-        // console.log(this.playerPosition)
       }
-      if (this.player.pos[1] < constants.BORDERTOP) {
-        this.world.pos[1] -= 5;
-        this.world.drawWorld(this.worldCtx)
+      if (this.playerScrolling.north || this.player.pos[1] < constants.BORDERTOP) {
+        if (this.moveQueueY <= 0) {
+          this.player.frozen = false;
+          this.playerScrolling.north = false;
+          this.moveQueueY = 528;
+        } else {
+          this.playerScrolling.north = true;
+          this.player.frozen = true;
+          this.world.pos[1] -= 8;
+          this.player.pos[1] += 8;
+          this.moveQueueY -= 8;
+          this.world.drawWorld(this.worldCtx)
+        }
       }
-      if (this.player.pos[0] > constants.BORDERRIGHT) {
-        this.world.pos[0] += 5;
-        this.world.drawWorld(this.worldCtx)
+      if (this.playerScrolling.east || this.player.pos[0] > constants.BORDERRIGHT) {
+        if (this.moveQueueX <= 0) {
+          this.player.frozen = false;
+          this.playerScrolling.east = false;
+          this.moveQueueX = 768;
+        } else {
+          this.playerScrolling.east = true;
+          this.player.frozen = true;
+          this.world.pos[0] += 8;
+          this.player.pos[0] -= 8;
+          this.moveQueueX -= 8;
+          this.world.drawWorld(this.worldCtx)
+        }
       }
-      if (this.player.pos[0] < constants.BORDERLEFT) {
-        this.world.pos[0] -= 5;
-        this.world.drawWorld(this.worldCtx)
+      if (this.playerScrolling.south || this.player.pos[1] > constants.BORDERBOTTOM) {
+        if (this.moveQueueY <= 0) {
+          this.player.frozen = false;
+          this.playerScrolling.south = false;
+          this.moveQueueY = 528;
+        } else {
+          this.playerScrolling.south = true;
+          this.player.frozen = true;
+          this.world.pos[1] += 8;
+          this.player.pos[1] -= 8;
+          this.moveQueueY -= 8;
+          this.world.drawWorld(this.worldCtx)
+        }
       }
-      if (this.player.pos[1] > constants.BORDERBOTTOM) {
-        this.world.pos[1] += 5;
-        this.world.drawWorld(this.worldCtx)
+      if (this.playerScrolling.west || this.player.pos[0] < constants.BORDERLEFT) {
+        if (this.moveQueueX <= 0) {
+          this.player.frozen = false;
+          this.playerScrolling.west = false;
+          this.moveQueueX = 768;
+        } else {
+          this.playerScrolling.west = true;
+          this.player.frozen = true;
+          this.world.pos[0] -= 8;
+          this.player.pos[0] += 8;
+          this.moveQueueX -= 8;
+          this.world.drawWorld(this.worldCtx)
+        }
       }
     }, 1000 / constants.FPS)
   }
-
-
 
   getLastInput() {
     if (key.isPressed('w') && this.lastInput.w === null) {
@@ -90,9 +128,9 @@ class GameView {
   }
 
   checkKey() {
-    if (this.player.attacking) {
-      return;
-    }
+    if (this.player.frozen) return;
+    if (this.player.attacking) return;
+
     const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
     this.currentInput = entry[0]
     if (this.currentInput === 'w') {
