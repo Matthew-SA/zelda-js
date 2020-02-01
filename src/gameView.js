@@ -56,9 +56,8 @@ class GameView {
           this.playerScrolling.north = true;
           this.player.frozen = true;
           this.world.pos[1] -= 8;
-          this.player.pos[1] += 8;
           this.moveQueueY -= 8;
-          this.player.updateTraceBox(0,8)
+          this.player.movePlayerPos(0,8)
           this.world.drawWorld(this.worldCtx)
         }
       }
@@ -72,9 +71,8 @@ class GameView {
           this.playerScrolling.east = true;
           this.player.frozen = true;
           this.world.pos[0] += 8;
-          this.player.pos[0] -= 8;
           this.moveQueueX -= 8;
-          this.player.updateTraceBox(-8, 0)
+          this.player.movePlayerPos(-8, 0)
           this.world.drawWorld(this.worldCtx)
         }
       }
@@ -88,9 +86,8 @@ class GameView {
           this.playerScrolling.south = true;
           this.player.frozen = true;
           this.world.pos[1] += 8;
-          this.player.pos[1] -= 8;
           this.moveQueueY -= 8;
-          this.player.updateTraceBox(0, -8)
+          this.player.movePlayerPos(0, -8)
           this.world.drawWorld(this.worldCtx)
         }
       }
@@ -104,13 +101,16 @@ class GameView {
           this.playerScrolling.west = true;
           this.player.frozen = true;
           this.world.pos[0] -= 8;
-          this.player.pos[0] += 8;
           this.moveQueueX -= 8;
-          this.player.updateTraceBox(8, 0)
+          this.player.movePlayerPos(8,0)
           this.world.drawWorld(this.worldCtx)
         }
       }
     }, 1000 / constants.FPS)
+  }
+
+  moveGameView(x,y) {
+    
   }
 
   getMapPixel(x,y) {
@@ -146,9 +146,6 @@ class GameView {
       return this.checkIfBarrier(topPixel, bottomPixel)
     }
   }
-  // scanBoard() {
-  //   for (let i)
-  // }
 
   getLastInput() {
     if (key.isPressed('w') && this.lastInput.w === null) {
@@ -193,26 +190,22 @@ class GameView {
     if ((this.currentInput === 'w')) {
       this.player.direction = 102 // 'up'
       if (this.impassableTerrain('north')) return
-      this.player.pos[1] -= 3
-      this.player.updateTraceBox(0,-3)
+      this.player.movePlayerPos(0, -4)
     }
     if ((this.currentInput === 'd')) {
       this.player.direction = 153 // 'right'
       if (this.impassableTerrain('east')) return
-      this.player.pos[0] += 3
-      this.player.updateTraceBox(3, 0)
+      this.player.movePlayerPos(4, 0)
     }
     if ((this.currentInput === 's')) {
       this.player.direction = 0 // 'down'
       if (this.impassableTerrain('south')) return
-      this.player.pos[1] += 3
-      this.player.updateTraceBox(0, 3)
+      this.player.movePlayerPos(0, 4)
     }
     if ((this.currentInput === 'a')) {
       this.player.direction = 51 // 'left'
       if (this.impassableTerrain('west')) return
-      this.player.pos[0] -= 3
-      this.player.updateTraceBox(-3, 0)
+      this.player.movePlayerPos(-4, 0)
     }
   }
 }

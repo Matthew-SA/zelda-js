@@ -17,7 +17,10 @@ class Player {
     }
   }
 
-  updateTraceBox(x,y) {
+  movePlayerPos(x,y) {
+    // this.lastPos = this.pos;
+    this.pos[0] += x;
+    this.pos[1] += y;
     this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
@@ -36,13 +39,6 @@ class Player {
       48,
       48
       )
-  }
-
-  drawDebugBox(ctx) {
-    ctx.beginPath()
-    ctx.fillRect(this.tracebox.topLeft[0], this.tracebox.topLeft[1], 48, 36)
-    ctx.fillstyle = 'black'
-    ctx.fill();
   }
 
   drawPlayer(ctx) {
@@ -64,12 +60,6 @@ class Player {
     ctx.beginPath();
     ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
   }
-
-  clearDebugBox(ctx) {
-    ctx.beginPath();
-    ctx.clearRect(this.lastPos[0] - 12 , this.lastPos[1] - 12, 60, 60);
-  }
-  
 
   drawSword(ctx) {
     this.attacking = true;
