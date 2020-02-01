@@ -9,6 +9,19 @@ class Player {
     this.frame = 0;
     this.attacking = false;
     this.frozen = false;
+    this.tracebox = {
+      topLeft: [this.pos[0] + 6, this.pos[1] + 24],
+      topRight: [this.pos[0] + 42, this.pos[1] + 24],
+      bottomLeft: [this.pos[0] + 6, this.pos[1] + 45],
+      bottomRight: [this.pos[0] + 42, this.pos[1] + 45],
+    }
+  }
+
+  updateTraceBox(x,y) {
+    this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
+    this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
+    this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
+    this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
   }
 
   drawFrame(ctx) {
@@ -25,13 +38,20 @@ class Player {
       )
   }
 
+  drawDebugBox(ctx) {
+    ctx.beginPath()
+    ctx.fillRect(this.tracebox.topLeft[0], this.tracebox.topLeft[1], 48, 36)
+    ctx.fillstyle = 'black'
+    ctx.fill();
+  }
+
   drawPlayer(ctx) {
     if (this.runCycle < 9) {
       this.frame = 0;
     } else {
       this.frame = 51;
     }
-    if (this.runCycle > 16) this.runCycle = 0;
+    if (this.runCycle > 15) this.runCycle = 0;
     if (this.attacking) {
       this.frame = 153; 
     }
@@ -43,6 +63,11 @@ class Player {
   clearPlayer(ctx) {
     ctx.beginPath();
     ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
+  }
+
+  clearDebugBox(ctx) {
+    ctx.beginPath();
+    ctx.clearRect(this.lastPos[0] - 12 , this.lastPos[1] - 12, 60, 60);
   }
   
 

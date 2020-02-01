@@ -14,7 +14,7 @@ header {
   left: 0;
   right: 0;
   margin: 20px auto;
-  z-index: 3;
+  z-index: 4;
 }
 
 #sprite-canvas {
@@ -22,7 +22,7 @@ header {
   left: 0;
   right: 0;
   margin: 20px auto;
-  z-index: 2;
+  z-index: 3;
   /* outline: 1px solid silver; */
 }
 
@@ -31,6 +31,13 @@ header {
   left: 0;
   right: 0;
   margin: 20px auto;
-  z-index: 1;
+  z-index: 2;
   outline: 2px solid #ddd;
+}
+#collision-canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 20px auto;
+  z-index: 1;
 }

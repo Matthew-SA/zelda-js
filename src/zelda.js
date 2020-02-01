@@ -17,6 +17,11 @@ const worldCtx = mapCanvas.getContext('2d')
 mapCanvas.width = 768
 mapCanvas.height = 696
 
+const collisionCanvas = document.getElementById('collision-canvas');
+const collisionCtx = collisionCanvas.getContext('2d')
+collisionCanvas.width = 768
+collisionCanvas.height = 696
+
 
 // const background = new Image();
 // background.src = "./images/board.jpg";
@@ -27,5 +32,5 @@ mapCanvas.height = 696
 // document.addEventListener('keyup', () => console.log('key up!'));
 // document.addEventListener('keydown', () => console.log('key down!'));
 
-const gameView = new GameView(menuCtx, spriteCtx, worldCtx)
+const gameView = new GameView(menuCtx, spriteCtx, worldCtx, collisionCtx)
 gameView.init();

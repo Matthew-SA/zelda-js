@@ -3,16 +3,19 @@ import Menu from './menu.js'
 import Player from './player'
 import World from './world.js'
 import * as constants from './constants'
+import * as util from './util'
+
 
 // gameView is 16 x 14.5 'tiles
 // gameplay is in 16 x 11 tiles
 
 class GameView {
-  constructor(menuCtx, spriteCtx, worldCtx) {
+  constructor(menuCtx, spriteCtx, worldCtx, collisionCtx) {
     // this.game = game;
     this.menuCtx = menuCtx;
     this.spriteCtx = spriteCtx;
     this.worldCtx = worldCtx;
+    this.collisionCtx = collisionCtx;
     this.menu = new Menu;
     this.player = new Player;
     this.world = new World;
@@ -26,6 +29,7 @@ class GameView {
   init() {
     setTimeout(() => {
       this.world.drawWorld(this.worldCtx)
+      this.world.drawCollisionMap(this.collisionCtx)
       this.menu.drawMenu(this.menuCtx)
       this.player.drawPlayer(this.spriteCtx);
       console.log('start!')
@@ -47,12 +51,14 @@ class GameView {
           this.player.frozen = false;
           this.playerScrolling.north = false;
           this.moveQueueY = 528;
+          this.world.drawCollisionMap(this.collisionCtx)
         } else {
           this.playerScrolling.north = true;
           this.player.frozen = true;
           this.world.pos[1] -= 8;
           this.player.pos[1] += 8;
           this.moveQueueY -= 8;
+          this.player.updateTraceBox(0,8)
           this.world.drawWorld(this.worldCtx)
         }
       }
@@ -61,12 +67,14 @@ class GameView {
           this.player.frozen = false;
           this.playerScrolling.east = false;
           this.moveQueueX = 768;
+          this.world.drawCollisionMap(this.collisionCtx)
         } else {
           this.playerScrolling.east = true;
           this.player.frozen = true;
           this.world.pos[0] += 8;
           this.player.pos[0] -= 8;
           this.moveQueueX -= 8;
+          this.player.updateTraceBox(-8, 0)
           this.world.drawWorld(this.worldCtx)
         }
       }
@@ -75,12 +83,14 @@ class GameView {
           this.player.frozen = false;
           this.playerScrolling.south = false;
           this.moveQueueY = 528;
+          this.world.drawCollisionMap(this.collisionCtx)
         } else {
           this.playerScrolling.south = true;
           this.player.frozen = true;
           this.world.pos[1] += 8;
           this.player.pos[1] -= 8;
           this.moveQueueY -= 8;
+          this.player.updateTraceBox(0, -8)
           this.world.drawWorld(this.worldCtx)
         }
       }
@@ -89,17 +99,56 @@ class GameView {
           this.player.frozen = false;
           this.playerScrolling.west = false;
           this.moveQueueX = 768;
+          this.world.drawCollisionMap(this.collisionCtx)
         } else {
           this.playerScrolling.west = true;
           this.player.frozen = true;
           this.world.pos[0] -= 8;
           this.player.pos[0] += 8;
           this.moveQueueX -= 8;
+          this.player.updateTraceBox(8, 0)
           this.world.drawWorld(this.worldCtx)
         }
       }
     }, 1000 / constants.FPS)
   }
+
+  getMapPixel(x,y) {
+    const pixel = this.collisionCtx.getImageData(x, y, 1, 1)
+    // console.log([pixel.data[0], pixel.data[1], pixel.data[2]])
+    return [pixel.data[0], pixel.data[1], pixel.data[2]]
+  }
+
+  checkIfBarrier(pixel1, pixel2) {
+    let pixel1value = util.sumArr(pixel1)
+    let pixel2value = util.sumArr(pixel2)
+    if (pixel1value === constants.WALL || pixel1value === constants.WATER) return true;
+    if (pixel2value === constants.WALL || pixel2value === constants.WATER) return true;
+    return false;
+  }
+
+  impassableTerrain(direction) {
+    if (direction === 'north') {
+      const topPixel = this.getMapPixel(this.player.tracebox.topLeft[0], this.player.tracebox.topLeft[1] - 3)
+      const bottomPixel = this.getMapPixel(this.player.tracebox.topRight[0], this.player.tracebox.topRight[1] - 3)
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'east') {
+      const topPixel = this.getMapPixel(this.player.tracebox.topRight[0] + 3, this.player.tracebox.topRight[1])
+      const bottomPixel = this.getMapPixel(this.player.tracebox.bottomRight[0] + 3, this.player.tracebox.bottomRight[1])
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'south') {
+      const topPixel = this.getMapPixel(this.player.tracebox.bottomLeft[0], this.player.tracebox.bottomLeft[1] + 3)
+      const bottomPixel = this.getMapPixel(this.player.tracebox.bottomRight[0], this.player.tracebox.bottomRight[1] + 3)
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'west') {
+      const topPixel = this.getMapPixel(this.player.tracebox.topLeft[0] - 3, this.player.tracebox.topRight[1])
+      const bottomPixel = this.getMapPixel(this.player.tracebox.bottomLeft[0] - 3, this.player.tracebox.bottomLeft[1])
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    }
+  }
+  // scanBoard() {
+  //   for (let i)
+  // }
 
   getLastInput() {
     if (key.isPressed('w') && this.lastInput.w === null) {
@@ -133,26 +182,6 @@ class GameView {
 
     const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
     this.currentInput = entry[0]
-    if (this.currentInput === 'w') {
-      this.player.pos[1] -= 3
-      // this.playerPosition[1] -= 3  // track center of player position?
-      this.player.direction = 102 // 'up'
-    }
-    if (this.currentInput === 'a') {
-      this.player.pos[0] -= 3
-      // this.playerPosition[0] -= 3  // track center of player position?
-      this.player.direction = 51 // 'left'
-    }
-    if (this.currentInput === 's') {
-      this.player.pos[1] += 3
-      // this.playerPosition[1] += 3  // track center of player position?
-      this.player.direction = 0 // 'down'
-    }
-    if (this.currentInput === 'd') {
-      this.player.pos[0] += 3
-      // this.playerPosition[0] += 3  // track center of player position?
-      this.player.direction = 153 // 'right'
-    }
     if (key.isPressed('/')) {
       this.currentInput = 'attack'
       this.player.drawSword(this.spriteCtx);
@@ -161,7 +190,32 @@ class GameView {
         this.player.drawPlayer(this.spriteCtx);
       }, 250)
     }
+    if ((this.currentInput === 'w')) {
+      this.player.direction = 102 // 'up'
+      if (this.impassableTerrain('north')) return
+      this.player.pos[1] -= 3
+      this.player.updateTraceBox(0,-3)
+    }
+    if ((this.currentInput === 'd')) {
+      this.player.direction = 153 // 'right'
+      if (this.impassableTerrain('east')) return
+      this.player.pos[0] += 3
+      this.player.updateTraceBox(3, 0)
+    }
+    if ((this.currentInput === 's')) {
+      this.player.direction = 0 // 'down'
+      if (this.impassableTerrain('south')) return
+      this.player.pos[1] += 3
+      this.player.updateTraceBox(0, 3)
+    }
+    if ((this.currentInput === 'a')) {
+      this.player.direction = 51 // 'left'
+      if (this.impassableTerrain('west')) return
+      this.player.pos[0] -= 3
+      this.player.updateTraceBox(-3, 0)
+    }
   }
 }
+
 
 export default GameView;
