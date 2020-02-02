@@ -17,7 +17,7 @@ class Player {
     }
   }
 
-  movePlayerPos(x,y) {
+  update(x,y) {
     // this.lastPos = this.pos;
     this.pos[0] += x;
     this.pos[1] += y;

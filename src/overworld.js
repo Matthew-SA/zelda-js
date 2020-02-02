@@ -2,12 +2,12 @@
 // map screens are 768 x 528 (256 x 176)
 // world is a 16 x 8 grid
 
-class World {
+class Overworld {
   constructor() {
     this.lastPos = [5376, 3528];
     this.pos = [5376,3528];
-    this.world = new Image();
-    this.world.src = '../assets/images/overworld.png'
+    this.overworld = new Image();
+    this.overworld.src = '../assets/images/overworld.png'
     this.collisionMap = new Image();
     this.collisionMap.src = '../assets/images/overworld-collision.png'
     this.grid = [
@@ -29,7 +29,7 @@ class World {
 
   drawWorld(ctx) {
     ctx.drawImage(
-      this.world,
+      this.overworld,
       this.pos[0], // x axis anchor point
       this.pos[1], // y axis anchor point
       768,
@@ -61,5 +61,5 @@ class World {
 }
 
 // start is at 
-export default World;
+export default Overworld;
 

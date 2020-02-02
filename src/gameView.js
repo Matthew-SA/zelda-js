@@ -1,7 +1,7 @@
 import key from 'keymaster'
 import Menu from './menu.js'
 import Player from './player'
-import World from './world.js'
+import Overworld from './overworld'
 import * as constants from './constants'
 import * as util from './util'
 
@@ -19,7 +19,7 @@ class GameView {
     this.collisionCtx = collisionCtx;
     this.menu = new Menu;
     this.player = new Player;
-    this.world = new World;
+    this.overworld = new Overworld;
     this.lastInput = {'a': null, 'w': null, 'd': null, 's': null};
     this.currentInput = null;
     this.scrollQueue = 0;
@@ -27,8 +27,8 @@ class GameView {
 
   init() {
     setTimeout(() => {
-      this.world.drawWorld(this.worldCtx)
-      this.world.drawCollisionMap(this.collisionCtx)
+      this.overworld.drawWorld(this.worldCtx)
+      this.overworld.drawCollisionMap(this.collisionCtx)
       this.menu.draw(this.menuCtx)
       this.player.draw(this.spriteCtx);
       requestAnimationFrame(() => this.gameLoop())
@@ -55,42 +55,41 @@ class GameView {
   }
 
   scroll() {
-    if (this.scrollQueue) {
-      this.world.drawWorld(this.worldCtx)
-      this.scrollQueue -= 8;
-      if (this.player.direction === 102) {
-        this.world.pos[1] -= 8;
-        this.player.movePlayerPos(0,8)
-      } else if (this.player.direction === 153) {
-        this.world.pos[0] += 8;
-        this.player.movePlayerPos(-8, 0)
-      } else if (this.player.direction === 0) {
-        this.world.pos[1] += 8;
-        this.player.movePlayerPos(0, -8)
-      } else if (this.player.direction === 51) {
-        this.world.pos[0] -= 8;
-        this.player.movePlayerPos(8, 0)
-      }
-    } else {
-      this.world.drawCollisionMap(this.collisionCtx)
+    if (!this.scrollQueue) return;
+    if (this.player.direction === 102) {
+      this.overworld.pos[1] -= 8;
+      if (this.scrollQueue > 48) this.player.update(0, 8)
+    } else if (this.player.direction === 153) {
+      this.overworld.pos[0] += 8;
+      if (this.scrollQueue > 48) this.player.update(-8, 0)
+    } else if (this.player.direction === 0) {
+      this.overworld.pos[1] += 8;
+      if (this.scrollQueue > 48) this.player.update(0, -8)
+    } else if (this.player.direction === 51) {
+      this.overworld.pos[0] -= 8;
+      if (this.scrollQueue > 48) this.player.update(8, 0)
     }
-  }
+      this.overworld.drawWorld(this.worldCtx)
 
-  // scroll() {
-  //   if (this.moveQueueX <= 0) {
-  //     this.player.frozen = false;
-  //     this.scrolling.east = false;
-  //     this.moveQueueX = 768;
-  //     this.world.drawCollisionMap(this.collisionCtx)
-  //   } else {
-  //     this.scrolling.east = true;
-  //     this.player.frozen = true;
-  //     this.world.pos[0] += 8;
-  //     this.moveQueueX -= 8;
-  //     this.player.movePlayerPos(-8, 0)
-  //     this.world.drawWorld(this.worldCtx)
-  //   }
-  // }
+    }
+
+    // this.overworld.drawWorld(this.worldCtx)
+    // this.scrollQueue -= 8;
+    // if (this.player.direction === 102) {
+    //   this.overworld.pos[1] -= 8;
+    //   this.player.update(0,8)
+    // } else if (this.player.direction === 153) {
+    //   this.overworld.pos[0] += 8;
+    //   this.player.update(-8, 0)
+    // } else if (this.player.direction === 0) {
+    //   this.overworld.pos[1] += 8;
+    //   this.player.update(0, -8)
+    // } else if (this.player.direction === 51) {
+    //   this.overworld.pos[0] -= 8;
+    //   this.player.update(8, 0)
+    // }
+    this.overworld.drawCollisionMap(this.collisionCtx)
+  }
 
   gameLoop() {
     // let now = Date.now();
@@ -103,71 +102,7 @@ class GameView {
       this.player.runCycle++;
       this.player.draw(this.spriteCtx);
     }
-    // if (this.playerScrolling.north || this.player.pos[1] < constants.BORDERTOP) {
-    //   if (this.moveQueueY <= 0) {
-    //     this.player.frozen = false;
-    //     this.playerScrolling.north = false;
-    //     this.moveQueueY = 528; //*
-    //     this.world.drawCollisionMap(this.collisionCtx)
-    //   } else {
-    //     this.playerScrolling.north = true;
-    //     this.player.frozen = true;
-    //     this.world.pos[1] -= 8; //*
-    //     this.moveQueueY -= 8; //*
-    //     this.player.movePlayerPos(0,8) //*
-    //     this.world.drawWorld(this.worldCtx)
-    //   }
-    // }
-    // if (this.playerScrolling.east || this.player.pos[0] > constants.BORDERRIGHT) {
-    //   if (this.moveQueueX <= 0) {
-    //     this.player.frozen = false;
-    //     this.playerScrolling.east = false;
-    //     this.moveQueueX = 768;
-    //     this.world.drawCollisionMap(this.collisionCtx)
-    //   } else {
-    //     this.playerScrolling.east = true;
-    //     this.player.frozen = true;
-    //     this.world.pos[0] += 8;
-    //     this.moveQueueX -= 8;
-    //     this.player.movePlayerPos(-8, 0)
-    //     this.world.drawWorld(this.worldCtx)
-    //   }
-    // }
-    // if (this.playerScrolling.south || this.player.pos[1] > constants.BORDERBOTTOM) {
-    //   if (this.moveQueueY <= 0) {
-    //     this.player.frozen = false;
-    //     this.playerScrolling.south = false;
-    //     this.moveQueueY = 528;
-    //     this.world.drawCollisionMap(this.collisionCtx)
-    //   } else {
-    //     this.playerScrolling.south = true;
-    //     this.player.frozen = true;
-    //     this.world.pos[1] += 8;
-    //     this.moveQueueY -= 8;
-    //     this.player.movePlayerPos(0, -8)
-    //     this.world.drawWorld(this.worldCtx)
-    //   }
-    // }
-    // if (this.playerScrolling.west || this.player.pos[0] < constants.BORDERLEFT) {
-    //   if (this.moveQueueX <= 0) {
-    //     this.player.frozen = false;
-    //     this.playerScrolling.west = false;
-    //     this.moveQueueX = 768;
-    //     this.world.drawCollisionMap(this.collisionCtx)
-    //   } else {
-    //     this.playerScrolling.west = true;
-    //     this.player.frozen = true;
-    //     this.world.pos[0] -= 8;
-    //     this.moveQueueX -= 8;
-    //     this.player.movePlayerPos(8, 0)
-    //     this.world.drawWorld(this.worldCtx)
-    //   }
-    // }
     window.requestAnimationFrame(() => this.gameLoop())
-  }
-
-  moveGameView(x,y) {
-
   }
 
   getMapPixel(x,y) {
@@ -231,7 +166,6 @@ class GameView {
   }
 
   checkKey() {
-    if (this.scrolling.east) return;
     if (this.player.frozen) return;
     if (this.player.attacking) return;
 
@@ -247,22 +181,22 @@ class GameView {
     if ((this.currentInput === 'w')) {
       this.player.direction = 102 // 'up'
       if (this.impassableTerrain('north')) return
-      this.player.movePlayerPos(0, -4)
+      this.player.update(0, -4)
     }
     if ((this.currentInput === 'd')) {
       this.player.direction = 153 // 'right'
       if (this.impassableTerrain('east')) return
-      this.player.movePlayerPos(4, 0)
+      this.player.update(4, 0)
     }
     if ((this.currentInput === 's')) {
       this.player.direction = 0 // 'down'
       if (this.impassableTerrain('south')) return
-      this.player.movePlayerPos(0, 4)
+      this.player.update(0, 4)
     }
     if ((this.currentInput === 'a')) {
       this.player.direction = 51 // 'left'
       if (this.impassableTerrain('west')) return
-      this.player.movePlayerPos(-4, 0)
+      this.player.update(-4, 0)
     }
   }
 }
