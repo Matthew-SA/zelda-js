@@ -10,11 +10,13 @@ class Player {
     this.attacking = false;
     this.frozen = false;
     this.tracebox = {
-      topLeft: [this.pos[0] + 6, this.pos[1] + 24],
-      topRight: [this.pos[0] + 42, this.pos[1] + 24],
-      bottomLeft: [this.pos[0] + 6, this.pos[1] + 45],
-      bottomRight: [this.pos[0] + 42, this.pos[1] + 45],
+      topLeft: [this.pos[0] + 9, this.pos[1] + 24],
+      topRight: [this.pos[0] + 39, this.pos[1] + 24],
+      bottomLeft: [this.pos[0] + 9, this.pos[1] + 45],
+      bottomRight: [this.pos[0] + 39, this.pos[1] + 45],
     }
+    this.xrail = 0
+    this.yrail = 0
   }
 
   update(x,y) {
@@ -25,6 +27,8 @@ class Player {
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
     this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
+    this.xrail = this.pos[1] % 24;
+    this.yrail = this.pos[0] % 24;
   }
 
   draw(ctx) {
