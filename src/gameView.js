@@ -11,6 +11,7 @@ import * as util from './util'
 
 class GameView {
   constructor(menuCtx, spriteCtx, worldCtx, collisionCtx) {
+    // this.lastTime;
     // this.game = game;
     this.menuCtx = menuCtx;
     this.spriteCtx = spriteCtx;
@@ -32,11 +33,13 @@ class GameView {
       this.world.drawCollisionMap(this.collisionCtx)
       this.menu.draw(this.menuCtx)
       this.player.draw(this.spriteCtx);
-      requestAnimationFrame(() => this.loop())
+      requestAnimationFrame(() => this.gameLoop())
     }, 30);
   }
   
-  loop() {
+  gameLoop() {
+    // let now = Date.now();
+    // let dt = (now - lastTime) / 1000.0;
     this.getLastInput();
     this.checkKey();
     if (this.currentInput) {
@@ -47,14 +50,14 @@ class GameView {
       if (this.moveQueueY <= 0) {
         this.player.frozen = false;
         this.playerScrolling.north = false;
-        this.moveQueueY = 528;
+        this.moveQueueY = 528; //*
         this.world.drawCollisionMap(this.collisionCtx)
       } else {
         this.playerScrolling.north = true;
         this.player.frozen = true;
-        this.world.pos[1] -= 8;
-        this.moveQueueY -= 8;
-        this.player.movePlayerPos(0,8)
+        this.world.pos[1] -= 8; //*
+        this.moveQueueY -= 8; //*
+        this.player.movePlayerPos(0,8) //*
         this.world.drawWorld(this.worldCtx)
       }
     }
@@ -103,7 +106,7 @@ class GameView {
         this.world.drawWorld(this.worldCtx)
       }
     }
-    window.requestAnimationFrame(() => this.loop())
+    window.requestAnimationFrame(() => this.gameLoop())
   }
 
   moveGameView(x,y) {
