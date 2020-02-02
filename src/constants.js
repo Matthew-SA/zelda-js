@@ -3,10 +3,10 @@ export const FPS = 60;
 
 
 // Borders that trigger screen transition
-export const BORDERTOP = 148;
-export const BORDERLEFT = -24;
+export const BORDERTOP = 172;
+export const BORDERLEFT = 0;
 export const BORDERRIGHT = 720;
-export const BORDERBOTTOM = 672;
+export const BORDERBOTTOM = 648;
 
 // Terrain values
 export const WALL = 765;

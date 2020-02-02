@@ -60,23 +60,46 @@ class GameView {
   // if player is past a certain distance, stop scrolling player
   // when scrolling is finished, update collision map
   scroll() {
-    if (!this.scrollQueue) return;
-    if (this.player.direction === 102) {
-      this.overworld.pos[1] -= 8;
-      if (this.scrollQueue > 48) this.player.update(0, 8)
-    } else if (this.player.direction === 153) {
-      this.overworld.pos[0] += 8;
-      if (this.scrollQueue > 48) this.player.update(-8, 0)
-    } else if (this.player.direction === 0) {
-      this.overworld.pos[1] += 8;
-      if (this.scrollQueue > 48) this.player.update(0, -8)
-    } else if (this.player.direction === 51) {
-      this.overworld.pos[0] -= 8;
-      if (this.scrollQueue > 48) this.player.update(8, 0)
-    }
+    if (!this.scrolling) return;
+    if (this.scrollQueue <= 0) {
+      this.scrolling = false;
+      this.overworld.drawCollisionMap(this.collisionCtx)
+    } else {
+      if (this.player.direction === 102) {
+        this.overworld.pos[1] -= 8;
+        if (this.scrollQueue > 48) this.player.update(0, 8)
+      }
+      if (this.player.direction === 153) {
+        this.overworld.pos[0] += 8;
+        if (this.scrollQueue > 48) this.player.update(-8, 0)
+      }
+      if (this.player.direction === 0) {
+        this.overworld.pos[1] += 8;
+        if (this.scrollQueue > 48) this.player.update(0, -8)
+      }
+      if (this.player.direction === 51) {
+        this.overworld.pos[0] -= 8;
+        if (this.scrollQueue > 48) this.player.update(8, 0)
+      }
+      this.scrollQueue -= 8;
       this.overworld.drawWorld(this.worldCtx)
-
     }
+  }
+    // if (this.player.direction === 102) {
+    //   this.overworld.pos[1] -= 8;
+    //   if (this.scrollQueue > 48) this.player.update(0, 8)
+    // } else if (this.player.direction === 153) {
+    //   this.overworld.pos[0] += 8;
+    //   if (this.scrollQueue > 48) this.player.update(-8, 0)
+    // } else if (this.player.direction === 0) {
+    //   this.overworld.pos[1] += 8;
+    //   if (this.scrollQueue > 48) this.player.update(0, -8)
+    // } else if (this.player.direction === 51) {
+    //   this.overworld.pos[0] -= 8;
+    //   if (this.scrollQueue > 48) this.player.update(8, 0)
+    // }
+      // this.overworld.drawWorld(this.worldCtx)
+
 
     // this.overworld.drawWorld(this.worldCtx)
     // this.scrollQueue -= 8;
@@ -93,8 +116,8 @@ class GameView {
     //   this.overworld.pos[0] -= 8;
     //   this.player.update(8, 0)
     // }
-    this.overworld.drawCollisionMap(this.collisionCtx)
-  }
+  //   this.overworld.drawCollisionMap(this.collisionCtx)
+  // }
 
   gameLoop() {
     // let now = Date.now();
@@ -171,6 +194,7 @@ class GameView {
   }
 
   checkKey() {
+    if (this.scrolling) return;
     if (this.player.frozen) return;
     if (this.player.attacking) return;
 
