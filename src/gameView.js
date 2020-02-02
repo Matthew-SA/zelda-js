@@ -22,6 +22,7 @@ class GameView {
     this.overworld = new Overworld;
     this.lastInput = {'a': null, 'w': null, 'd': null, 's': null};
     this.currentInput = null;
+    this.scrolling = false;
     this.scrollQueue = 0;
   }
 
@@ -37,23 +38,27 @@ class GameView {
   
   checkBorder() {
     if (this.player.pos[1] < constants.BORDERTOP) {
-      this.player.frozen = true;
+      this.scrolling = true;
       this.scrollQueue = 528;
     }
     if (this.player.pos[0] > constants.BORDERRIGHT) {
-      this.player.frozen = true;
+      this.scrolling = true;
       this.scrollQueue = 768;
     }
     if (this.player.pos[1] > constants.BORDERBOTTOM) {
-      this.player.frozen = true;
+      this.scrolling = true;
       this.scrollQueue = 528;
     }
     if (this.player.pos[0] < constants.BORDERLEFT) {
-      this.player.frozen = true;
+      this.scrolling = true;
       this.scrollQueue = 768;
     }
   }
 
+
+  // if scrolling, move screen and player
+  // if player is past a certain distance, stop scrolling player
+  // when scrolling is finished, update collision map
   scroll() {
     if (!this.scrollQueue) return;
     if (this.player.direction === 102) {
