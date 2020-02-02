@@ -6,7 +6,7 @@ class Menu {
     this.image.src = "../assets/images/menu.png"
   }
 
-  drawMenu(ctx) {
+  draw(ctx) {
     ctx.drawImage(
       this.image,
       0,

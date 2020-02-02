@@ -27,7 +27,15 @@ class Player {
     this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
   }
 
-  drawFrame(ctx) {
+  draw(ctx) {
+    if (this.runCycle < 9) {
+      this.frame = 0;
+    } else {
+      this.frame = 51;
+    }
+    if (this.runCycle > 15) this.runCycle = 0;
+    if (this.attacking) this.frame = 153;
+    ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
     ctx.drawImage(
       this.sprite,
       this.direction,
@@ -38,27 +46,9 @@ class Player {
       this.pos[1],
       48,
       48
-      )
-  }
-
-  drawPlayer(ctx) {
-    if (this.runCycle < 9) {
-      this.frame = 0;
-    } else {
-      this.frame = 51;
-    }
-    if (this.runCycle > 15) this.runCycle = 0;
-    if (this.attacking) {
-      this.frame = 153; 
-    }
-    this.drawFrame(ctx)
+    )
     this.lastPos[0] = this.pos[0];
     this.lastPos[1] = this.pos[1];
-  }
-
-  clearPlayer(ctx) {
-    ctx.beginPath();
-    ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
   }
 
   drawSword(ctx) {

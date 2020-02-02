@@ -30,87 +30,84 @@ class GameView {
     setTimeout(() => {
       this.world.drawWorld(this.worldCtx)
       this.world.drawCollisionMap(this.collisionCtx)
-      this.menu.drawMenu(this.menuCtx)
-      this.player.drawPlayer(this.spriteCtx);
-      console.log('start!')
-      this.start();
-    }, 10)
+      this.menu.draw(this.menuCtx)
+      this.player.draw(this.spriteCtx);
+      requestAnimationFrame(() => this.loop())
+    }, 30);
   }
-
-  start() {
-    const gameLoop = setInterval(() => {
-      this.getLastInput();
-      this.checkKey();
-      if (this.currentInput) {
-        this.player.runCycle ++; 
-        this.player.clearPlayer(this.spriteCtx);
-        this.player.drawPlayer(this.spriteCtx);
+  
+  loop() {
+    this.getLastInput();
+    this.checkKey();
+    if (this.currentInput) {
+      this.player.runCycle++;
+      this.player.draw(this.spriteCtx);
+    }
+    if (this.playerScrolling.north || this.player.pos[1] < constants.BORDERTOP) {
+      if (this.moveQueueY <= 0) {
+        this.player.frozen = false;
+        this.playerScrolling.north = false;
+        this.moveQueueY = 528;
+        this.world.drawCollisionMap(this.collisionCtx)
+      } else {
+        this.playerScrolling.north = true;
+        this.player.frozen = true;
+        this.world.pos[1] -= 8;
+        this.moveQueueY -= 8;
+        this.player.movePlayerPos(0,8)
+        this.world.drawWorld(this.worldCtx)
       }
-      if (this.playerScrolling.north || this.player.pos[1] < constants.BORDERTOP) {
-        if (this.moveQueueY <= 0) {
-          this.player.frozen = false;
-          this.playerScrolling.north = false;
-          this.moveQueueY = 528;
-          this.world.drawCollisionMap(this.collisionCtx)
-        } else {
-          this.playerScrolling.north = true;
-          this.player.frozen = true;
-          this.world.pos[1] -= 8;
-          this.moveQueueY -= 8;
-          this.player.movePlayerPos(0,8)
-          this.world.drawWorld(this.worldCtx)
-        }
+    }
+    if (this.playerScrolling.east || this.player.pos[0] > constants.BORDERRIGHT) {
+      if (this.moveQueueX <= 0) {
+        this.player.frozen = false;
+        this.playerScrolling.east = false;
+        this.moveQueueX = 768;
+        this.world.drawCollisionMap(this.collisionCtx)
+      } else {
+        this.playerScrolling.east = true;
+        this.player.frozen = true;
+        this.world.pos[0] += 8;
+        this.moveQueueX -= 8;
+        this.player.movePlayerPos(-8, 0)
+        this.world.drawWorld(this.worldCtx)
       }
-      if (this.playerScrolling.east || this.player.pos[0] > constants.BORDERRIGHT) {
-        if (this.moveQueueX <= 0) {
-          this.player.frozen = false;
-          this.playerScrolling.east = false;
-          this.moveQueueX = 768;
-          this.world.drawCollisionMap(this.collisionCtx)
-        } else {
-          this.playerScrolling.east = true;
-          this.player.frozen = true;
-          this.world.pos[0] += 8;
-          this.moveQueueX -= 8;
-          this.player.movePlayerPos(-8, 0)
-          this.world.drawWorld(this.worldCtx)
-        }
+    }
+    if (this.playerScrolling.south || this.player.pos[1] > constants.BORDERBOTTOM) {
+      if (this.moveQueueY <= 0) {
+        this.player.frozen = false;
+        this.playerScrolling.south = false;
+        this.moveQueueY = 528;
+        this.world.drawCollisionMap(this.collisionCtx)
+      } else {
+        this.playerScrolling.south = true;
+        this.player.frozen = true;
+        this.world.pos[1] += 8;
+        this.moveQueueY -= 8;
+        this.player.movePlayerPos(0, -8)
+        this.world.drawWorld(this.worldCtx)
       }
-      if (this.playerScrolling.south || this.player.pos[1] > constants.BORDERBOTTOM) {
-        if (this.moveQueueY <= 0) {
-          this.player.frozen = false;
-          this.playerScrolling.south = false;
-          this.moveQueueY = 528;
-          this.world.drawCollisionMap(this.collisionCtx)
-        } else {
-          this.playerScrolling.south = true;
-          this.player.frozen = true;
-          this.world.pos[1] += 8;
-          this.moveQueueY -= 8;
-          this.player.movePlayerPos(0, -8)
-          this.world.drawWorld(this.worldCtx)
-        }
+    }
+    if (this.playerScrolling.west || this.player.pos[0] < constants.BORDERLEFT) {
+      if (this.moveQueueX <= 0) {
+        this.player.frozen = false;
+        this.playerScrolling.west = false;
+        this.moveQueueX = 768;
+        this.world.drawCollisionMap(this.collisionCtx)
+      } else {
+        this.playerScrolling.west = true;
+        this.player.frozen = true;
+        this.world.pos[0] -= 8;
+        this.moveQueueX -= 8;
+        this.player.movePlayerPos(8, 0)
+        this.world.drawWorld(this.worldCtx)
       }
-      if (this.playerScrolling.west || this.player.pos[0] < constants.BORDERLEFT) {
-        if (this.moveQueueX <= 0) {
-          this.player.frozen = false;
-          this.playerScrolling.west = false;
-          this.moveQueueX = 768;
-          this.world.drawCollisionMap(this.collisionCtx)
-        } else {
-          this.playerScrolling.west = true;
-          this.player.frozen = true;
-          this.world.pos[0] -= 8;
-          this.moveQueueX -= 8;
-          this.player.movePlayerPos(8,0)
-          this.world.drawWorld(this.worldCtx)
-        }
-      }
-    }, 1000 / constants.FPS)
+    }
+    window.requestAnimationFrame(() => this.loop())
   }
 
   moveGameView(x,y) {
-    
+
   }
 
   getMapPixel(x,y) {
@@ -154,22 +151,22 @@ class GameView {
       this.lastInput.w = null;
     }
 
-    if (key.isPressed('a') && this.lastInput.a === null) {
-      this.lastInput.a = Date.now();
-    } else if (!key.isPressed('a') && this.lastInput.a !== null) {
-      this.lastInput.a = null;
+    if (key.isPressed('d') && this.lastInput.d === null) {
+      this.lastInput.d = Date.now();
+    } else if (!key.isPressed('d') && this.lastInput.d !== null) {
+      this.lastInput.d = null;
     }
-
+    
     if (key.isPressed('s') && this.lastInput.s === null) {
       this.lastInput.s = Date.now();
     } else if (!key.isPressed('s') && this.lastInput.s !== null) {
       this.lastInput.s = null;
     }
 
-    if (key.isPressed('d') && this.lastInput.d === null) {
-      this.lastInput.d = Date.now();
-    } else if (!key.isPressed('d') && this.lastInput.d !== null) {
-      this.lastInput.d = null;
+    if (key.isPressed('a') && this.lastInput.a === null) {
+      this.lastInput.a = Date.now();
+    } else if (!key.isPressed('a') && this.lastInput.a !== null) {
+      this.lastInput.a = null;
     }
   }
 
@@ -183,8 +180,7 @@ class GameView {
       this.currentInput = 'attack'
       this.player.drawSword(this.spriteCtx);
       setTimeout(() => {
-        this.player.clearPlayer(this.spriteCtx);
-        this.player.drawPlayer(this.spriteCtx);
+        this.player.draw(this.spriteCtx);
       }, 250)
     }
     if ((this.currentInput === 'w')) {
