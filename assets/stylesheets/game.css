@@ -7,6 +7,10 @@
 
 header {
   height: 30px;
+  color: white;
+  text-align: center;
+  font-family: 'VT323', monospace;
+  font-size: 32px;
 }
 
 #menu-canvas {
