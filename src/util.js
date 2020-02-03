@@ -27,3 +27,10 @@ export function sumMapPixel(x, y, ctx) {
 export function sample(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
+
+
+export function random(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}

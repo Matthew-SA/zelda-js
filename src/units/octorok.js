@@ -3,7 +3,7 @@ class Octorok {
     this.lastPos = [pos[0], pos[1]];
     this.pos = [pos[0], pos[1]];
     this.sprite = new Image();
-    this.sprite.src = "../assets/images/units/spawn.png"
+    this.sprite.src = "../assets/images/units/octorok.png"
     this.runCycle = 0;
     this.direction = 0
     this.frame = 0;
@@ -17,12 +17,12 @@ class Octorok {
   }
 
   draw(ctx) {
-    if (this.runCycle < 9) {
+    if (this.runCycle < 14) {
       this.frame = 0;
     } else {
       this.frame = 51;
     }
-    if (this.runCycle > 15) this.runCycle = 0;
+    if (this.runCycle > 25) this.runCycle = 0;
     if (this.attacking) this.frame = 153;
     ctx.drawImage(
       this.sprite,

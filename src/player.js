@@ -7,16 +7,16 @@ class Player {
     this.runCycle = 0;
     this.direction = 0
     this.frame = 0;
-    this.attacking = false;
-    this.frozen = false;
+    this.attackFrame = 0;
+    this.cooldown = 0;
     this.tracebox = {
       topLeft: [this.pos[0] + 9, this.pos[1] + 24],
       topRight: [this.pos[0] + 39, this.pos[1] + 24],
       bottomLeft: [this.pos[0] + 9, this.pos[1] + 45],
       bottomRight: [this.pos[0] + 39, this.pos[1] + 45],
     }
-    this.xrail = 0
-    this.yrail = 0
+    this.swordX
+    this.swordY
   }
 
   update(x,y) {
@@ -31,69 +31,69 @@ class Player {
   }
 
   draw(ctx) {
+    if (this.cooldown) this.cooldown--
     if (this.runCycle < 9) {
       this.frame = 0;
     } else {
       this.frame = 51;
     }
     if (this.runCycle > 15) this.runCycle = 0;
-    if (this.attacking) this.frame = 153;
-    ctx.drawImage(
-      this.sprite,
-      this.direction,
-      this.frame,
-      48,
-      48,
-      this.pos[0],
-      this.pos[1],
-      48,
-      48
-    )
+    if (this.attackFrame) {
+      ctx.drawImage(
+        this.sprite,
+        this.direction,
+        153,
+        48,
+        48,
+        this.pos[0],
+        this.pos[1],
+        48,
+        48
+      )
+      this.swordX = this.pos[0]
+      this.swordY = this.pos[1]
+      if (this.direction === 0) {
+        this.swordY += 48;
+      } else if (this.direction === 51) {
+        this.swordX -= 48;
+      } else if (this.direction === 102) {
+       this.swordY -= 48
+      } else if (this.direction === 153) {
+        this.swordX += 48;
+      }
+      ctx.drawImage(
+        this.sprite,
+        this.direction,
+        204,
+        48,
+        48,
+        this.swordX,
+        this.swordY,
+        48,
+        48
+      )
+      this.attackFrame--
+    } else {
+      ctx.drawImage(
+        this.sprite,
+        this.direction,
+        this.frame,
+        48,
+        48,
+        this.pos[0],
+        this.pos[1],
+        48,
+        48
+      )
+    }
     this.lastPos[0] = this.pos[0];
     this.lastPos[1] = this.pos[1];
   }
 
   clear(ctx) {
     ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
+    if (this.cooldown) ctx.clearRect(this.swordX, this.swordY, 48, 48);
   }
-
-  drawSword(ctx) {
-    this.attacking = true;
-    let swordX = this.pos[0]
-    let swordY = this.pos[1]
-    if (this.direction === 0) {
-      swordY += 48;
-    } else if (this.direction === 51) {
-      swordX -= 48;
-    } else if (this.direction === 102) {
-      swordY -= 48
-    } else if (this.direction === 153) {
-      swordX += 48;
-    }
-    ctx.drawImage(
-      this.sprite,
-      this.direction,
-      204,
-      48,
-      48,
-      swordX,
-      swordY,
-      48,
-      48
-    )
-    setTimeout(() => {
-      this.attacking = false;
-      ctx.clearRect(swordX, swordY, 48, 48);
-    },250)
-  }
-
-  freezePlayer(time) {
-    this.frozen = true;
-    setTimeout(() => {
-      this.frozen = false;
-    }, time)
-  }
-  
 }
 
 export default Player;

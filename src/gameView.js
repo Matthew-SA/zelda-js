@@ -43,6 +43,7 @@ class GameView {
     this.scroll();
     this.getLastInput();
     this.checkKey();
+    this.game.incrementUnitRunCycle(this.spriteCtx);
     this.game.clearUnits(this.spriteCtx);
     this.game.drawUnits(this.spriteCtx);
     if (this.currentInput) this.player.runCycle++;
@@ -201,17 +202,14 @@ class GameView {
 
   checkKey() {
     if (this.scrolling) return;
-    if (this.player.frozen) return;
-    if (this.player.attacking) return;
+    if (this.player.cooldown) return;
 
     const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
     this.currentInput = entry[0]
     if (key.isPressed('/')) {
       this.currentInput = 'attack'
-      this.player.drawSword(this.spriteCtx);
-      setTimeout(() => {
-        this.player.draw(this.spriteCtx);
-      }, 250)
+      this.player.attackFrame = 15;
+      this.player.cooldown = 18;
     }
     if ((this.currentInput === 'w')) {
       this.player.direction = 102 // 'up'
