@@ -564,6 +564,7 @@ class GameView {
     this.currentInput = null;
     this.scrolling = false;
     this.scrollQueue = 0;
+    this.init();
   }
 
   // start primary game loop
@@ -574,9 +575,9 @@ class GameView {
       this.menu.draw(this.menuCtx)
       this.player.draw(this.spriteCtx);
       requestAnimationFrame(() => this.gameLoop())
-    }, 30);
+    }, 50);
   }
-  
+
   // primary game loop  TODO: add pixel /sec to ensure proper gameplay at all FPS
   gameLoop() {
     // let now = Date.now();
@@ -1252,7 +1253,7 @@ collisionCanvas.height = 696
 // document.addEventListener('keydown', () => console.log('key down!'));
 
 const gameView = new _gameView__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, worldCtx, collisionCtx)
-gameView.init();
+// gameView.init();
 
 
 /***/ })
