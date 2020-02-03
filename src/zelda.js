@@ -31,4 +31,4 @@ collisionCanvas.height = 696
 // document.addEventListener('keydown', () => console.log('key down!'));
 
 const gameView = new GameView(menuCtx, spriteCtx, worldCtx, collisionCtx)
-gameView.init();
+// gameView.init();
