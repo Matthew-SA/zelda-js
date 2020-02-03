@@ -476,7 +476,7 @@ class Game {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     this.openSpaces = null;
-    this.enemyCount = _util__WEBPACK_IMPORTED_MODULE_5__["random"](1, 6)
+    this.enemyCount = 0;
   }
 
   spawnUnits() {
@@ -514,6 +514,7 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
+    this.enemyCount = (_util__WEBPACK_IMPORTED_MODULE_5__["random"](1, 6))
   }
 
   hatchSpawn(spawn) {
