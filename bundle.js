@@ -489,12 +489,12 @@ class Game {
   incrementUnitRunCycle(ctx) {
     for (let i = 0; i < this.units.length; i++) {
       this.units[i].runCycle++
-      if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle >= 240) {
+      if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle >= 160) {
         this.units[i].clear(ctx)
         this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](this.units[i].pos, this.grid);
       }
+      this.units[i].step();
     }
-    // console.log(this.units)
   }
 
   drawUnits(ctx) {
@@ -585,8 +585,8 @@ class GameView {
     this.scroll();
     this.getLastInput();
     this.checkKey();
-    this.game.incrementUnitRunCycle(this.spriteCtx);
     this.game.clearUnits(this.spriteCtx);
+    this.game.incrementUnitRunCycle(this.spriteCtx);
     this.game.drawUnits(this.spriteCtx);
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
@@ -648,15 +648,31 @@ class GameView {
     }
   }
 
+  // scanGrid() {
+  //   let newGrid = [];
+  //   let openSpaces = [];
+  //   for (let y = 0; y < 11; y += 1) {
+  //     let row = [];
+  //     for (let x = 0; x < 16; x += 1) {
+  //       let value = util.sumMapPixel(x*48, y*48+168, this.collisionCtx);
+  //       row.push(value);
+  //       if (!value) openSpaces.push([y,x]);
+  //     }
+  //     newGrid.push(row);
+  //   }
+  //   this.game.openSpaces = openSpaces;
+  //   this.game.grid = newGrid;
+  // }
+  
   scanGrid() {
     let newGrid = [];
     let openSpaces = [];
-    for (let y = 192; y < 696; y += 48) {
+    for (let y = 168; y < 696; y += 48) {
       let row = [];
-      for (let x = 24; x < 768; x += 48) {
-        let value = _util__WEBPACK_IMPORTED_MODULE_3__["sumMapPixel"](x-24, y-24, this.collisionCtx);
+      for (let x = 0; x < 768; x += 48) {
+        let value = _util__WEBPACK_IMPORTED_MODULE_3__["sumMapPixel"](x, y, this.collisionCtx);
         row.push(value);
-        if (!value) openSpaces.push([x-24,y-24]);
+        if (!value) openSpaces.push([x,y]);
       }
       newGrid.push(row);
     }
@@ -1003,27 +1019,59 @@ __webpack_require__.r(__webpack_exports__);
 
 class Octorok {
   constructor(pos, grid) {
-    this.lastPos = [pos[0], pos[1]];
-    this.pos = [pos[0], pos[1]];
+    this.lastPos = pos
+    this.pos = pos;
+    this.grid = grid;
+    this.gridRow = ((pos[1] - 168) / 48)
+    this.gridCol = pos[0] / 48
     this.sprite = new Image();
     this.sprite.src = "../assets/images/units/octorok.png"
     this.runCycle = 0;
-    this.actionCycle = _util__WEBPACK_IMPORTED_MODULE_0__["random"](0,150);
+    this.actionCycle = 48;
     this.direction = 0
     this.frame = 0;
-    this.actions = ['north','east','south','west']
-    this.grid = grid;
+    this.queueMovement();
   }
 
   step() {
-    if (this.actionCycle <= 0)
-
-    this.actionCycle--
+    if (this.actionCycle <= 0) {
+      this.gridRow = Math.floor((this.pos[1] - 168) / 48);
+      this.gridCol = Math.floor(this.pos[0] / 48);
+      this.queueMovement();
+    }
+    if (this.direction === 102) { // north
+      this.pos[1] -= 1
+    } else if (this.direction === 153) { // east
+      this.pos[0] += 1
+    } else if (this.direction === 0) { // south
+      this.pos[1] += 1
+    } else if (this.direction === 51) { // west
+      this.pos[0] -= 1
+    }
+    this.actionCycle -= 1
   }
 
-  getNeighbors() {
-    
+  checkAvailableActions() {
+    let neighbors = [];
+    this.gridRow = Math.floor(this.gridRow)
+    this.gridCol = Math.floor(this.gridCol)
+    if (this.gridRow > 0) {
+      if (this.grid[this.gridRow - 1][this.gridCol] === 0) neighbors.push(102); // north
+    }
+    if (this.grid[this.gridRow][this.gridCol + 1] === 0) neighbors.push(153); // east
+    if (this.gridRow < 10) {
+      if (this.grid[this.gridRow + 1][this.gridCol] === 0) neighbors.push(0); // south
+    }
+    if (this.grid[this.gridRow][this.gridCol - 1] === 0) neighbors.push(51); // west
+    return neighbors;
   }
+
+  queueMovement() {
+    let actions = this.checkAvailableActions();
+    this.actionCycle = 48;
+    this.direction = _util__WEBPACK_IMPORTED_MODULE_0__["sample"](actions);
+  }
+
   update(x, y) {
     this.pos[0] += x;
     this.pos[1] += y;
@@ -1047,10 +1095,10 @@ class Octorok {
       this.pos[1],
       48,
       48
-    )
-    this.lastPos[0] = this.pos[0];
-    this.lastPos[1] = this.pos[1];
-  }
+      )
+      this.lastPos[0] = this.pos[0];
+      this.lastPos[1] = this.pos[1];
+    }
 
   clear(ctx) {
     ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
@@ -1075,11 +1123,13 @@ __webpack_require__.r(__webpack_exports__);
 
 class Spawn {
   constructor(pos) {
-    this.pos = [pos[0], pos[1]];
+    this.pos = pos;
     this.sprite = new Image();
     this.sprite.src = "../assets/images/units/spawn.png"
     this.runCycle = _util__WEBPACK_IMPORTED_MODULE_0__["random"](0,150);
   }
+
+  step() {}
 
   draw(ctx) {
     ctx.drawImage(
