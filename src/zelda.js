@@ -1,4 +1,3 @@
-console.log("project loaded!")
 import GameView from './gameView'
 
 const menuCanvas = document.getElementById('menu-canvas');

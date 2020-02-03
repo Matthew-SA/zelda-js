@@ -1,7 +1,5 @@
 import key from 'keymaster'
-import Menu from './menu.js'
-import Player from './player'
-import Overworld from './overworld'
+import Game from './game'
 import * as constants from './constants'
 import * as util from './util'
 
@@ -12,20 +10,21 @@ import * as util from './util'
 class GameView {
   constructor(menuCtx, spriteCtx, worldCtx, collisionCtx) {
     // this.lastTime;
-    // this.game = game;
+    this.game = new Game;
     this.menuCtx = menuCtx;
     this.spriteCtx = spriteCtx;
     this.worldCtx = worldCtx;
     this.collisionCtx = collisionCtx;
-    this.menu = new Menu;
-    this.player = new Player;
-    this.overworld = new Overworld;
+    this.menu = this.game.menu;
+    this.player = this.game.player;
+    this.overworld = this.game.overworld;
     this.lastInput = {'a': null, 'w': null, 'd': null, 's': null};
     this.currentInput = null;
     this.scrolling = false;
     this.scrollQueue = 0;
   }
 
+  // start primary game loop
   init() {
     setTimeout(() => {
       this.overworld.drawWorld(this.worldCtx)
@@ -36,25 +35,43 @@ class GameView {
     }, 30);
   }
   
+  // primary game loop  TODO: add pixel /sec to ensure proper gameplay at all FPS
+  gameLoop() {
+    // let now = Date.now();
+    // let dt = (now - lastTime) / 1000.0;
+    this.checkBorder();
+    this.scroll();
+    this.getLastInput();
+    this.checkKey();
+    this.game.clearUnits(this.spriteCtx);
+    this.game.drawUnits(this.spriteCtx);
+    if (this.currentInput) this.player.runCycle++;
+    window.requestAnimationFrame(() => this.gameLoop())
+  }
+
+  // check if map border has been crossed by player
   checkBorder() {
     if (this.player.pos[1] < constants.BORDERTOP) {
       this.scrolling = true;
+      this.game.destroyUnits(this.spriteCtx)
       this.scrollQueue = 528;
     }
     if (this.player.pos[0] > constants.BORDERRIGHT) {
       this.scrolling = true;
+      this.game.destroyUnits(this.spriteCtx)
       this.scrollQueue = 768;
     }
     if (this.player.pos[1] > constants.BORDERBOTTOM) {
       this.scrolling = true;
+      this.game.destroyUnits(this.spriteCtx)
       this.scrollQueue = 528;
     }
     if (this.player.pos[0] < constants.BORDERLEFT) {
       this.scrolling = true;
+      this.game.destroyUnits(this.spriteCtx)
       this.scrollQueue = 768;
     }
   }
-
 
   // if scrolling, move screen and player
   // if player is past a certain distance, stop scrolling player
@@ -64,6 +81,8 @@ class GameView {
     if (this.scrollQueue <= 0) {
       this.scrolling = false;
       this.overworld.drawCollisionMap(this.collisionCtx)
+      this.scanGrid();
+      this.game.spawnUnits();
     } else {
       if (this.player.direction === 102) {
         this.overworld.pos[1] -= 8;
@@ -86,24 +105,20 @@ class GameView {
     }
   }
 
-  gameLoop() {
-    // let now = Date.now();
-    // let dt = (now - lastTime) / 1000.0;
-    this.checkBorder();
-    this.scroll();
-    this.getLastInput();
-    this.checkKey();
-    if (this.currentInput) {
-      this.player.runCycle++;
-      this.player.draw(this.spriteCtx);
+  scanGrid() {
+    let newGrid = [];
+    let openSpaces = [];
+    for (let y = 192; y < 696; y += 48) {
+      let row = [];
+      for (let x = 24; x < 768; x += 48) {
+        let value = util.sumMapPixel(x-24, y-24, this.collisionCtx);
+        row.push(value);
+        if (!value) openSpaces.push([x-24,y-24]);
+      }
+      newGrid.push(row);
     }
-    window.requestAnimationFrame(() => this.gameLoop())
-  }
-
-  getMapPixel(x,y) {
-    const pixel = this.collisionCtx.getImageData(x, y, 1, 1)
-    // console.log([pixel.data[0], pixel.data[1], pixel.data[2]])
-    return [pixel.data[0], pixel.data[1], pixel.data[2]]
+    this.game.openSpaces = openSpaces;
+    this.game.grid = newGrid;
   }
 
   checkIfBarrier(pixel1, pixel2) {
@@ -116,20 +131,44 @@ class GameView {
 
   impassableTerrain(direction) {
     if (direction === 'north') {
-      const topPixel = this.getMapPixel(this.player.tracebox.topLeft[0], this.player.tracebox.topLeft[1] - 3)
-      const bottomPixel = this.getMapPixel(this.player.tracebox.topRight[0], this.player.tracebox.topRight[1] - 3)
+      const topPixel = util.getMapPixel(
+        this.player.tracebox.topLeft[0], 
+        this.player.tracebox.topLeft[1] - 3,
+        this.collisionCtx);
+      const bottomPixel = util.getMapPixel(
+        this.player.tracebox.topRight[0],
+        this.player.tracebox.topRight[1] - 3,
+        this.collisionCtx);
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'east') {
-      const topPixel = this.getMapPixel(this.player.tracebox.topRight[0] + 3, this.player.tracebox.topRight[1])
-      const bottomPixel = this.getMapPixel(this.player.tracebox.bottomRight[0] + 3, this.player.tracebox.bottomRight[1])
+      const topPixel = util.getMapPixel(
+        this.player.tracebox.topRight[0] + 3,
+        this.player.tracebox.topRight[1],
+        this.collisionCtx);
+      const bottomPixel = util.getMapPixel(
+        this.player.tracebox.bottomRight[0] + 3,
+        this.player.tracebox.bottomRight[1],
+        this.collisionCtx);
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'south') {
-      const topPixel = this.getMapPixel(this.player.tracebox.bottomLeft[0], this.player.tracebox.bottomLeft[1] + 3)
-      const bottomPixel = this.getMapPixel(this.player.tracebox.bottomRight[0], this.player.tracebox.bottomRight[1] + 3)
+      const topPixel = util.getMapPixel(
+        this.player.tracebox.bottomLeft[0],
+        this.player.tracebox.bottomLeft[1] + 3,
+        this.collisionCtx);
+      const bottomPixel = util.getMapPixel(
+        this.player.tracebox.bottomRight[0],
+        this.player.tracebox.bottomRight[1] + 3,
+        this.collisionCtx);
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'west') {
-      const topPixel = this.getMapPixel(this.player.tracebox.topLeft[0] - 3, this.player.tracebox.topRight[1])
-      const bottomPixel = this.getMapPixel(this.player.tracebox.bottomLeft[0] - 3, this.player.tracebox.bottomLeft[1])
+      const topPixel = util.getMapPixel(
+        this.player.tracebox.topLeft[0] - 3,
+        this.player.tracebox.topRight[1],
+        this.collisionCtx);
+      const bottomPixel = util.getMapPixel(
+        this.player.tracebox.bottomLeft[0] - 3, 
+        this.player.tracebox.bottomLeft[1],
+        this.collisionCtx);
       return this.checkIfBarrier(topPixel, bottomPixel)
     }
   }

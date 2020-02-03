@@ -12,3 +12,18 @@ export function sumArr(arr) {
   }
   return sum;
 }
+
+export function getMapPixel(x, y, ctx) {
+  const pixel = ctx.getImageData(x, y, 1, 1);
+  // console.log([pixel.data[0], pixel.data[1], pixel.data[2]]);
+  return [pixel.data[0], pixel.data[1], pixel.data[2]];
+}
+
+export function sumMapPixel(x, y, ctx) {
+  const pixel = ctx.getImageData(x, y, 1, 1);
+  return (pixel.data[0] + pixel.data[1] + pixel.data[2]);
+}
+
+export function sample(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
