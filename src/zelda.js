@@ -32,3 +32,9 @@ collisionCanvas.height = 696
 
 const gameView = new GameView(menuCtx, spriteCtx, worldCtx, collisionCtx)
 // gameView.init();
+
+var img = new Image();
+img.onload = function () {
+  gameView.init();
+};
+img.src = '../assets/images/overworld.png'

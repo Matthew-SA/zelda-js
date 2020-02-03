@@ -22,18 +22,18 @@ class GameView {
     this.currentInput = null;
     this.scrolling = false;
     this.scrollQueue = 0;
-    this.init();
+    // this.init();
   }
 
   // start primary game loop
   init() {
-    setTimeout(() => {
+    // setTimeout(() => {
       this.overworld.drawWorld(this.worldCtx)
       this.overworld.drawCollisionMap(this.collisionCtx)
       this.menu.draw(this.menuCtx)
       this.player.draw(this.spriteCtx);
       requestAnimationFrame(() => this.gameLoop())
-    }, 50);
+    // }, 70);
   }
 
   // primary game loop  TODO: add pixel /sec to ensure proper gameplay at all FPS

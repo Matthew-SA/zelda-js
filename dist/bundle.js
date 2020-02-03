@@ -564,18 +564,18 @@ class GameView {
     this.currentInput = null;
     this.scrolling = false;
     this.scrollQueue = 0;
-    this.init();
+    // this.init();
   }
 
   // start primary game loop
   init() {
-    setTimeout(() => {
+    // setTimeout(() => {
       this.overworld.drawWorld(this.worldCtx)
       this.overworld.drawCollisionMap(this.collisionCtx)
       this.menu.draw(this.menuCtx)
       this.player.draw(this.spriteCtx);
       requestAnimationFrame(() => this.gameLoop())
-    }, 50);
+    // }, 70);
   }
 
   // primary game loop  TODO: add pixel /sec to ensure proper gameplay at all FPS
@@ -1255,6 +1255,11 @@ collisionCanvas.height = 696
 const gameView = new _gameView__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, worldCtx, collisionCtx)
 // gameView.init();
 
+var img = new Image();
+img.onload = function () {
+  gameView.init();
+};
+img.src = '../assets/images/overworld.png'
 
 /***/ })
 
