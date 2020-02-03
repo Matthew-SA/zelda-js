@@ -1,16 +1,28 @@
+import * as util from '../util'
+
 class Octorok {
-  constructor(pos) {
+  constructor(pos, grid) {
     this.lastPos = [pos[0], pos[1]];
     this.pos = [pos[0], pos[1]];
     this.sprite = new Image();
     this.sprite.src = "../assets/images/units/octorok.png"
     this.runCycle = 0;
+    this.actionCycle = util.random(0,150);
     this.direction = 0
     this.frame = 0;
-    this.attacking = false;
-    this.frozen = false;
+    this.actions = ['north','east','south','west']
+    this.grid = grid;
   }
 
+  step() {
+    if (this.actionCycle <= 0)
+
+    this.actionCycle--
+  }
+
+  getNeighbors() {
+    
+  }
   update(x, y) {
     this.pos[0] += x;
     this.pos[1] += y;

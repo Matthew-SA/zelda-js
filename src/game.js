@@ -43,7 +43,7 @@ class Game {
       this.units[i].runCycle++
       if (this.units[i] instanceof Spawn && this.units[i].runCycle >= 240) {
         this.units[i].clear(ctx)
-        this.units[i] = new Octorok(this.units[i].pos);
+        this.units[i] = new Octorok(this.units[i].pos, this.grid);
       }
     }
     // console.log(this.units)

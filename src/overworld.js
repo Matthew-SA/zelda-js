@@ -12,19 +12,6 @@ class Overworld {
     this.overworld.src = '../assets/images/overworld.png'
     this.collisionMap = new Image();
     this.collisionMap.src = '../assets/images/overworld-collision.png'
-    // this.grid = [
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    // ];
-    // this.openSpaces = null;
-    // this.units = 3;
   }
 
   drawWorld(ctx) {
@@ -54,14 +41,7 @@ class Overworld {
       696
     )
   }
-
-  // spawnUnits() {
-  //   for (this.units; this.units > 0; this.units--) {
-  //     new Octorok(this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)])
-  //   }
-  // }
 }
 
-// start is at 
 export default Overworld;
 
