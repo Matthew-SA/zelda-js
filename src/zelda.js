@@ -34,8 +34,8 @@ const gameView = new GameView(menuCtx, spriteCtx, worldCtx, collisionCtx)
 // gameView.init();
 
 window.addEventListener('load',() => {
-  var img = new Image();
-  img.src = '../assets/images/overworld.png'
+  // var img = new Image();
+  // img.src = '../assets/images/overworld.png'
   gameView.init();
   }, false);
 
