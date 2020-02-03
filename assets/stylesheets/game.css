@@ -1,0 +1,47 @@
+/* canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 40px auto;
+} */
+
+header {
+  height: 30px;
+  color: white;
+  text-align: center;
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+}
+
+#menu-canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 20px auto;
+  z-index: 4;
+  outline: 2px solid #ddd;
+}
+
+#sprite-canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 20px auto;
+  z-index: 3;
+  /* outline: 1px solid silver; */
+}
+
+#map-canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 20px auto;
+  z-index: 2;
+}
+#collision-canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 20px auto;
+  z-index: 1;
+}
