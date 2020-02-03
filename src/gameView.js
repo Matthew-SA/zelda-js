@@ -43,8 +43,8 @@ class GameView {
     this.scroll();
     this.getLastInput();
     this.checkKey();
-    this.game.incrementUnitRunCycle(this.spriteCtx);
     this.game.clearUnits(this.spriteCtx);
+    this.game.incrementUnitRunCycle(this.spriteCtx);
     this.game.drawUnits(this.spriteCtx);
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
@@ -106,15 +106,31 @@ class GameView {
     }
   }
 
+  // scanGrid() {
+  //   let newGrid = [];
+  //   let openSpaces = [];
+  //   for (let y = 0; y < 11; y += 1) {
+  //     let row = [];
+  //     for (let x = 0; x < 16; x += 1) {
+  //       let value = util.sumMapPixel(x*48, y*48+168, this.collisionCtx);
+  //       row.push(value);
+  //       if (!value) openSpaces.push([y,x]);
+  //     }
+  //     newGrid.push(row);
+  //   }
+  //   this.game.openSpaces = openSpaces;
+  //   this.game.grid = newGrid;
+  // }
+  
   scanGrid() {
     let newGrid = [];
     let openSpaces = [];
-    for (let y = 192; y < 696; y += 48) {
+    for (let y = 168; y < 696; y += 48) {
       let row = [];
-      for (let x = 24; x < 768; x += 48) {
-        let value = util.sumMapPixel(x-24, y-24, this.collisionCtx);
+      for (let x = 0; x < 768; x += 48) {
+        let value = util.sumMapPixel(x, y, this.collisionCtx);
         row.push(value);
-        if (!value) openSpaces.push([x-24,y-24]);
+        if (!value) openSpaces.push([x,y]);
       }
       newGrid.push(row);
     }

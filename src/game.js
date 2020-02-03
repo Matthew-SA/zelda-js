@@ -41,12 +41,12 @@ class Game {
   incrementUnitRunCycle(ctx) {
     for (let i = 0; i < this.units.length; i++) {
       this.units[i].runCycle++
-      if (this.units[i] instanceof Spawn && this.units[i].runCycle >= 240) {
+      if (this.units[i] instanceof Spawn && this.units[i].runCycle >= 160) {
         this.units[i].clear(ctx)
         this.units[i] = new Octorok(this.units[i].pos, this.grid);
       }
+      this.units[i].step();
     }
-    // console.log(this.units)
   }
 
   drawUnits(ctx) {
