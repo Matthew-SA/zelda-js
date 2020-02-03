@@ -28,7 +28,7 @@ class Game {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     this.openSpaces = null;
-    this.enemyCount = 4;
+    this.enemyCount = util.random(1, 6)
   }
 
   spawnUnits() {
