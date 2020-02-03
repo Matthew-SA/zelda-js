@@ -1253,24 +1253,11 @@ collisionCanvas.height = 696
 // document.addEventListener('keydown', () => console.log('key down!'));
 
 const gameView = new _gameView__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, worldCtx, collisionCtx)
-// gameView.init();
 
 window.addEventListener('load',() => {
-  // var img = new Image();
-  // img.src = '../assets/images/overworld.png'
   gameView.init();
   }, false);
 
-
-// let overworld = new Image();
-// overworld.src = '../assets/images/overworld.png'
-
-// window.onload(() => gameView.init())
-// var img = new Image();
-// img.onload = function () {
-//   gameView.init();
-// };
-// img.src = '../assets/images/overworld.png'
 
 /***/ })
 
