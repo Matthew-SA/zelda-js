@@ -812,7 +812,7 @@ class Menu {
     this.lastpos = [0,0]
     this.pos = [0,0]
     this.image = new Image();
-    this.image.src = "../assets/images/menu.png"
+    this.image.src = "./assets/images/menu.png"
   }
 
   draw(ctx) {
@@ -855,9 +855,9 @@ class Overworld {
     this.lastPos = [5376, 3528];
     this.pos = [5376,3528];
     this.overworld = new Image();
-    this.overworld.src = '../assets/images/overworld.png'
+    this.overworld.src = './assets/images/overworld.png'
     this.collisionMap = new Image();
-    this.collisionMap.src = '../assets/images/overworld-collision.png'
+    this.collisionMap.src = './assets/images/overworld-collision.png'
   }
 
   drawWorld(ctx) {
@@ -909,7 +909,7 @@ class Player {
     this.lastPos = [336, 432];
     this.pos = [336, 432];
     this.sprite = new Image();
-    this.sprite.src = "../assets/images/link.png"
+    this.sprite.src = "./assets/images/link.png"
     this.runCycle = 0;
     this.direction = 0
     this.frame = 0;
@@ -1026,7 +1026,7 @@ class Octorok {
     this.gridRow = ((pos[1] - 168) / 48)
     this.gridCol = pos[0] / 48
     this.sprite = new Image();
-    this.sprite.src = "../assets/images/units/octorok.png"
+    this.sprite.src = "./assets/images/units/octorok.png"
     this.runCycle = 0;
     this.actionCycle = 48;
     this.direction = 0
@@ -1126,7 +1126,7 @@ class Spawn {
   constructor(pos) {
     this.pos = pos;
     this.sprite = new Image();
-    this.sprite.src = "../assets/images/units/spawn.png"
+    this.sprite.src = "./assets/images/units/spawn.png"
     this.runCycle = _util__WEBPACK_IMPORTED_MODULE_0__["random"](0,150);
   }
 

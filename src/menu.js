@@ -3,7 +3,7 @@ class Menu {
     this.lastpos = [0,0]
     this.pos = [0,0]
     this.image = new Image();
-    this.image.src = "../assets/images/menu.png"
+    this.image.src = "./assets/images/menu.png"
   }
 
   draw(ctx) {

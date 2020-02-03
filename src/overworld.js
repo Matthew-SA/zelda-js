@@ -9,9 +9,9 @@ class Overworld {
     this.lastPos = [5376, 3528];
     this.pos = [5376,3528];
     this.overworld = new Image();
-    this.overworld.src = '../assets/images/overworld.png'
+    this.overworld.src = './assets/images/overworld.png'
     this.collisionMap = new Image();
-    this.collisionMap.src = '../assets/images/overworld-collision.png'
+    this.collisionMap.src = './assets/images/overworld-collision.png'
   }
 
   drawWorld(ctx) {

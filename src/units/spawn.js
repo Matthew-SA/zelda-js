@@ -4,7 +4,7 @@ class Spawn {
   constructor(pos) {
     this.pos = pos;
     this.sprite = new Image();
-    this.sprite.src = "../assets/images/units/spawn.png"
+    this.sprite.src = "./assets/images/units/spawn.png"
     this.runCycle = util.random(0,150);
   }
 

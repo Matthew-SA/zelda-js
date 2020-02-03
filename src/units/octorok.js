@@ -8,7 +8,7 @@ class Octorok {
     this.gridRow = ((pos[1] - 168) / 48)
     this.gridCol = pos[0] / 48
     this.sprite = new Image();
-    this.sprite.src = "../assets/images/units/octorok.png"
+    this.sprite.src = "./assets/images/units/octorok.png"
     this.runCycle = 0;
     this.actionCycle = 48;
     this.direction = 0
