@@ -476,7 +476,7 @@ class Game {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     this.openSpaces = null;
-    this.enemyCount = 4;
+    this.enemyCount = _util__WEBPACK_IMPORTED_MODULE_5__["random"](1, 6)
   }
 
   spawnUnits() {
