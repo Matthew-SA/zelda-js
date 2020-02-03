@@ -1256,8 +1256,8 @@ const gameView = new _gameView__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, 
 // gameView.init();
 
 window.addEventListener('load',() => {
-  var img = new Image();
-  img.src = '../assets/images/overworld.png'
+  // var img = new Image();
+  // img.src = '../assets/images/overworld.png'
   gameView.init();
   }, false);
 
