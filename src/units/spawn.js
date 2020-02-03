@@ -2,11 +2,13 @@ import * as util from '../util'
 
 class Spawn {
   constructor(pos) {
-    this.pos = [pos[0], pos[1]];
+    this.pos = pos;
     this.sprite = new Image();
     this.sprite.src = "../assets/images/units/spawn.png"
     this.runCycle = util.random(0,150);
   }
+
+  step() {}
 
   draw(ctx) {
     ctx.drawImage(
