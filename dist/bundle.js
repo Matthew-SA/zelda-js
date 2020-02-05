@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/zelda.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./zelda.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -1211,16 +1211,16 @@ function random(min, max) {
 
 /***/ }),
 
-/***/ "./src/zelda.js":
-/*!**********************!*\
-  !*** ./src/zelda.js ***!
-  \**********************/
+/***/ "./zelda.js":
+/*!******************!*\
+  !*** ./zelda.js ***!
+  \******************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _gameView__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameView */ "./src/gameView.js");
+/* harmony import */ var _src_gameView__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/gameView */ "./src/gameView.js");
 
 
 const menuCanvas = document.getElementById('menu-canvas');
@@ -1244,6 +1244,8 @@ collisionCanvas.width = 768
 collisionCanvas.height = 696
 
 
+
+
 // const background = new Image();
 // background.src = "./images/board.jpg";
 
@@ -1253,7 +1255,7 @@ collisionCanvas.height = 696
 // document.addEventListener('keyup', () => console.log('key up!'));
 // document.addEventListener('keydown', () => console.log('key down!'));
 
-const gameView = new _gameView__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, worldCtx, collisionCtx)
+const gameView = new _src_gameView__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, worldCtx, collisionCtx)
 
 window.addEventListener('load',() => {
   gameView.init();

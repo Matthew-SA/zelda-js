@@ -1,4 +1,4 @@
-import GameView from './gameView'
+import GameView from './src/gameView'
 
 const menuCanvas = document.getElementById('menu-canvas');
 const menuCtx = menuCanvas.getContext('2d');
@@ -19,6 +19,8 @@ const collisionCanvas = document.getElementById('collision-canvas');
 const collisionCtx = collisionCanvas.getContext('2d')
 collisionCanvas.width = 768
 collisionCanvas.height = 696
+
+
 
 
 // const background = new Image();
