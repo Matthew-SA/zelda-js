@@ -1,8 +1,8 @@
 import * as util from '../util'
 
 class Spawn {
-  constructor(pos) {
-    this.pos = pos;
+  constructor(pixelPos) {
+    this.pixelPos = pixelPos;
     this.sprite = new Image();
     this.sprite.src = "./assets/images/units/spawn.png"
     this.runCycle = util.random(0,150);
@@ -17,15 +17,15 @@ class Spawn {
       0,
       48,
       48,
-      this.pos[0],
-      this.pos[1],
+      this.pixelPos[0],
+      this.pixelPos[1],
       48,
       48
     )
   }
 
   clear(ctx) {
-    ctx.clearRect(this.pos[0], this.pos[1], 48, 48);
+    ctx.clearRect(this.pixelPos[0], this.pixelPos[1], 48, 48);
   }
 }
 

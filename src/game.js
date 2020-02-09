@@ -16,7 +16,7 @@ class Game {
     this.player = new Player;
     this.overworld = new Overworld;
     this.units = [];
-    this.grid = [
+    this.grid = [ // collection of grid squares with color data of center 4 pixels.
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -27,14 +27,14 @@ class Game {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    this.openSpaces = null;
+    this.openSpaces = null; // Array of subarrays.  Each contain a x/y pixel position pair.
     this.enemyCount = 0;
   }
 
   spawnUnits() {
     for (let i = 0; i < this.enemyCount; i++) {
-      let coordinate = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
-      this.units.push(new Spawn(coordinate));
+      let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
+      this.units.push(new Spawn(pixelPos));
     }
   }
   
@@ -50,7 +50,7 @@ class Game {
       this.units[i].runCycle++
       if (this.units[i] instanceof Spawn && this.units[i].runCycle >= 160) {
         this.units[i].clear(ctx)
-        this.units[i] = new Octorok(this.units[i].pos, this.grid);
+        this.units[i] = new Octorok(this.units[i].pixelPos, this.grid);
       }
       this.units[i].step();
     }
@@ -67,12 +67,11 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    this.enemyCount = 1 // reload enemy count for next screen.
-    // this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
+    this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
   }
 
   hatchSpawn(spawn) {
-    new Octorok(spawn.pos[0], spawn.pos[1])
+    new Octorok(spawn.pixelPos[0], spawn.pixelPos[1])
   }
 }
 

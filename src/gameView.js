@@ -110,8 +110,8 @@ class GameView {
     this.game.openSpaces = openSpaces;
     this.game.grid = newGrid;
 
-    console.log(openSpaces)
-    console.log(newGrid)
+    // console.log(openSpaces)
+    // console.log(newGrid)
   }
 
   checkIfBarrier(pixel1, pixel2) {
