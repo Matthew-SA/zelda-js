@@ -3,8 +3,8 @@ import Player from './player'
 import Spawn from './units/spawn'
 import Octorok from './units/octorok'
 import Overworld from './maps/overworld'
-import * as constants from './constants'
-import * as util from './util'
+import * as constants from './util/constants'
+import * as util from './util/util'
 
 // gameView is 16 x 14.5 'tiles
 // gameplay is in 16 x 11 tiles

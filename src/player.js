@@ -26,8 +26,8 @@ class Player {
   }
   
   step(x,y) {
-    // this.lastPos[0] = this.pos[0];
-    // this.lastPos[1] = this.pos[1];
+    this.lastPos[0] = this.pos[0];
+    this.lastPos[1] = this.pos[1];
     this.pos[0] += x;
     this.pos[1] += y;
     this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
@@ -92,8 +92,8 @@ class Player {
         48
       )
     }
-    this.lastPos[0] = this.pos[0];
-    this.lastPos[1] = this.pos[1];
+    // this.lastPos[0] = this.pos[0];
+    // this.lastPos[1] = this.pos[1];
   }
 
   clear(ctx) {

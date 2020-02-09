@@ -1,7 +1,7 @@
 import key from 'keymaster'
 import Game from './game'
-import * as constants from './constants'
-import * as util from './util'
+import * as constants from './util/constants'
+import * as util from './util/util'
 
 
 // gameView is 16 x 14.5 'tiles

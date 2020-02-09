@@ -393,44 +393,6 @@
 
 /***/ }),
 
-/***/ "./src/constants.js":
-/*!**************************!*\
-  !*** ./src/constants.js ***!
-  \**************************/
-/*! exports provided: FPS, BORDERTOP, BORDERLEFT, BORDERRIGHT, BORDERBOTTOM, WALL, WATER, VIEWWIDTH, VIEWHEIGHT */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FPS", function() { return FPS; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BORDERTOP", function() { return BORDERTOP; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BORDERLEFT", function() { return BORDERLEFT; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BORDERRIGHT", function() { return BORDERRIGHT; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BORDERBOTTOM", function() { return BORDERBOTTOM; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WALL", function() { return WALL; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WATER", function() { return WATER; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VIEWWIDTH", function() { return VIEWWIDTH; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VIEWHEIGHT", function() { return VIEWHEIGHT; });
-const FPS = 60;
-
-
-
-// Borders that trigger screen transition
-const BORDERTOP = 172;
-const BORDERLEFT = 0;
-const BORDERRIGHT = 720;
-const BORDERBOTTOM = 648;
-
-// Terrain values
-const WALL = 765;
-const WATER = 503;
-
-// Screen scroll distance
-const VIEWWIDTH = 768;
-const VIEWHEIGHT = 528;
-
-/***/ }),
-
 /***/ "./src/game.js":
 /*!*********************!*\
   !*** ./src/game.js ***!
@@ -445,8 +407,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
 /* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
 /* harmony import */ var _maps_overworld__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./maps/overworld */ "./src/maps/overworld.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./util */ "./src/util.js");
+/* harmony import */ var _util_constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./util/constants */ "./src/util/constants.js");
+/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./util/util */ "./src/util/util.js");
 
 
 
@@ -482,7 +444,7 @@ class Game {
     for (let y = 168; y < 696; y += 48) {
       let row = [];
       for (let x = 0; x < 768; x += 48) {
-        let value = _util__WEBPACK_IMPORTED_MODULE_6__["scanMapTile"](ctx, x, y);
+        let value = _util_util__WEBPACK_IMPORTED_MODULE_6__["scanMapTile"](ctx, x, y);
         row.push(value);
         if (value === 1020) openSpaces.push([x, y]);
       }
@@ -560,12 +522,12 @@ class Game {
   }
 
   checkBorder(ctx) {
-    if (this.player.pos[1] < _constants__WEBPACK_IMPORTED_MODULE_5__["BORDERTOP"] || this.player.pos[1] > _constants__WEBPACK_IMPORTED_MODULE_5__["BORDERBOTTOM"]) {
+    if (this.player.pos[1] < _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERTOP"] || this.player.pos[1] > _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERBOTTOM"]) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 528;
     }
-    if (this.player.pos[0] > _constants__WEBPACK_IMPORTED_MODULE_5__["BORDERRIGHT"] || this.player.pos[0] < _constants__WEBPACK_IMPORTED_MODULE_5__["BORDERLEFT"]) {
+    if (this.player.pos[0] > _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERRIGHT"] || this.player.pos[0] < _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERLEFT"]) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 768;
@@ -575,7 +537,7 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    this.enemyCount = (_util__WEBPACK_IMPORTED_MODULE_6__["random"](1, 6)) // reload enemy count for next screen.
+    this.enemyCount = (_util_util__WEBPACK_IMPORTED_MODULE_6__["random"](1, 6)) // reload enemy count for next screen.
   }
 }
 
@@ -596,8 +558,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var keymaster__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! keymaster */ "./node_modules/keymaster/keymaster.js");
 /* harmony import */ var keymaster__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(keymaster__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./game */ "./src/game.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util */ "./src/util.js");
+/* harmony import */ var _util_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util/constants */ "./src/util/constants.js");
+/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util/util */ "./src/util/util.js");
 
 
 
@@ -648,50 +610,50 @@ class GameView {
 
   // collision layer check below
   checkIfBarrier(pixel1, pixel2) {
-    let pixel1value = _util__WEBPACK_IMPORTED_MODULE_3__["sumArr"](pixel1)
-    let pixel2value = _util__WEBPACK_IMPORTED_MODULE_3__["sumArr"](pixel2)
-    if (pixel1value === _constants__WEBPACK_IMPORTED_MODULE_2__["WALL"] || pixel1value === _constants__WEBPACK_IMPORTED_MODULE_2__["WATER"]) return true;
-    if (pixel2value === _constants__WEBPACK_IMPORTED_MODULE_2__["WALL"] || pixel2value === _constants__WEBPACK_IMPORTED_MODULE_2__["WATER"]) return true;
+    let pixel1value = _util_util__WEBPACK_IMPORTED_MODULE_3__["sumArr"](pixel1)
+    let pixel2value = _util_util__WEBPACK_IMPORTED_MODULE_3__["sumArr"](pixel2)
+    if (pixel1value === _util_constants__WEBPACK_IMPORTED_MODULE_2__["WALL"] || pixel1value === _util_constants__WEBPACK_IMPORTED_MODULE_2__["WATER"]) return true;
+    if (pixel2value === _util_constants__WEBPACK_IMPORTED_MODULE_2__["WALL"] || pixel2value === _util_constants__WEBPACK_IMPORTED_MODULE_2__["WATER"]) return true;
     return false;
   }
 
   impassableTerrain(direction) {
     if (direction === 'north') {
-      const topPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
         this.collisionCtx,
         this.player.tracebox.topLeft[0], 
         this.player.tracebox.topLeft[1] - 3)
-      const bottomPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
         this.collisionCtx,
         this.player.tracebox.topRight[0],
         this.player.tracebox.topRight[1] - 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'east') {
-      const topPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
         this.collisionCtx,
         this.player.tracebox.topRight[0] + 3,
         this.player.tracebox.topRight[1])
-      const bottomPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
         this.collisionCtx,
         this.player.tracebox.bottomRight[0] + 3,
         this.player.tracebox.bottomRight[1])
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'south') {
-      const topPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
         this.collisionCtx,
         this.player.tracebox.bottomLeft[0],
         this.player.tracebox.bottomLeft[1] + 3)
-      const bottomPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
         this.collisionCtx,
         this.player.tracebox.bottomRight[0],
         this.player.tracebox.bottomRight[1] + 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'west') {
-      const topPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
         this.collisionCtx,
         this.player.tracebox.topLeft[0] - 3,
         this.player.tracebox.topRight[1])
-      const bottomPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
         this.collisionCtx,
         this.player.tracebox.bottomLeft[0] - 3, 
         this.player.tracebox.bottomLeft[1])
@@ -901,8 +863,8 @@ class Player {
   }
   
   step(x,y) {
-    // this.lastPos[0] = this.pos[0];
-    // this.lastPos[1] = this.pos[1];
+    this.lastPos[0] = this.pos[0];
+    this.lastPos[1] = this.pos[1];
     this.pos[0] += x;
     this.pos[1] += y;
     this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
@@ -967,8 +929,8 @@ class Player {
         48
       )
     }
-    this.lastPos[0] = this.pos[0];
-    this.lastPos[1] = this.pos[1];
+    // this.lastPos[0] = this.pos[0];
+    // this.lastPos[1] = this.pos[1];
   }
 
   clear(ctx) {
@@ -990,7 +952,7 @@ class Player {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./src/util.js");
+/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/util */ "./src/util/util.js");
 
 
 class Octorok {
@@ -1013,7 +975,7 @@ class Octorok {
     this.actionCycle = 48;
     this.direction = 0
     this.frame = 0;
-    this.speed = _util__WEBPACK_IMPORTED_MODULE_0__["random"](1,3)
+    this.speed = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](1,3)
     
     //start action cycle
     this.updateAction();
@@ -1081,7 +1043,7 @@ class Octorok {
   updateAction() {
     let possibleActions = this.checkAvailableActions();
     this.actionCycle = 48;
-    let action = _util__WEBPACK_IMPORTED_MODULE_0__["sample"](possibleActions);
+    let action = _util_util__WEBPACK_IMPORTED_MODULE_0__["sample"](possibleActions);
     this.direction = action[0];
     this.pos[0] += action[1];
     this.pos[1] += action[2];
@@ -1101,7 +1063,7 @@ class Octorok {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./src/util.js");
+/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/util */ "./src/util/util.js");
 
 
 class Spawn {
@@ -1109,7 +1071,7 @@ class Spawn {
     this.pixelPos = pixelPos;
     this.sprite = new Image();
     this.sprite.src = "./assets/images/units/spawn.png"
-    this.runCycle = _util__WEBPACK_IMPORTED_MODULE_0__["random"](0,150);
+    this.runCycle = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](0,150);
   }
 
   step() {}
@@ -1137,10 +1099,48 @@ class Spawn {
 
 /***/ }),
 
-/***/ "./src/util.js":
-/*!*********************!*\
-  !*** ./src/util.js ***!
-  \*********************/
+/***/ "./src/util/constants.js":
+/*!*******************************!*\
+  !*** ./src/util/constants.js ***!
+  \*******************************/
+/*! exports provided: FPS, BORDERTOP, BORDERLEFT, BORDERRIGHT, BORDERBOTTOM, WALL, WATER, VIEWWIDTH, VIEWHEIGHT */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FPS", function() { return FPS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BORDERTOP", function() { return BORDERTOP; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BORDERLEFT", function() { return BORDERLEFT; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BORDERRIGHT", function() { return BORDERRIGHT; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BORDERBOTTOM", function() { return BORDERBOTTOM; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WALL", function() { return WALL; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WATER", function() { return WATER; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VIEWWIDTH", function() { return VIEWWIDTH; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VIEWHEIGHT", function() { return VIEWHEIGHT; });
+const FPS = 60;
+
+
+
+// Borders that trigger screen transition
+const BORDERTOP = 172;
+const BORDERLEFT = 0;
+const BORDERRIGHT = 720;
+const BORDERBOTTOM = 648;
+
+// Terrain values
+const WALL = 765;
+const WATER = 503;
+
+// Screen scroll distance
+const VIEWWIDTH = 768;
+const VIEWHEIGHT = 528;
+
+/***/ }),
+
+/***/ "./src/util/util.js":
+/*!**************************!*\
+  !*** ./src/util/util.js ***!
+  \**************************/
 /*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, scanMapTile, sample, random */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
