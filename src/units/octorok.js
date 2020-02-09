@@ -7,18 +7,22 @@ class Octorok {
     
     this.grid = grid;
     
+    // unit stats
+    this.hp = 1;
+    this.ap = 1;
+
     //position data
     this.lastPixelPos = pixelPos;
     this.pixelPos = pixelPos;
     this.pos = [
       (this.pixelPos[0] / 48), 
       ((this.pixelPos[1] - 168) / 48)
-    ]
+    ];
     
     // frame data
     this.runCycle = 0;
     this.actionCycle = 48;
-    this.direction = 0
+    this.direction = 0;
     this.frame = 0;
     this.speed = util.random(1,3)
     
