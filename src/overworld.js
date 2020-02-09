@@ -1,15 +1,13 @@
-import Octorok from "./units/octorok";
-
 // Hud height is scaled up: 168
 // map screens are 768 x 528 (256 x 176)
 // world is a 16 x 8 grid
 
 class Overworld {
   constructor() {
-    this.music = new Audio("./assets/sfx/overworld.mp3");
-    this.music.loop = true;
-    this.music.autoPlay = true;
-    this.music.play();
+    // this.music = new Audio("./assets/sfx/overworld.mp3");
+    // this.music.autoplay();
+    // this.music.loop = true;
+    // this.music.play();
 
     this.lastPos = [5376, 3528];
     this.pos = [5376,3528];

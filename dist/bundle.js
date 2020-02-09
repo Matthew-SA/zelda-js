@@ -809,19 +809,16 @@ class Menu {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
-
-
 // Hud height is scaled up: 168
 // map screens are 768 x 528 (256 x 176)
 // world is a 16 x 8 grid
 
 class Overworld {
   constructor() {
-    this.music = new Audio("./assets/sfx/overworld.mp3");
-    this.music.loop = true;
-    this.music.autoPlay = true;
-    this.music.play();
+    // this.music = new Audio("./assets/sfx/overworld.mp3");
+    // this.music.autoplay();
+    // this.music.loop = true;
+    // this.music.play();
 
     this.lastPos = [5376, 3528];
     this.pos = [5376,3528];
