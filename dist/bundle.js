@@ -858,7 +858,7 @@ class Player {
 
   attack() {
     this.swordSound.play()
-    this.attackFrame = 15;
+    this.attackFrame = 18;
     this.cooldown = 20;
   }
   
