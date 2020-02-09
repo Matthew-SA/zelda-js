@@ -4,6 +4,8 @@ class Player {
     this.pos = [336, 432];
     this.sprite = new Image();
     this.sprite.src = "./assets/images/link.png"
+    // this.swordSound = new Sound("bounce.mp3");
+
     this.runCycle = 0;
     this.direction = 0
     this.frame = 0;
@@ -19,7 +21,7 @@ class Player {
     this.swordY
   }
 
-  update(x,y) {
+  step(x,y) {
     // this.lastPos[0] = this.pos[0];
     // this.lastPos[1] = this.pos[1];
     this.pos[0] += x;

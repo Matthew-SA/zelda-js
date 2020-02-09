@@ -76,19 +76,19 @@ class GameView {
     } else {
       if (this.player.direction === 102) {
         this.overworld.pos[1] -= 8;
-        if (this.scrollQueue > 48) this.player.update(0, 8)
+        if (this.scrollQueue > 48) this.player.step(0, 8)
       }
       if (this.player.direction === 153) {
         this.overworld.pos[0] += 8;
-        if (this.scrollQueue > 48) this.player.update(-8, 0)
+        if (this.scrollQueue > 48) this.player.step(-8, 0)
       }
       if (this.player.direction === 0) {
         this.overworld.pos[1] += 8;
-        if (this.scrollQueue > 48) this.player.update(0, -8)
+        if (this.scrollQueue > 48) this.player.step(0, -8)
       }
       if (this.player.direction === 51) {
         this.overworld.pos[0] -= 8;
-        if (this.scrollQueue > 48) this.player.update(8, 0)
+        if (this.scrollQueue > 48) this.player.step(8, 0)
       }
       this.scrollQueue -= 8;
       this.overworld.drawWorld(this.worldCtx)
@@ -206,22 +206,22 @@ class GameView {
     if ((this.currentInput === 'w')) {
       this.player.direction = 102 // 'up'
       if (this.impassableTerrain('north')) return
-      this.player.update(0, -4)
+      this.player.step(0, -4)
     }
     if ((this.currentInput === 'd')) {
       this.player.direction = 153 // 'right'
       if (this.impassableTerrain('east')) return
-      this.player.update(4, 0)
+      this.player.step(4, 0)
     }
     if ((this.currentInput === 's')) {
       this.player.direction = 0 // 'down'
       if (this.impassableTerrain('south')) return
-      this.player.update(0, 4)
+      this.player.step(0, 4)
     }
     if ((this.currentInput === 'a')) {
       this.player.direction = 51 // 'left'
       if (this.impassableTerrain('west')) return
-      this.player.update(-4, 0)
+      this.player.step(-4, 0)
     }
   }
 }
