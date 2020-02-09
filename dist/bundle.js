@@ -854,7 +854,6 @@ __webpack_require__.r(__webpack_exports__);
 class Player {
   constructor() {
     this.lastPos = { x: 336, y: 432, width: 48, height: 48 }
-    // this.pos = [336, 432];
     this.pos = { x: 336, y: 432, width: 48, height: 48 }
 
     this.sprite = new Image();
@@ -985,12 +984,15 @@ class Octorok {
     this.ap = 1;
 
     //position data
-    this.lastPixelPos = pixelPos;
-    this.pixelPos = pixelPos;
-    this.pos = [
-      (this.pixelPos[0] / 48), 
-      ((this.pixelPos[1] - 168) / 48)
-    ];
+    this.pos = { 
+      x: pixelPos[0], 
+      y: pixelPos[1], 
+      row: ((pixelPos[1] - 168) / 48),
+      col: (pixelPos[0] / 48), 
+      width: 48, 
+      height: 48 
+    }
+    this.lastPos = Object.assign({}, this.pos)
     
     // frame data
     this.runCycle = 0;
@@ -1004,22 +1006,23 @@ class Octorok {
   }
   
   clear(ctx) {
-    ctx.clearRect(this.lastPixelPos[0], this.lastPixelPos[1], 48, 48);
+    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
   }
 
   step() {
-    this.lastPixelPos = this.pixelPos;
+    this.lastPos.x = this.pos.x;
+    this.lastPos.y = this.pos.y;
 
     if (this.actionCycle <= 0) this.updateAction();
 
     if (this.direction === 102) { // north
-      this.pixelPos[1] -= 1 * this.speed
+      this.pos.y -= 1 * this.speed
     } else if (this.direction === 153) { // east
-      this.pixelPos[0] += 1 * this.speed
+      this.pos.x += 1 * this.speed
     } else if (this.direction === 0) { // south
-      this.pixelPos[1] += 1 * this.speed
+      this.pos.y += 1 * this.speed
     } else if (this.direction === 51) { // west
-      this.pixelPos[0] -= 1 * this.speed
+      this.pos.x -= 1 * this.speed
     }
     this.actionCycle -= 1 * this.speed
   }
@@ -1038,8 +1041,8 @@ class Octorok {
       this.frame,
       48,
       48,
-      this.pixelPos[0],
-      this.pixelPos[1],
+      this.pos.x,
+      this.pos.y,
       48,
       48
       )
@@ -1047,28 +1050,29 @@ class Octorok {
 
   checkAvailableActions() {
     let neighbors = [];
-    if (this.pos[1] > 0 && this.grid[this.pos[1] - 1][this.pos[0]] === 1020) {
+    if (this.pos.row > 0 && this.grid[this.pos.row - 1][this.pos.col] === 1020) {
       neighbors.push([102, 0, -1]); // north
     }
-    if (this.grid[this.pos[1]][this.pos[0] + 1] === 1020) {
+    if (this.grid[this.pos.row][this.pos.col + 1] === 1020) {
       neighbors.push([153, 1, 0]); // east
     }
-    if (this.pos[1] < 10 && this.grid[this.pos[1] + 1][this.pos[0]] === 1020) {
+    if (this.pos.row < 10 && this.grid[this.pos.row + 1][this.pos.col] === 1020) {
       neighbors.push([0, 0, 1]); // south
     }
-    if (this.grid[this.pos[1]][this.pos[0] - 1] === 1020) {
+    if (this.grid[this.pos.row][this.pos.col - 1] === 1020) {
       neighbors.push([51, -1, 0]); // west
     }
     return neighbors;
   }
 
   updateAction() {
+    console.log(this.pos)
     let possibleActions = this.checkAvailableActions();
     this.actionCycle = 48;
     let action = _util_util__WEBPACK_IMPORTED_MODULE_0__["sample"](possibleActions);
     this.direction = action[0];
-    this.pos[0] += action[1];
-    this.pos[1] += action[2];
+    this.pos.col += action[1];
+    this.pos.row += action[2];
   }
 }
 

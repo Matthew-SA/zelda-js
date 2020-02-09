@@ -1,7 +1,6 @@
 class Player {
   constructor() {
     this.lastPos = { x: 336, y: 432, width: 48, height: 48 }
-    // this.pos = [336, 432];
     this.pos = { x: 336, y: 432, width: 48, height: 48 }
 
     this.sprite = new Image();
