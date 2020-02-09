@@ -20,9 +20,6 @@ class GameView {
     this.overworld = this.game.overworld;
     this.lastInput = {'a': null, 'w': null, 'd': null, 's': null};
     this.currentInput = null;
-    this.scrolling = false;
-    this.scrollQueue = 0;
-    // this.init();
   }
 
   // start primary game loop
@@ -38,8 +35,8 @@ class GameView {
   gameLoop() {
     // let now = Date.now();
     // let dt = (now - lastTime) / 1000.0;
-    this.checkBorder();
-    this.scroll();
+    this.game.checkBorder(this.spriteCtx);
+    this.game.scroll(this.worldCtx, this.collisionCtx);
     this.getLastInput();
     this.checkKey();
     this.game.clearUnits(this.spriteCtx);
@@ -49,71 +46,7 @@ class GameView {
     window.requestAnimationFrame(() => this.gameLoop())
   }
 
-  // check if map border has been crossed by player
-  checkBorder() {
-    if (this.player.pos[1] < constants.BORDERTOP || this.player.pos[1] > constants.BORDERBOTTOM) {
-      this.scrolling = true;
-      this.game.destroyUnits(this.spriteCtx)
-      this.scrollQueue = 528;
-    }
-    if (this.player.pos[0] > constants.BORDERRIGHT || this.player.pos[0] < constants.BORDERLEFT) {
-      this.scrolling = true;
-      this.game.destroyUnits(this.spriteCtx)
-      this.scrollQueue = 768;
-    }
-  }
-
-  // if scrolling, move screen and player
-  // if player is past a certain distance, stop scrolling player
-  // when scrolling is finished, update collision map
-  scroll() {
-    if (!this.scrolling) return;
-    if (this.scrollQueue <= 0) {
-      this.scrolling = false;
-      this.overworld.drawCollisionMap(this.collisionCtx)
-      this.scanGrid();
-      this.game.spawnUnits();
-    } else {
-      if (this.player.direction === 102) {
-        this.overworld.pos[1] -= 8;
-        if (this.scrollQueue > 48) this.player.step(0, 8)
-      }
-      if (this.player.direction === 153) {
-        this.overworld.pos[0] += 8;
-        if (this.scrollQueue > 48) this.player.step(-8, 0)
-      }
-      if (this.player.direction === 0) {
-        this.overworld.pos[1] += 8;
-        if (this.scrollQueue > 48) this.player.step(0, -8)
-      }
-      if (this.player.direction === 51) {
-        this.overworld.pos[0] -= 8;
-        if (this.scrollQueue > 48) this.player.step(8, 0)
-      }
-      this.scrollQueue -= 8;
-      this.overworld.drawWorld(this.worldCtx)
-    }
-  }
-  
-  scanGrid() {
-    let newGrid = [];
-    let openSpaces = [];
-    for (let y = 168; y < 696; y += 48) {
-      let row = [];
-      for (let x = 0; x < 768; x += 48) {
-        let value = util.scanMapTile(this.collisionCtx, x, y);
-        row.push(value);
-        if (value === 1020) openSpaces.push([x,y]);
-      }
-      newGrid.push(row);
-    }
-    this.game.openSpaces = openSpaces;
-    this.game.grid = newGrid;
-
-    // console.log(openSpaces)
-    // console.log(newGrid)
-  }
-
+  // collision layer check below
   checkIfBarrier(pixel1, pixel2) {
     let pixel1value = util.sumArr(pixel1)
     let pixel2value = util.sumArr(pixel2)
@@ -166,6 +99,7 @@ class GameView {
     }
   }
 
+  // player input below
   getLastInput() {
     if (key.isPressed('w') && this.lastInput.w === null) {
       this.lastInput.w = Date.now();
@@ -193,15 +127,14 @@ class GameView {
   }
 
   checkKey() {
-    if (this.scrolling) return;
+    if (this.game.scrolling) return;
     if (this.player.cooldown) return;
 
     const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
     this.currentInput = entry[0]
     if (key.isPressed('/')) {
       this.currentInput = 'attack'
-      this.player.attackFrame = 15;
-      this.player.cooldown = 18;
+      this.player.attack();
     }
     if ((this.currentInput === 'w')) {
       this.player.direction = 102 // 'up'

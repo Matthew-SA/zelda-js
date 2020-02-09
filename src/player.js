@@ -4,7 +4,7 @@ class Player {
     this.pos = [336, 432];
     this.sprite = new Image();
     this.sprite.src = "./assets/images/link.png"
-    // this.swordSound = new Sound("bounce.mp3");
+    this.swordSound = new Audio("./assets/sfx/sword.wav");
 
     this.runCycle = 0;
     this.direction = 0
@@ -21,6 +21,13 @@ class Player {
     this.swordY
   }
 
+  attack() {
+    if (this.cooldown) return;
+    this.swordSound.play()
+    this.attackFrame = 15;
+    this.cooldown = 20;
+  }
+  
   step(x,y) {
     // this.lastPos[0] = this.pos[0];
     // this.lastPos[1] = this.pos[1];
@@ -41,6 +48,7 @@ class Player {
     }
     if (this.runCycle > 15) this.runCycle = 0;
     if (this.attackFrame) {
+      if (!this.cooldown) this.swordSound.play()
       ctx.drawImage(
         this.sprite,
         this.direction,
