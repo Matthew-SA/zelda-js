@@ -26,29 +26,6 @@ class Game {
     this.enemyCount = 0;
 
   }
-
-  scanGrid(ctx) {
-    let newGrid = [];
-    let openSpaces = [];
-    for (let y = 168; y < 696; y += 48) {
-      let row = [];
-      for (let x = 0; x < 768; x += 48) {
-        let value = util.scanMapTile(ctx, x, y);
-        row.push(value);
-        if (value === 1020) openSpaces.push([x, y]);
-      }
-      newGrid.push(row);
-    }
-    this.openSpaces = openSpaces;
-    this.grid = newGrid;
-  }
-
-  spawnUnits() {
-    for (let i = 0; i < this.enemyCount; i++) {
-      let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
-      this.units.push(new Spawn(pixelPos));
-    }
-  }
   
   clearUnits(ctx) {
     for (let i = 0; i < this.units.length; i++) {
@@ -74,6 +51,45 @@ class Game {
     }
     this.player.draw(ctx);
   }
+
+  // checkCollisions(other) {
+  //   const playerHitbox = {
+  //     x: this.player.pos[0] + 2,
+  //     y: this.player.pos[1] + 2,
+  //     width: 44,
+  //     height: 44,
+  //   }
+  //   if (playerHitBox.x < other.x + other.width &&
+  //     playerHitBox.x + playerHitBox.width > other.x &&
+  //     playerHitBox.y < other.y + other.height &&
+  //     playerHitBox.y + playerHitBox.height > other.y) {
+  //     // collision detected!
+  //   }
+  // }
+
+  scanGrid(ctx) {
+    let newGrid = [];
+    let openSpaces = [];
+    for (let y = 168; y < 696; y += 48) {
+      let row = [];
+      for (let x = 0; x < 768; x += 48) {
+        let value = util.scanMapTile(ctx, x, y);
+        row.push(value);
+        if (value === 1020) openSpaces.push([x, y]);
+      }
+      newGrid.push(row);
+    }
+    this.openSpaces = openSpaces;
+    this.grid = newGrid;
+  }
+
+  spawnUnits() {
+    for (let i = 0; i < this.enemyCount; i++) {
+      let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
+      this.units.push(new Spawn(pixelPos));
+    }
+  }
+  
 
   hatchSpawn(spawn) {
     new Octorok(spawn.pixelPos[0], spawn.pixelPos[1])
@@ -111,12 +127,12 @@ class Game {
   }
 
   checkBorder(ctx) {
-    if (this.player.pos[1] < constants.BORDERTOP || this.player.pos[1] > constants.BORDERBOTTOM) {
+    if (this.player.pos.y < constants.BORDERTOP || this.player.pos.y > constants.BORDERBOTTOM) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 528;
     }
-    if (this.player.pos[0] > constants.BORDERRIGHT || this.player.pos[0] < constants.BORDERLEFT) {
+    if (this.player.pos.x > constants.BORDERRIGHT || this.player.pos.x < constants.BORDERLEFT) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 768;
