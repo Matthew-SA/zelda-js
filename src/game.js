@@ -2,7 +2,7 @@ import Menu from './menu.js'
 import Player from './player'
 import Spawn from './units/spawn'
 import Octorok from './units/octorok'
-import Overworld from './overworld'
+import Overworld from './maps/overworld'
 import * as constants from './constants'
 import * as util from './util'
 

@@ -444,7 +444,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player */ "./src/player.js");
 /* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
 /* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
-/* harmony import */ var _overworld__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./overworld */ "./src/overworld.js");
+/* harmony import */ var _maps_overworld__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./maps/overworld */ "./src/maps/overworld.js");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./util */ "./src/util.js");
 
@@ -462,7 +462,7 @@ class Game {
   constructor() {
     this.menu = new _menu_js__WEBPACK_IMPORTED_MODULE_0__["default"];
     this.player = new _player__WEBPACK_IMPORTED_MODULE_1__["default"];
-    this.overworld = new _overworld__WEBPACK_IMPORTED_MODULE_4__["default"];
+    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_4__["default"];
     
     // game scroll logic
     this.scrolling = false;
@@ -764,46 +764,10 @@ class GameView {
 
 /***/ }),
 
-/***/ "./src/menu.js":
-/*!*********************!*\
-  !*** ./src/menu.js ***!
-  \*********************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-class Menu {
-  constructor() {
-    this.lastpos = [0,0]
-    this.pos = [0,0]
-    this.image = new Image();
-    this.image.src = "./assets/images/menu.png"
-  }
-
-  draw(ctx) {
-    ctx.drawImage(
-      this.image,
-      0,
-      528,
-      768,
-      696,
-      this.pos[0],
-      this.pos[1],
-      768,
-      696
-    )
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Menu);
-
-/***/ }),
-
-/***/ "./src/overworld.js":
-/*!**************************!*\
-  !*** ./src/overworld.js ***!
-  \**************************/
+/***/ "./src/maps/overworld.js":
+/*!*******************************!*\
+  !*** ./src/maps/overworld.js ***!
+  \*******************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -864,6 +828,42 @@ class Overworld {
 
 /***/ }),
 
+/***/ "./src/menu.js":
+/*!*********************!*\
+  !*** ./src/menu.js ***!
+  \*********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Menu {
+  constructor() {
+    this.lastpos = [0,0]
+    this.pos = [0,0]
+    this.image = new Image();
+    this.image.src = "./assets/images/menu.png"
+  }
+
+  draw(ctx) {
+    ctx.drawImage(
+      this.image,
+      0,
+      528,
+      768,
+      696,
+      this.pos[0],
+      this.pos[1],
+      768,
+      696
+    )
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Menu);
+
+/***/ }),
+
 /***/ "./src/player.js":
 /*!***********************!*\
   !*** ./src/player.js ***!
@@ -892,12 +892,9 @@ class Player {
       bottomLeft: [this.pos[0] + 9, this.pos[1] + 45],
       bottomRight: [this.pos[0] + 39, this.pos[1] + 45],
     }
-    this.swordX
-    this.swordY
   }
 
   attack() {
-    if (this.cooldown) return;
     this.swordSound.play()
     this.attackFrame = 15;
     this.cooldown = 20;
@@ -923,7 +920,6 @@ class Player {
     }
     if (this.runCycle > 15) this.runCycle = 0;
     if (this.attackFrame) {
-      if (!this.cooldown) this.swordSound.play()
       ctx.drawImage(
         this.sprite,
         this.direction,

@@ -17,12 +17,9 @@ class Player {
       bottomLeft: [this.pos[0] + 9, this.pos[1] + 45],
       bottomRight: [this.pos[0] + 39, this.pos[1] + 45],
     }
-    this.swordX
-    this.swordY
   }
 
   attack() {
-    if (this.cooldown) return;
     this.swordSound.play()
     this.attackFrame = 15;
     this.cooldown = 20;
@@ -48,7 +45,6 @@ class Player {
     }
     if (this.runCycle > 15) this.runCycle = 0;
     if (this.attackFrame) {
-      if (!this.cooldown) this.swordSound.play()
       ctx.drawImage(
         this.sprite,
         this.direction,
