@@ -437,29 +437,6 @@ class Game {
     this.enemyCount = 0;
 
   }
-
-  scanGrid(ctx) {
-    let newGrid = [];
-    let openSpaces = [];
-    for (let y = 168; y < 696; y += 48) {
-      let row = [];
-      for (let x = 0; x < 768; x += 48) {
-        let value = _util_util__WEBPACK_IMPORTED_MODULE_6__["scanMapTile"](ctx, x, y);
-        row.push(value);
-        if (value === 1020) openSpaces.push([x, y]);
-      }
-      newGrid.push(row);
-    }
-    this.openSpaces = openSpaces;
-    this.grid = newGrid;
-  }
-
-  spawnUnits() {
-    for (let i = 0; i < this.enemyCount; i++) {
-      let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
-      this.units.push(new _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"](pixelPos));
-    }
-  }
   
   clearUnits(ctx) {
     for (let i = 0; i < this.units.length; i++) {
@@ -485,6 +462,45 @@ class Game {
     }
     this.player.draw(ctx);
   }
+
+  // checkCollisions(other) {
+  //   const playerHitbox = {
+  //     x: this.player.pos[0] + 2,
+  //     y: this.player.pos[1] + 2,
+  //     width: 44,
+  //     height: 44,
+  //   }
+  //   if (playerHitBox.x < other.x + other.width &&
+  //     playerHitBox.x + playerHitBox.width > other.x &&
+  //     playerHitBox.y < other.y + other.height &&
+  //     playerHitBox.y + playerHitBox.height > other.y) {
+  //     // collision detected!
+  //   }
+  // }
+
+  scanGrid(ctx) {
+    let newGrid = [];
+    let openSpaces = [];
+    for (let y = 168; y < 696; y += 48) {
+      let row = [];
+      for (let x = 0; x < 768; x += 48) {
+        let value = _util_util__WEBPACK_IMPORTED_MODULE_6__["scanMapTile"](ctx, x, y);
+        row.push(value);
+        if (value === 1020) openSpaces.push([x, y]);
+      }
+      newGrid.push(row);
+    }
+    this.openSpaces = openSpaces;
+    this.grid = newGrid;
+  }
+
+  spawnUnits() {
+    for (let i = 0; i < this.enemyCount; i++) {
+      let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
+      this.units.push(new _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"](pixelPos));
+    }
+  }
+  
 
   hatchSpawn(spawn) {
     new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](spawn.pixelPos[0], spawn.pixelPos[1])
@@ -522,12 +538,12 @@ class Game {
   }
 
   checkBorder(ctx) {
-    if (this.player.pos[1] < _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERTOP"] || this.player.pos[1] > _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERBOTTOM"]) {
+    if (this.player.pos.y < _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERTOP"] || this.player.pos.y > _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERBOTTOM"]) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 528;
     }
-    if (this.player.pos[0] > _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERRIGHT"] || this.player.pos[0] < _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERLEFT"]) {
+    if (this.player.pos.x > _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERRIGHT"] || this.player.pos.x < _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERLEFT"]) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 768;
@@ -837,8 +853,10 @@ class Menu {
 __webpack_require__.r(__webpack_exports__);
 class Player {
   constructor() {
-    this.lastPos = [336, 432];
-    this.pos = [336, 432];
+    this.lastPos = { x: 336, y: 432, width: 48, height: 48 }
+    // this.pos = [336, 432];
+    this.pos = { x: 336, y: 432, width: 48, height: 48 }
+
     this.sprite = new Image();
     this.sprite.src = "./assets/images/link.png"
     this.swordSound = new Audio("./assets/sfx/sword.wav");
@@ -849,10 +867,10 @@ class Player {
     this.attackFrame = 0;
     this.cooldown = 0;
     this.tracebox = {
-      topLeft: [this.pos[0] + 9, this.pos[1] + 24],
-      topRight: [this.pos[0] + 39, this.pos[1] + 24],
-      bottomLeft: [this.pos[0] + 9, this.pos[1] + 45],
-      bottomRight: [this.pos[0] + 39, this.pos[1] + 45],
+      topLeft: [this.pos.x + 9, this.pos.y + 24],
+      topRight: [this.pos.x + 39, this.pos.y + 24],
+      bottomLeft: [this.pos.x + 9, this.pos.y + 45],
+      bottomRight: [this.pos.x + 39, this.pos.y + 45],
     }
   }
 
@@ -863,10 +881,10 @@ class Player {
   }
   
   step(x,y) {
-    this.lastPos[0] = this.pos[0];
-    this.lastPos[1] = this.pos[1];
-    this.pos[0] += x;
-    this.pos[1] += y;
+    // this.lastPos[0] = this.pos[0];
+    // this.lastPos[1] = this.pos[1];
+    this.pos.x += x;
+    this.pos.y += y;
     this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
@@ -888,13 +906,13 @@ class Player {
         153,
         48,
         48,
-        this.pos[0],
-        this.pos[1],
+        this.pos.x,
+        this.pos.y,
         48,
         48
       )
-      this.swordX = this.pos[0]
-      this.swordY = this.pos[1]
+      this.swordX = this.pos.x
+      this.swordY = this.pos.y
       if (this.direction === 0) {
         this.swordY += 48;
       } else if (this.direction === 51) {
@@ -923,18 +941,18 @@ class Player {
         this.frame,
         48,
         48,
-        this.pos[0],
-        this.pos[1],
+        this.pos.x,
+        this.pos.y,
         48,
         48
       )
     }
-    // this.lastPos[0] = this.pos[0];
-    // this.lastPos[1] = this.pos[1];
+    this.lastPos.x = this.pos.x;
+    this.lastPos.y = this.pos.y;
   }
 
   clear(ctx) {
-    ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
+    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
     if (this.cooldown) ctx.clearRect(this.swordX, this.swordY, 48, 48);
   }
 }

@@ -1,7 +1,9 @@
 class Player {
   constructor() {
-    this.lastPos = [336, 432];
-    this.pos = [336, 432];
+    this.lastPos = { x: 336, y: 432, width: 48, height: 48 }
+    // this.pos = [336, 432];
+    this.pos = { x: 336, y: 432, width: 48, height: 48 }
+
     this.sprite = new Image();
     this.sprite.src = "./assets/images/link.png"
     this.swordSound = new Audio("./assets/sfx/sword.wav");
@@ -12,10 +14,10 @@ class Player {
     this.attackFrame = 0;
     this.cooldown = 0;
     this.tracebox = {
-      topLeft: [this.pos[0] + 9, this.pos[1] + 24],
-      topRight: [this.pos[0] + 39, this.pos[1] + 24],
-      bottomLeft: [this.pos[0] + 9, this.pos[1] + 45],
-      bottomRight: [this.pos[0] + 39, this.pos[1] + 45],
+      topLeft: [this.pos.x + 9, this.pos.y + 24],
+      topRight: [this.pos.x + 39, this.pos.y + 24],
+      bottomLeft: [this.pos.x + 9, this.pos.y + 45],
+      bottomRight: [this.pos.x + 39, this.pos.y + 45],
     }
   }
 
@@ -26,10 +28,10 @@ class Player {
   }
   
   step(x,y) {
-    this.lastPos[0] = this.pos[0];
-    this.lastPos[1] = this.pos[1];
-    this.pos[0] += x;
-    this.pos[1] += y;
+    // this.lastPos[0] = this.pos[0];
+    // this.lastPos[1] = this.pos[1];
+    this.pos.x += x;
+    this.pos.y += y;
     this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
@@ -51,13 +53,13 @@ class Player {
         153,
         48,
         48,
-        this.pos[0],
-        this.pos[1],
+        this.pos.x,
+        this.pos.y,
         48,
         48
       )
-      this.swordX = this.pos[0]
-      this.swordY = this.pos[1]
+      this.swordX = this.pos.x
+      this.swordY = this.pos.y
       if (this.direction === 0) {
         this.swordY += 48;
       } else if (this.direction === 51) {
@@ -86,18 +88,18 @@ class Player {
         this.frame,
         48,
         48,
-        this.pos[0],
-        this.pos[1],
+        this.pos.x,
+        this.pos.y,
         48,
         48
       )
     }
-    // this.lastPos[0] = this.pos[0];
-    // this.lastPos[1] = this.pos[1];
+    this.lastPos.x = this.pos.x;
+    this.lastPos.y = this.pos.y;
   }
 
   clear(ctx) {
-    ctx.clearRect(this.lastPos[0], this.lastPos[1], 48, 48);
+    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
     if (this.cooldown) ctx.clearRect(this.swordX, this.swordY, 48, 48);
   }
 }
