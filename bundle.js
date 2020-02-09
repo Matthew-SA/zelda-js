@@ -445,13 +445,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
 /* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
 /* harmony import */ var _overworld__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./overworld */ "./src/overworld.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./util */ "./src/util.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./util */ "./src/util.js");
 
 
 
 
 
-// import * as constants from './constants'
 
 
 
@@ -463,20 +463,33 @@ class Game {
     this.menu = new _menu_js__WEBPACK_IMPORTED_MODULE_0__["default"];
     this.player = new _player__WEBPACK_IMPORTED_MODULE_1__["default"];
     this.overworld = new _overworld__WEBPACK_IMPORTED_MODULE_4__["default"];
+    
+    // game scroll logic
+    this.scrolling = false;
+    this.scrollQueue = 0;
+
+    // npc placement
     this.units = [];
-    this.grid = [ // collection of grid squares with color data of center 4 pixels.
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
+    this.grid = null; // collection of grid squares with color data of center 4 pixels.
     this.openSpaces = null; // Array of subarrays.  Each contain a x/y pixel position pair.
     this.enemyCount = 0;
+
+  }
+
+  scanGrid(ctx) {
+    let newGrid = [];
+    let openSpaces = [];
+    for (let y = 168; y < 696; y += 48) {
+      let row = [];
+      for (let x = 0; x < 768; x += 48) {
+        let value = _util__WEBPACK_IMPORTED_MODULE_6__["scanMapTile"](ctx, x, y);
+        row.push(value);
+        if (value === 1020) openSpaces.push([x, y]);
+      }
+      newGrid.push(row);
+    }
+    this.openSpaces = openSpaces;
+    this.grid = newGrid;
   }
 
   spawnUnits() {
@@ -511,15 +524,58 @@ class Game {
     this.player.draw(ctx);
   }
 
+  hatchSpawn(spawn) {
+    new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](spawn.pixelPos[0], spawn.pixelPos[1])
+  }
+  
+
+  // Scrolling logic below
+  scroll(worldCtx, collisionCtx) {
+    if (!this.scrolling) return;
+    if (this.scrollQueue <= 0) {
+      this.scrolling = false;
+      this.overworld.drawCollisionMap(collisionCtx)
+      this.scanGrid(collisionCtx);
+      this.spawnUnits();
+    } else {
+      if (this.player.direction === 102) {
+        this.overworld.pos[1] -= 8;
+        if (this.scrollQueue > 48) this.player.step(0, 8)
+      }
+      if (this.player.direction === 153) {
+        this.overworld.pos[0] += 8;
+        if (this.scrollQueue > 48) this.player.step(-8, 0)
+      }
+      if (this.player.direction === 0) {
+        this.overworld.pos[1] += 8;
+        if (this.scrollQueue > 48) this.player.step(0, -8)
+      }
+      if (this.player.direction === 51) {
+        this.overworld.pos[0] -= 8;
+        if (this.scrollQueue > 48) this.player.step(8, 0)
+      }
+      this.scrollQueue -= 8;
+      this.overworld.drawWorld(worldCtx)
+    }
+  }
+
+  checkBorder(ctx) {
+    if (this.player.pos[1] < _constants__WEBPACK_IMPORTED_MODULE_5__["BORDERTOP"] || this.player.pos[1] > _constants__WEBPACK_IMPORTED_MODULE_5__["BORDERBOTTOM"]) {
+      this.scrolling = true;
+      this.destroyUnits(ctx)
+      this.scrollQueue = 528;
+    }
+    if (this.player.pos[0] > _constants__WEBPACK_IMPORTED_MODULE_5__["BORDERRIGHT"] || this.player.pos[0] < _constants__WEBPACK_IMPORTED_MODULE_5__["BORDERLEFT"]) {
+      this.scrolling = true;
+      this.destroyUnits(ctx)
+      this.scrollQueue = 768;
+    }
+  }
 
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    this.enemyCount = (_util__WEBPACK_IMPORTED_MODULE_5__["random"](1, 6)) // reload enemy count for next screen.
-  }
-
-  hatchSpawn(spawn) {
-    new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](spawn.pixelPos[0], spawn.pixelPos[1])
+    this.enemyCount = (_util__WEBPACK_IMPORTED_MODULE_6__["random"](1, 6)) // reload enemy count for next screen.
   }
 }
 
@@ -564,9 +620,6 @@ class GameView {
     this.overworld = this.game.overworld;
     this.lastInput = {'a': null, 'w': null, 'd': null, 's': null};
     this.currentInput = null;
-    this.scrolling = false;
-    this.scrollQueue = 0;
-    // this.init();
   }
 
   // start primary game loop
@@ -582,8 +635,8 @@ class GameView {
   gameLoop() {
     // let now = Date.now();
     // let dt = (now - lastTime) / 1000.0;
-    this.checkBorder();
-    this.scroll();
+    this.game.checkBorder(this.spriteCtx);
+    this.game.scroll(this.worldCtx, this.collisionCtx);
     this.getLastInput();
     this.checkKey();
     this.game.clearUnits(this.spriteCtx);
@@ -593,71 +646,7 @@ class GameView {
     window.requestAnimationFrame(() => this.gameLoop())
   }
 
-  // check if map border has been crossed by player
-  checkBorder() {
-    if (this.player.pos[1] < _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERTOP"] || this.player.pos[1] > _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERBOTTOM"]) {
-      this.scrolling = true;
-      this.game.destroyUnits(this.spriteCtx)
-      this.scrollQueue = 528;
-    }
-    if (this.player.pos[0] > _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERRIGHT"] || this.player.pos[0] < _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERLEFT"]) {
-      this.scrolling = true;
-      this.game.destroyUnits(this.spriteCtx)
-      this.scrollQueue = 768;
-    }
-  }
-
-  // if scrolling, move screen and player
-  // if player is past a certain distance, stop scrolling player
-  // when scrolling is finished, update collision map
-  scroll() {
-    if (!this.scrolling) return;
-    if (this.scrollQueue <= 0) {
-      this.scrolling = false;
-      this.overworld.drawCollisionMap(this.collisionCtx)
-      this.scanGrid();
-      this.game.spawnUnits();
-    } else {
-      if (this.player.direction === 102) {
-        this.overworld.pos[1] -= 8;
-        if (this.scrollQueue > 48) this.player.step(0, 8)
-      }
-      if (this.player.direction === 153) {
-        this.overworld.pos[0] += 8;
-        if (this.scrollQueue > 48) this.player.step(-8, 0)
-      }
-      if (this.player.direction === 0) {
-        this.overworld.pos[1] += 8;
-        if (this.scrollQueue > 48) this.player.step(0, -8)
-      }
-      if (this.player.direction === 51) {
-        this.overworld.pos[0] -= 8;
-        if (this.scrollQueue > 48) this.player.step(8, 0)
-      }
-      this.scrollQueue -= 8;
-      this.overworld.drawWorld(this.worldCtx)
-    }
-  }
-  
-  scanGrid() {
-    let newGrid = [];
-    let openSpaces = [];
-    for (let y = 168; y < 696; y += 48) {
-      let row = [];
-      for (let x = 0; x < 768; x += 48) {
-        let value = _util__WEBPACK_IMPORTED_MODULE_3__["scanMapTile"](this.collisionCtx, x, y);
-        row.push(value);
-        if (value === 1020) openSpaces.push([x,y]);
-      }
-      newGrid.push(row);
-    }
-    this.game.openSpaces = openSpaces;
-    this.game.grid = newGrid;
-
-    // console.log(openSpaces)
-    // console.log(newGrid)
-  }
-
+  // collision layer check below
   checkIfBarrier(pixel1, pixel2) {
     let pixel1value = _util__WEBPACK_IMPORTED_MODULE_3__["sumArr"](pixel1)
     let pixel2value = _util__WEBPACK_IMPORTED_MODULE_3__["sumArr"](pixel2)
@@ -710,6 +699,7 @@ class GameView {
     }
   }
 
+  // player input below
   getLastInput() {
     if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('w') && this.lastInput.w === null) {
       this.lastInput.w = Date.now();
@@ -737,15 +727,14 @@ class GameView {
   }
 
   checkKey() {
-    if (this.scrolling) return;
+    if (this.game.scrolling) return;
     if (this.player.cooldown) return;
 
     const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
     this.currentInput = entry[0]
     if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('/')) {
       this.currentInput = 'attack'
-      this.player.attackFrame = 15;
-      this.player.cooldown = 18;
+      this.player.attack();
     }
     if ((this.currentInput === 'w')) {
       this.player.direction = 102 // 'up'
@@ -829,12 +818,18 @@ __webpack_require__.r(__webpack_exports__);
 
 class Overworld {
   constructor() {
+    this.music = new Audio("./assets/sfx/overworld.mp3");
+    this.music.loop = true;
+    this.music.autoPlay = true;
+    this.music.play();
+
     this.lastPos = [5376, 3528];
     this.pos = [5376,3528];
     this.overworld = new Image();
     this.overworld.src = './assets/images/overworld.png'
     this.collisionMap = new Image();
     this.collisionMap.src = './assets/images/overworld-collision.png'
+    
   }
 
   drawWorld(ctx) {
@@ -887,7 +882,7 @@ class Player {
     this.pos = [336, 432];
     this.sprite = new Image();
     this.sprite.src = "./assets/images/link.png"
-    // this.swordSound = new Sound("bounce.mp3");
+    this.swordSound = new Audio("./assets/sfx/sword.wav");
 
     this.runCycle = 0;
     this.direction = 0
@@ -904,6 +899,13 @@ class Player {
     this.swordY
   }
 
+  attack() {
+    if (this.cooldown) return;
+    this.swordSound.play()
+    this.attackFrame = 15;
+    this.cooldown = 20;
+  }
+  
   step(x,y) {
     // this.lastPos[0] = this.pos[0];
     // this.lastPos[1] = this.pos[1];
@@ -924,6 +926,7 @@ class Player {
     }
     if (this.runCycle > 15) this.runCycle = 0;
     if (this.attackFrame) {
+      if (!this.cooldown) this.swordSound.play()
       ctx.drawImage(
         this.sprite,
         this.direction,
