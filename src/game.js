@@ -37,6 +37,7 @@ class Game {
   stepUnits(ctx) {
     for (let i = 0; i < this.units.length; i++) {
       this.units[i].runCycle++
+      this.checkCollisions(this.units[i])
       if (this.units[i] instanceof Spawn && this.units[i].runCycle >= 160) {
         this.units[i].clear(ctx)
         this.units[i] = new Octorok(this.units[i].pixelPos, this.grid);
@@ -52,20 +53,22 @@ class Game {
     this.player.draw(ctx);
   }
 
-  // checkCollisions(other) {
-  //   const playerHitbox = {
-  //     x: this.player.pos[0] + 2,
-  //     y: this.player.pos[1] + 2,
-  //     width: 44,
-  //     height: 44,
-  //   }
-  //   if (playerHitBox.x < other.x + other.width &&
-  //     playerHitBox.x + playerHitBox.width > other.x &&
-  //     playerHitBox.y < other.y + other.height &&
-  //     playerHitBox.y + playerHitBox.height > other.y) {
-  //     // collision detected!
-  //   }
-  // }
+  checkCollisions(other) {
+    const playerHitbox = {
+      x: this.player.pos.x + 2,
+      y: this.player.pos.y + 2,
+      width: 44,
+      height: 44,
+    }
+    // console.log(playerHitbox)
+    console.log
+    if (playerHitbox.x < other.pos.x + other.pos.width &&
+      playerHitbox.x + playerHitbox.width > other.pos.x &&
+      playerHitbox.y < other.pos.y + other.pos.height &&
+      playerHitbox.y + playerHitbox.height > other.pos.y) {
+      console.log('collision detected!')
+    }
+  }
 
   scanGrid(ctx) {
     let newGrid = [];

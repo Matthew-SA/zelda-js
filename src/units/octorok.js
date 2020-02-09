@@ -38,11 +38,9 @@ class Octorok {
   }
 
   step() {
-    this.lastPos.x = this.pos.x;
-    this.lastPos.y = this.pos.y;
-
+    
     if (this.actionCycle <= 0) this.updateAction();
-
+    
     if (this.direction === 102) { // north
       this.pos.y -= 1 * this.speed
     } else if (this.direction === 153) { // east
@@ -54,7 +52,7 @@ class Octorok {
     }
     this.actionCycle -= 1 * this.speed
   }
-
+  
   draw(ctx) {
     if (this.runCycle < 14) {
       this.frame = 0;
@@ -74,6 +72,8 @@ class Octorok {
       48,
       48
       )
+      this.lastPos.x = this.pos.x;
+      this.lastPos.y = this.pos.y;
     }
 
   checkAvailableActions() {
@@ -94,7 +94,6 @@ class Octorok {
   }
 
   updateAction() {
-    console.log(this.pos)
     let possibleActions = this.checkAvailableActions();
     this.actionCycle = 48;
     let action = util.sample(possibleActions);

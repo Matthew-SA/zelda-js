@@ -448,6 +448,7 @@ class Game {
   stepUnits(ctx) {
     for (let i = 0; i < this.units.length; i++) {
       this.units[i].runCycle++
+      this.checkCollisions(this.units[i])
       if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle >= 160) {
         this.units[i].clear(ctx)
         this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](this.units[i].pixelPos, this.grid);
@@ -463,20 +464,22 @@ class Game {
     this.player.draw(ctx);
   }
 
-  // checkCollisions(other) {
-  //   const playerHitbox = {
-  //     x: this.player.pos[0] + 2,
-  //     y: this.player.pos[1] + 2,
-  //     width: 44,
-  //     height: 44,
-  //   }
-  //   if (playerHitBox.x < other.x + other.width &&
-  //     playerHitBox.x + playerHitBox.width > other.x &&
-  //     playerHitBox.y < other.y + other.height &&
-  //     playerHitBox.y + playerHitBox.height > other.y) {
-  //     // collision detected!
-  //   }
-  // }
+  checkCollisions(other) {
+    const playerHitbox = {
+      x: this.player.pos.x + 2,
+      y: this.player.pos.y + 2,
+      width: 44,
+      height: 44,
+    }
+    // console.log(playerHitbox)
+    console.log
+    if (playerHitbox.x < other.pos.x + other.pos.width &&
+      playerHitbox.x + playerHitbox.width > other.pos.x &&
+      playerHitbox.y < other.pos.y + other.pos.height &&
+      playerHitbox.y + playerHitbox.height > other.pos.y) {
+      console.log('collision detected!')
+    }
+  }
 
   scanGrid(ctx) {
     let newGrid = [];
@@ -1010,11 +1013,9 @@ class Octorok {
   }
 
   step() {
-    this.lastPos.x = this.pos.x;
-    this.lastPos.y = this.pos.y;
-
+    
     if (this.actionCycle <= 0) this.updateAction();
-
+    
     if (this.direction === 102) { // north
       this.pos.y -= 1 * this.speed
     } else if (this.direction === 153) { // east
@@ -1026,7 +1027,7 @@ class Octorok {
     }
     this.actionCycle -= 1 * this.speed
   }
-
+  
   draw(ctx) {
     if (this.runCycle < 14) {
       this.frame = 0;
@@ -1046,6 +1047,8 @@ class Octorok {
       48,
       48
       )
+      this.lastPos.x = this.pos.x;
+      this.lastPos.y = this.pos.y;
     }
 
   checkAvailableActions() {
@@ -1066,7 +1069,6 @@ class Octorok {
   }
 
   updateAction() {
-    console.log(this.pos)
     let possibleActions = this.checkAvailableActions();
     this.actionCycle = 48;
     let action = _util_util__WEBPACK_IMPORTED_MODULE_0__["sample"](possibleActions);
@@ -1094,6 +1096,12 @@ __webpack_require__.r(__webpack_exports__);
 
 class Spawn {
   constructor(pixelPos) {
+    this.pos = {
+      x: pixelPos[0],
+      y: pixelPos[1],
+      width: 48,
+      height: 48,
+    }
     this.pixelPos = pixelPos;
     this.sprite = new Image();
     this.sprite.src = "./assets/images/units/spawn.png"
