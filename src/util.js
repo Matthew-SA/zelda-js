@@ -13,15 +13,22 @@ export function sumArr(arr) {
   return sum;
 }
 
-export function getMapPixel(x, y, ctx) {
+export function getMapPixel(ctx, x, y) {
   const pixel = ctx.getImageData(x, y, 1, 1);
   // console.log([pixel.data[0], pixel.data[1], pixel.data[2]]);
   return [pixel.data[0], pixel.data[1], pixel.data[2]];
 }
 
-export function sumMapPixel(x, y, ctx) {
+export function sumMapPixel(ctx, x, y) {
   const pixel = ctx.getImageData(x, y, 1, 1);
   return (pixel.data[0] + pixel.data[1] + pixel.data[2]);
+}
+
+export function scanMapTile(ctx, x, y) {
+  const tile = ctx.getImageData(x+23, y+23, 2, 2);
+  // if (sumArr(tile.data) === 1020) return true;
+  // return false;
+  return sumArr(tile.data)
 }
 
 export function sample(arr) {

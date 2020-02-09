@@ -27,13 +27,11 @@ class GameView {
 
   // start primary game loop
   init() {
-    // setTimeout(() => {
-      this.overworld.drawWorld(this.worldCtx)
-      this.overworld.drawCollisionMap(this.collisionCtx)
-      this.menu.draw(this.menuCtx)
-      this.player.draw(this.spriteCtx);
-      requestAnimationFrame(() => this.gameLoop())
-    // }, 70);
+    this.overworld.drawWorld(this.worldCtx)
+    this.overworld.drawCollisionMap(this.collisionCtx)
+    this.menu.draw(this.menuCtx)
+    this.player.draw(this.spriteCtx);
+    requestAnimationFrame(() => this.gameLoop())
   }
 
   // primary game loop  TODO: add pixel /sec to ensure proper gameplay at all FPS
@@ -45,7 +43,7 @@ class GameView {
     this.getLastInput();
     this.checkKey();
     this.game.clearUnits(this.spriteCtx);
-    this.game.incrementUnitRunCycle(this.spriteCtx);
+    this.game.stepUnits(this.spriteCtx);
     this.game.drawUnits(this.spriteCtx);
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
@@ -53,22 +51,12 @@ class GameView {
 
   // check if map border has been crossed by player
   checkBorder() {
-    if (this.player.pos[1] < constants.BORDERTOP) {
+    if (this.player.pos[1] < constants.BORDERTOP || this.player.pos[1] > constants.BORDERBOTTOM) {
       this.scrolling = true;
       this.game.destroyUnits(this.spriteCtx)
       this.scrollQueue = 528;
     }
-    if (this.player.pos[0] > constants.BORDERRIGHT) {
-      this.scrolling = true;
-      this.game.destroyUnits(this.spriteCtx)
-      this.scrollQueue = 768;
-    }
-    if (this.player.pos[1] > constants.BORDERBOTTOM) {
-      this.scrolling = true;
-      this.game.destroyUnits(this.spriteCtx)
-      this.scrollQueue = 528;
-    }
-    if (this.player.pos[0] < constants.BORDERLEFT) {
+    if (this.player.pos[0] > constants.BORDERRIGHT || this.player.pos[0] < constants.BORDERLEFT) {
       this.scrolling = true;
       this.game.destroyUnits(this.spriteCtx)
       this.scrollQueue = 768;
@@ -106,22 +94,6 @@ class GameView {
       this.overworld.drawWorld(this.worldCtx)
     }
   }
-
-  // scanGrid() {
-  //   let newGrid = [];
-  //   let openSpaces = [];
-  //   for (let y = 0; y < 11; y += 1) {
-  //     let row = [];
-  //     for (let x = 0; x < 16; x += 1) {
-  //       let value = util.sumMapPixel(x*48, y*48+168, this.collisionCtx);
-  //       row.push(value);
-  //       if (!value) openSpaces.push([y,x]);
-  //     }
-  //     newGrid.push(row);
-  //   }
-  //   this.game.openSpaces = openSpaces;
-  //   this.game.grid = newGrid;
-  // }
   
   scanGrid() {
     let newGrid = [];
@@ -129,14 +101,17 @@ class GameView {
     for (let y = 168; y < 696; y += 48) {
       let row = [];
       for (let x = 0; x < 768; x += 48) {
-        let value = util.sumMapPixel(x, y, this.collisionCtx);
+        let value = util.scanMapTile(this.collisionCtx, x, y);
         row.push(value);
-        if (!value) openSpaces.push([x,y]);
+        if (value === 1020) openSpaces.push([x,y]);
       }
       newGrid.push(row);
     }
     this.game.openSpaces = openSpaces;
     this.game.grid = newGrid;
+
+    console.log(openSpaces)
+    console.log(newGrid)
   }
 
   checkIfBarrier(pixel1, pixel2) {
@@ -150,43 +125,43 @@ class GameView {
   impassableTerrain(direction) {
     if (direction === 'north') {
       const topPixel = util.getMapPixel(
+        this.collisionCtx,
         this.player.tracebox.topLeft[0], 
-        this.player.tracebox.topLeft[1] - 3,
-        this.collisionCtx);
+        this.player.tracebox.topLeft[1] - 3)
       const bottomPixel = util.getMapPixel(
+        this.collisionCtx,
         this.player.tracebox.topRight[0],
-        this.player.tracebox.topRight[1] - 3,
-        this.collisionCtx);
+        this.player.tracebox.topRight[1] - 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'east') {
       const topPixel = util.getMapPixel(
+        this.collisionCtx,
         this.player.tracebox.topRight[0] + 3,
-        this.player.tracebox.topRight[1],
-        this.collisionCtx);
+        this.player.tracebox.topRight[1])
       const bottomPixel = util.getMapPixel(
+        this.collisionCtx,
         this.player.tracebox.bottomRight[0] + 3,
-        this.player.tracebox.bottomRight[1],
-        this.collisionCtx);
+        this.player.tracebox.bottomRight[1])
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'south') {
       const topPixel = util.getMapPixel(
+        this.collisionCtx,
         this.player.tracebox.bottomLeft[0],
-        this.player.tracebox.bottomLeft[1] + 3,
-        this.collisionCtx);
+        this.player.tracebox.bottomLeft[1] + 3)
       const bottomPixel = util.getMapPixel(
+        this.collisionCtx,
         this.player.tracebox.bottomRight[0],
-        this.player.tracebox.bottomRight[1] + 3,
-        this.collisionCtx);
+        this.player.tracebox.bottomRight[1] + 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'west') {
       const topPixel = util.getMapPixel(
+        this.collisionCtx,
         this.player.tracebox.topLeft[0] - 3,
-        this.player.tracebox.topRight[1],
-        this.collisionCtx);
+        this.player.tracebox.topRight[1])
       const bottomPixel = util.getMapPixel(
+        this.collisionCtx,
         this.player.tracebox.bottomLeft[0] - 3, 
-        this.player.tracebox.bottomLeft[1],
-        this.collisionCtx);
+        this.player.tracebox.bottomLeft[1])
       return this.checkIfBarrier(topPixel, bottomPixel)
     }
   }

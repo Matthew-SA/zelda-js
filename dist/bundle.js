@@ -485,8 +485,15 @@ class Game {
       this.units.push(new _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"](coordinate));
     }
   }
+  
+  clearUnits(ctx) {
+    for (let i = 0; i < this.units.length; i++) {
+      this.units[i].clear(ctx);
+    }
+    this.player.clear(ctx);
+  }
 
-  incrementUnitRunCycle(ctx) {
+  stepUnits(ctx) {
     for (let i = 0; i < this.units.length; i++) {
       this.units[i].runCycle++
       if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle >= 160) {
@@ -504,17 +511,12 @@ class Game {
     this.player.draw(ctx);
   }
 
-  clearUnits(ctx) {
-    for (let i = 0; i < this.units.length; i++) {
-      this.units[i].clear(ctx);
-    }
-    this.player.clear(ctx);
-  }
 
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    this.enemyCount = (_util__WEBPACK_IMPORTED_MODULE_5__["random"](1, 6))
+    this.enemyCount = 1 // reload enemy count for next screen.
+    // this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
   }
 
   hatchSpawn(spawn) {
@@ -570,13 +572,11 @@ class GameView {
 
   // start primary game loop
   init() {
-    // setTimeout(() => {
-      this.overworld.drawWorld(this.worldCtx)
-      this.overworld.drawCollisionMap(this.collisionCtx)
-      this.menu.draw(this.menuCtx)
-      this.player.draw(this.spriteCtx);
-      requestAnimationFrame(() => this.gameLoop())
-    // }, 70);
+    this.overworld.drawWorld(this.worldCtx)
+    this.overworld.drawCollisionMap(this.collisionCtx)
+    this.menu.draw(this.menuCtx)
+    this.player.draw(this.spriteCtx);
+    requestAnimationFrame(() => this.gameLoop())
   }
 
   // primary game loop  TODO: add pixel /sec to ensure proper gameplay at all FPS
@@ -588,7 +588,7 @@ class GameView {
     this.getLastInput();
     this.checkKey();
     this.game.clearUnits(this.spriteCtx);
-    this.game.incrementUnitRunCycle(this.spriteCtx);
+    this.game.stepUnits(this.spriteCtx);
     this.game.drawUnits(this.spriteCtx);
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
@@ -596,22 +596,12 @@ class GameView {
 
   // check if map border has been crossed by player
   checkBorder() {
-    if (this.player.pos[1] < _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERTOP"]) {
+    if (this.player.pos[1] < _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERTOP"] || this.player.pos[1] > _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERBOTTOM"]) {
       this.scrolling = true;
       this.game.destroyUnits(this.spriteCtx)
       this.scrollQueue = 528;
     }
-    if (this.player.pos[0] > _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERRIGHT"]) {
-      this.scrolling = true;
-      this.game.destroyUnits(this.spriteCtx)
-      this.scrollQueue = 768;
-    }
-    if (this.player.pos[1] > _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERBOTTOM"]) {
-      this.scrolling = true;
-      this.game.destroyUnits(this.spriteCtx)
-      this.scrollQueue = 528;
-    }
-    if (this.player.pos[0] < _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERLEFT"]) {
+    if (this.player.pos[0] > _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERRIGHT"] || this.player.pos[0] < _constants__WEBPACK_IMPORTED_MODULE_2__["BORDERLEFT"]) {
       this.scrolling = true;
       this.game.destroyUnits(this.spriteCtx)
       this.scrollQueue = 768;
@@ -649,22 +639,6 @@ class GameView {
       this.overworld.drawWorld(this.worldCtx)
     }
   }
-
-  // scanGrid() {
-  //   let newGrid = [];
-  //   let openSpaces = [];
-  //   for (let y = 0; y < 11; y += 1) {
-  //     let row = [];
-  //     for (let x = 0; x < 16; x += 1) {
-  //       let value = util.sumMapPixel(x*48, y*48+168, this.collisionCtx);
-  //       row.push(value);
-  //       if (!value) openSpaces.push([y,x]);
-  //     }
-  //     newGrid.push(row);
-  //   }
-  //   this.game.openSpaces = openSpaces;
-  //   this.game.grid = newGrid;
-  // }
   
   scanGrid() {
     let newGrid = [];
@@ -672,14 +646,17 @@ class GameView {
     for (let y = 168; y < 696; y += 48) {
       let row = [];
       for (let x = 0; x < 768; x += 48) {
-        let value = _util__WEBPACK_IMPORTED_MODULE_3__["sumMapPixel"](x, y, this.collisionCtx);
+        let value = _util__WEBPACK_IMPORTED_MODULE_3__["scanMapTile"](this.collisionCtx, x, y);
         row.push(value);
-        if (!value) openSpaces.push([x,y]);
+        if (value === 1020) openSpaces.push([x,y]);
       }
       newGrid.push(row);
     }
     this.game.openSpaces = openSpaces;
     this.game.grid = newGrid;
+
+    console.log(openSpaces)
+    console.log(newGrid)
   }
 
   checkIfBarrier(pixel1, pixel2) {
@@ -693,43 +670,43 @@ class GameView {
   impassableTerrain(direction) {
     if (direction === 'north') {
       const topPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+        this.collisionCtx,
         this.player.tracebox.topLeft[0], 
-        this.player.tracebox.topLeft[1] - 3,
-        this.collisionCtx);
+        this.player.tracebox.topLeft[1] - 3)
       const bottomPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+        this.collisionCtx,
         this.player.tracebox.topRight[0],
-        this.player.tracebox.topRight[1] - 3,
-        this.collisionCtx);
+        this.player.tracebox.topRight[1] - 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'east') {
       const topPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+        this.collisionCtx,
         this.player.tracebox.topRight[0] + 3,
-        this.player.tracebox.topRight[1],
-        this.collisionCtx);
+        this.player.tracebox.topRight[1])
       const bottomPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+        this.collisionCtx,
         this.player.tracebox.bottomRight[0] + 3,
-        this.player.tracebox.bottomRight[1],
-        this.collisionCtx);
+        this.player.tracebox.bottomRight[1])
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'south') {
       const topPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+        this.collisionCtx,
         this.player.tracebox.bottomLeft[0],
-        this.player.tracebox.bottomLeft[1] + 3,
-        this.collisionCtx);
+        this.player.tracebox.bottomLeft[1] + 3)
       const bottomPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+        this.collisionCtx,
         this.player.tracebox.bottomRight[0],
-        this.player.tracebox.bottomRight[1] + 3,
-        this.collisionCtx);
+        this.player.tracebox.bottomRight[1] + 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'west') {
       const topPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+        this.collisionCtx,
         this.player.tracebox.topLeft[0] - 3,
-        this.player.tracebox.topRight[1],
-        this.collisionCtx);
+        this.player.tracebox.topRight[1])
       const bottomPixel = _util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
+        this.collisionCtx,
         this.player.tracebox.bottomLeft[0] - 3, 
-        this.player.tracebox.bottomLeft[1],
-        this.collisionCtx);
+        this.player.tracebox.bottomLeft[1])
       return this.checkIfBarrier(topPixel, bottomPixel)
     }
   }
@@ -1033,6 +1010,8 @@ class Octorok {
     this.direction = 0
     this.frame = 0;
     this.queueMovement();
+    console.log(this.gridRow)
+    console.log(this.gridCol)
   }
 
   step() {
@@ -1160,7 +1139,7 @@ class Spawn {
 /*!*********************!*\
   !*** ./src/util.js ***!
   \*********************/
-/*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, sample, random */
+/*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, scanMapTile, sample, random */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1169,6 +1148,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sumArr", function() { return sumArr; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getMapPixel", function() { return getMapPixel; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sumMapPixel", function() { return sumMapPixel; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scanMapTile", function() { return scanMapTile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sample", function() { return sample; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "random", function() { return random; });
 function equalArr(arr1,arr2) {
@@ -1186,15 +1166,22 @@ function sumArr(arr) {
   return sum;
 }
 
-function getMapPixel(x, y, ctx) {
+function getMapPixel(ctx, x, y) {
   const pixel = ctx.getImageData(x, y, 1, 1);
   // console.log([pixel.data[0], pixel.data[1], pixel.data[2]]);
   return [pixel.data[0], pixel.data[1], pixel.data[2]];
 }
 
-function sumMapPixel(x, y, ctx) {
+function sumMapPixel(ctx, x, y) {
   const pixel = ctx.getImageData(x, y, 1, 1);
   return (pixel.data[0] + pixel.data[1] + pixel.data[2]);
+}
+
+function scanMapTile(ctx, x, y) {
+  const tile = ctx.getImageData(x+23, y+23, 2, 2);
+  // if (sumArr(tile.data) === 1020) return true;
+  // return false;
+  return sumArr(tile.data)
 }
 
 function sample(arr) {

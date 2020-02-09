@@ -37,8 +37,15 @@ class Game {
       this.units.push(new Spawn(coordinate));
     }
   }
+  
+  clearUnits(ctx) {
+    for (let i = 0; i < this.units.length; i++) {
+      this.units[i].clear(ctx);
+    }
+    this.player.clear(ctx);
+  }
 
-  incrementUnitRunCycle(ctx) {
+  stepUnits(ctx) {
     for (let i = 0; i < this.units.length; i++) {
       this.units[i].runCycle++
       if (this.units[i] instanceof Spawn && this.units[i].runCycle >= 160) {
@@ -56,17 +63,12 @@ class Game {
     this.player.draw(ctx);
   }
 
-  clearUnits(ctx) {
-    for (let i = 0; i < this.units.length; i++) {
-      this.units[i].clear(ctx);
-    }
-    this.player.clear(ctx);
-  }
 
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    this.enemyCount = (util.random(1, 6))
+    this.enemyCount = 1 // reload enemy count for next screen.
+    // this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
   }
 
   hatchSpawn(spawn) {

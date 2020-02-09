@@ -14,6 +14,8 @@ class Octorok {
     this.direction = 0
     this.frame = 0;
     this.queueMovement();
+    console.log(this.gridRow)
+    console.log(this.gridCol)
   }
 
   step() {
