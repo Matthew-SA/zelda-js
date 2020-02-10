@@ -405,10 +405,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _menu_menu_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./menu/menu.js */ "./src/menu/menu.js");
 /* harmony import */ var _player_player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player/player */ "./src/player/player.js");
 /* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
-/* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
-/* harmony import */ var _maps_overworld__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./maps/overworld */ "./src/maps/overworld.js");
-/* harmony import */ var _util_constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./util/constants */ "./src/util/constants.js");
-/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./util/util */ "./src/util/util.js");
+/* harmony import */ var _units_spark__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/spark */ "./src/units/spark.js");
+/* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
+/* harmony import */ var _maps_overworld__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./maps/overworld */ "./src/maps/overworld.js");
+/* harmony import */ var _util_constants__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./util/constants */ "./src/util/constants.js");
+/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./util/util */ "./src/util/util.js");
+
 
 
 
@@ -424,7 +426,7 @@ class Game {
   constructor() {
     this.menu = new _menu_menu_js__WEBPACK_IMPORTED_MODULE_0__["default"];
     this.player = new _player_player__WEBPACK_IMPORTED_MODULE_1__["default"];
-    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_4__["default"];
+    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_5__["default"];
     
     // game sounds
     this.hitEnemy = new Audio("./assets/sfx/hit-enemy.wav");
@@ -457,12 +459,15 @@ class Game {
   stepUnits() {
     for (let i = 0; i < this.units.length; i++) {
       if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle <= 0) {
-        this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](this.units[i].pixelPos, this.grid);
+        this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_4__["default"](this.units[i].pixelPos, this.grid);
       }
       this.units[i].step();
       this.checkCollisionsAgainstPlayer(this.units[i])
       for (let j = 0; j < this.player.attacks.length; j++) {
         this.checkCollisionAgainstOther(this.player.attacks[j], this.units[i])
+      }
+      if (this.units[i] instanceof _units_spark__WEBPACK_IMPORTED_MODULE_3__["default"] && this.units[i].runCycle > 16) {
+        this.units.splice(this.units.indexOf(this.units[i]), 1)
       }
     }
   }
@@ -505,6 +510,7 @@ class Game {
     } else {
       this.destroyEnemy.play();
       this.units.splice(this.units.indexOf(unit), 1)
+      this.units.push(new _units_spark__WEBPACK_IMPORTED_MODULE_3__["default"](unit.pos))
     }
   }
 
@@ -527,7 +533,7 @@ class Game {
     for (let y = 168; y < 696; y += 48) {
       let row = [];
       for (let x = 0; x < 768; x += 48) {
-        let value = _util_util__WEBPACK_IMPORTED_MODULE_6__["scanMapTile"](ctx, x, y);
+        let value = _util_util__WEBPACK_IMPORTED_MODULE_7__["scanMapTile"](ctx, x, y);
         row.push(value);
         if (value === 1020) openSpaces.push([x, y]);
       }
@@ -575,12 +581,12 @@ class Game {
   }
 
   checkBorder(ctx) {
-    if (this.player.pos.y < _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERTOP"] || this.player.pos.y > _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERBOTTOM"]) {
+    if (this.player.pos.y < _util_constants__WEBPACK_IMPORTED_MODULE_6__["BORDERTOP"] || this.player.pos.y > _util_constants__WEBPACK_IMPORTED_MODULE_6__["BORDERBOTTOM"]) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 528;
     }
-    if (this.player.pos.x > _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERRIGHT"] || this.player.pos.x < _util_constants__WEBPACK_IMPORTED_MODULE_5__["BORDERLEFT"]) {
+    if (this.player.pos.x > _util_constants__WEBPACK_IMPORTED_MODULE_6__["BORDERRIGHT"] || this.player.pos.x < _util_constants__WEBPACK_IMPORTED_MODULE_6__["BORDERLEFT"]) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 768;
@@ -590,7 +596,7 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    this.enemyCount = (_util_util__WEBPACK_IMPORTED_MODULE_6__["random"](1, 6)) // reload enemy count for next screen.
+    this.enemyCount = (_util_util__WEBPACK_IMPORTED_MODULE_7__["random"](1, 6)) // reload enemy count for next screen.
     // this.enemyCount = 100 // stress test!
   }
 }
@@ -1187,6 +1193,58 @@ class Octorok {
 
 /***/ }),
 
+/***/ "./src/units/spark.js":
+/*!****************************!*\
+  !*** ./src/units/spark.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Spark {
+  constructor(pos) {
+    this.sprite = new Image();
+    this.sprite.src = "./assets/images/effects.png"
+
+    this.pos = {
+      x: pos.x,
+      y: pos.y,
+      width: 48,
+      height: 48,
+    }
+
+    this.runCycle = 0;
+    this.invincibilityFrames = 100;
+  }
+
+  clear(ctx) {
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  }
+
+  step() {
+    this.runCycle++
+  }
+
+  draw(ctx) {
+    ctx.drawImage(
+      this.sprite,
+      96 + (48 * Math.floor(this.runCycle / 2)),
+      0,
+      48,
+      48,
+      this.pos.x,
+      this.pos.y,
+      48,
+      48
+    )
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Spark);
+
+/***/ }),
+
 /***/ "./src/units/spawn.js":
 /*!****************************!*\
   !*** ./src/units/spawn.js ***!
@@ -1201,6 +1259,8 @@ __webpack_require__.r(__webpack_exports__);
 
 class Spawn {
   constructor(pixelPos) {
+    this.sprite = new Image();
+    this.sprite.src = "./assets/images/effects.png"
     this.pos = {
       x: pixelPos[0],
       y: pixelPos[1],
@@ -1208,8 +1268,6 @@ class Spawn {
       height: 48,
     }
     this.pixelPos = pixelPos;
-    this.sprite = new Image();
-    this.sprite.src = "./assets/images/effects.png"
     this.runCycle = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](20,150);
 
     this.invincibilityFrames = 100;
