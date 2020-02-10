@@ -30,7 +30,6 @@ class Sword {
         width: 48, height: 9, direction: 48
       }
     }
-    console.log(this.pos)
   }
 
   clear(ctx) {
