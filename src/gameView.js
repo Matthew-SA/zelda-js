@@ -42,6 +42,7 @@ class GameView {
     this.game.clearUnits(this.spriteCtx);
     this.game.stepUnits(this.spriteCtx);
     this.game.drawUnits(this.spriteCtx);
+    // this.game.removeDeadUnits()
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
   }
@@ -137,22 +138,22 @@ class GameView {
       this.player.attack();
     }
     if ((this.currentInput === 'w')) {
-      this.player.direction = 102 // 'up'
+      this.player.pos.direction = 96 // 'up'
       if (this.impassableTerrain('north')) return
       this.player.step(0, -4)
     }
     if ((this.currentInput === 'd')) {
-      this.player.direction = 153 // 'right'
+      this.player.pos.direction = 144 // 'right'
       if (this.impassableTerrain('east')) return
       this.player.step(4, 0)
     }
     if ((this.currentInput === 's')) {
-      this.player.direction = 0 // 'down'
+      this.player.pos.direction = 0 // 'down'
       if (this.impassableTerrain('south')) return
       this.player.step(0, 4)
     }
     if ((this.currentInput === 'a')) {
-      this.player.direction = 51 // 'left'
+      this.player.pos.direction = 48 // 'left'
       if (this.impassableTerrain('west')) return
       this.player.step(-4, 0)
     }

@@ -10,28 +10,32 @@ class Spawn {
     }
     this.pixelPos = pixelPos;
     this.sprite = new Image();
-    this.sprite.src = "./assets/images/units/spawn.png"
-    this.runCycle = util.random(0,150);
+    this.sprite.src = "./assets/images/effects.png"
+    this.runCycle = util.random(20,150);
+
+    this.invincibilityFrames = 100;
   }
 
-  step() {}
+  step() {
+    this.runCycle --
+  }
 
   draw(ctx) {
     ctx.drawImage(
       this.sprite,
-      0,
+      this.runCycle >= 8 ? 0 : 48,
       0,
       48,
       48,
-      this.pixelPos[0],
-      this.pixelPos[1],
+      this.pos.x,
+      this.pos.y,
       48,
       48
     )
   }
 
   clear(ctx) {
-    ctx.clearRect(this.pixelPos[0], this.pixelPos[1], 48, 48);
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 }
 

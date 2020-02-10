@@ -402,8 +402,8 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _menu_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./menu.js */ "./src/menu.js");
-/* harmony import */ var _player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player */ "./src/player.js");
+/* harmony import */ var _menu_menu_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./menu/menu.js */ "./src/menu/menu.js");
+/* harmony import */ var _player_player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player/player */ "./src/player/player.js");
 /* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
 /* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
 /* harmony import */ var _maps_overworld__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./maps/overworld */ "./src/maps/overworld.js");
@@ -422,10 +422,14 @@ __webpack_require__.r(__webpack_exports__);
 
 class Game {
   constructor() {
-    this.menu = new _menu_js__WEBPACK_IMPORTED_MODULE_0__["default"];
-    this.player = new _player__WEBPACK_IMPORTED_MODULE_1__["default"];
+    this.menu = new _menu_menu_js__WEBPACK_IMPORTED_MODULE_0__["default"];
+    this.player = new _player_player__WEBPACK_IMPORTED_MODULE_1__["default"];
     this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_4__["default"];
     
+    // game sounds
+    this.hitEnemy = new Audio("./assets/sfx/hit-enemy.wav");
+    this.destroyEnemy = new Audio("./assets/sfx/destroy-enemy.wav");
+
     // game scroll logic
     this.scrolling = false;
     this.scrollQueue = 0;
@@ -447,13 +451,12 @@ class Game {
 
   stepUnits(ctx) {
     for (let i = 0; i < this.units.length; i++) {
-      this.units[i].runCycle++
-      this.checkCollisions(this.units[i])
-      if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle >= 160) {
-        this.units[i].clear(ctx)
+      if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle <= 0) {
         this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](this.units[i].pixelPos, this.grid);
       }
       this.units[i].step();
+      this.checkCollisionsAgainstPlayer(this.units[i])
+      this.checkCollisionAgainstOther(this.units[i])
     }
   }
 
@@ -464,20 +467,39 @@ class Game {
     this.player.draw(ctx);
   }
 
-  checkCollisions(other) {
+  checkCollisionsAgainstPlayer(other) {
     const playerHitbox = {
       x: this.player.pos.x + 2,
       y: this.player.pos.y + 2,
       width: 44,
       height: 44,
     }
-    // console.log(playerHitbox)
-    console.log
     if (playerHitbox.x < other.pos.x + other.pos.width &&
       playerHitbox.x + playerHitbox.width > other.pos.x &&
       playerHitbox.y < other.pos.y + other.pos.height &&
       playerHitbox.y + playerHitbox.height > other.pos.y) {
-      console.log('collision detected!')
+      console.log('ouch!')
+    }
+  }
+
+  checkCollisionAgainstOther(other) {
+    if (!this.player.swordHitBox) return
+    if (this.player.swordHitBox.x < other.pos.x + other.pos.width &&
+      this.player.swordHitBox.x + this.player.swordHitBox.width > other.pos.x &&
+      this.player.swordHitBox.y < other.pos.y + other.pos.height &&
+      this.player.swordHitBox.y + this.player.swordHitBox.height > other.pos.y) {
+      this.damageUnit(other);
+    }
+  }
+
+  damageUnit(unit) {
+    if (unit.invincibilityFrames) return;
+    unit.hp -= 1
+    if (unit.hp) {
+      this.hitEnemy.play();
+    } else {
+      this.destroyEnemy.play();
+      this.units.splice(this.units.indexOf(unit), 1)
     }
   }
 
@@ -497,7 +519,7 @@ class Game {
     this.grid = newGrid;
   }
 
-  spawnUnits() {
+  setSpawns() {
     for (let i = 0; i < this.enemyCount; i++) {
       let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
       this.units.push(new _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"](pixelPos));
@@ -517,21 +539,21 @@ class Game {
       this.scrolling = false;
       this.overworld.drawCollisionMap(collisionCtx)
       this.scanGrid(collisionCtx);
-      this.spawnUnits();
+      this.setSpawns();
     } else {
-      if (this.player.direction === 102) {
+      if (this.player.pos.direction === 96) {
         this.overworld.pos[1] -= 8;
         if (this.scrollQueue > 48) this.player.step(0, 8)
       }
-      if (this.player.direction === 153) {
+      if (this.player.pos.direction === 144) {
         this.overworld.pos[0] += 8;
         if (this.scrollQueue > 48) this.player.step(-8, 0)
       }
-      if (this.player.direction === 0) {
+      if (this.player.pos.direction === 0) {
         this.overworld.pos[1] += 8;
         if (this.scrollQueue > 48) this.player.step(0, -8)
       }
-      if (this.player.direction === 51) {
+      if (this.player.pos.direction === 48) {
         this.overworld.pos[0] -= 8;
         if (this.scrollQueue > 48) this.player.step(8, 0)
       }
@@ -557,6 +579,7 @@ class Game {
     this.clearUnits(ctx);
     this.units = [];
     this.enemyCount = (_util_util__WEBPACK_IMPORTED_MODULE_6__["random"](1, 6)) // reload enemy count for next screen.
+    // this.enemyCount = 100 // stress test!
   }
 }
 
@@ -623,6 +646,7 @@ class GameView {
     this.game.clearUnits(this.spriteCtx);
     this.game.stepUnits(this.spriteCtx);
     this.game.drawUnits(this.spriteCtx);
+    // this.game.removeDeadUnits()
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
   }
@@ -718,22 +742,22 @@ class GameView {
       this.player.attack();
     }
     if ((this.currentInput === 'w')) {
-      this.player.direction = 102 // 'up'
+      this.player.pos.direction = 96 // 'up'
       if (this.impassableTerrain('north')) return
       this.player.step(0, -4)
     }
     if ((this.currentInput === 'd')) {
-      this.player.direction = 153 // 'right'
+      this.player.pos.direction = 144 // 'right'
       if (this.impassableTerrain('east')) return
       this.player.step(4, 0)
     }
     if ((this.currentInput === 's')) {
-      this.player.direction = 0 // 'down'
+      this.player.pos.direction = 0 // 'down'
       if (this.impassableTerrain('south')) return
       this.player.step(0, 4)
     }
     if ((this.currentInput === 'a')) {
-      this.player.direction = 51 // 'left'
+      this.player.pos.direction = 48 // 'left'
       if (this.impassableTerrain('west')) return
       this.player.step(-4, 0)
     }
@@ -760,6 +784,11 @@ __webpack_require__.r(__webpack_exports__);
 
 class Overworld {
   constructor() {
+    this.overworld = new Image();
+    this.overworld.src = './assets/images/maps/overworld.png'
+    this.collisionMap = new Image();
+    this.collisionMap.src = './assets/images/maps/overworld-collision.png'
+    
     // this.music = new Audio("./assets/sfx/overworld.mp3");
     // this.music.autoplay();
     // this.music.loop = true;
@@ -767,10 +796,6 @@ class Overworld {
 
     this.lastPos = [5376, 3528];
     this.pos = [5376,3528];
-    this.overworld = new Image();
-    this.overworld.src = './assets/images/overworld.png'
-    this.collisionMap = new Image();
-    this.collisionMap.src = './assets/images/overworld-collision.png'
     
   }
 
@@ -809,10 +834,10 @@ class Overworld {
 
 /***/ }),
 
-/***/ "./src/menu.js":
-/*!*********************!*\
-  !*** ./src/menu.js ***!
-  \*********************/
+/***/ "./src/menu/menu.js":
+/*!**************************!*\
+  !*** ./src/menu/menu.js ***!
+  \**************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -845,26 +870,28 @@ class Menu {
 
 /***/ }),
 
-/***/ "./src/player.js":
-/*!***********************!*\
-  !*** ./src/player.js ***!
-  \***********************/
+/***/ "./src/player/player.js":
+/*!******************************!*\
+  !*** ./src/player/player.js ***!
+  \******************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _sword_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sword.js */ "./src/player/sword.js");
+
+
 class Player {
   constructor() {
-    this.lastPos = { x: 336, y: 432, width: 48, height: 48 }
-    this.pos = { x: 336, y: 432, width: 48, height: 48 }
+    this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
+    this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
 
     this.sprite = new Image();
-    this.sprite.src = "./assets/images/link.png"
+    this.sprite.src = "./assets/images/player/link.png"
     this.swordSound = new Audio("./assets/sfx/sword.wav");
 
     this.runCycle = 0;
-    this.direction = 0
     this.frame = 0;
     this.attackFrame = 0;
     this.cooldown = 0;
@@ -874,12 +901,15 @@ class Player {
       bottomLeft: [this.pos.x + 9, this.pos.y + 45],
       bottomRight: [this.pos.x + 39, this.pos.y + 45],
     }
+
+    this.attacks = [];
+    this.swordHitBox = null;
   }
 
   attack() {
-    this.swordSound.play()
-    this.attackFrame = 18;
-    this.cooldown = 20;
+    // this.swordSound.play()
+    this.attacks.push(new _sword_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.pos))
+    console.log(this.attacks)
   }
   
   step(x,y) {
@@ -894,17 +924,18 @@ class Player {
   }
 
   draw(ctx) {
+    if (this.swordHitBox && !this.attackFrame) this.swordHitBox = null;
     if (this.cooldown) this.cooldown--
     if (this.runCycle < 9) {
       this.frame = 0;
     } else {
-      this.frame = 51;
+      this.frame = 48;
     }
     if (this.runCycle > 15) this.runCycle = 0;
     if (this.attackFrame) {
       ctx.drawImage(
         this.sprite,
-        this.direction,
+        this.pos.direction,
         153,
         48,
         48,
@@ -913,33 +944,33 @@ class Player {
         48,
         48
       )
-      this.swordX = this.pos.x
-      this.swordY = this.pos.y
-      if (this.direction === 0) {
-        this.swordY += 48;
-      } else if (this.direction === 51) {
-        this.swordX -= 48;
-      } else if (this.direction === 102) {
-       this.swordY -= 48
-      } else if (this.direction === 153) {
-        this.swordX += 48;
-      }
-      ctx.drawImage(
-        this.sprite,
-        this.direction,
-        204,
-        48,
-        48,
-        this.swordX,
-        this.swordY,
-        48,
-        48
-      )
+      // this.swordX = this.pos.x
+      // this.swordY = this.pos.y
+      // if (this.pos.direction === 0) {
+      //   this.swordY += 48;
+      // } else if (this.pos.direction === 48) {
+      //   this.swordX -= 48;
+      // } else if (this.pos.direction === 96) {
+      //  this.swordY -= 48
+      // } else if (this.pos.direction === 144) {
+      //   this.swordX += 48;
+      // }
+      // ctx.drawImage(
+      //   this.sprite,
+      //   this.direction,
+      //   204,
+      //   48,
+      //   48,
+      //   this.swordX,
+      //   this.swordY,
+      //   48,
+      //   48
+      // )
       this.attackFrame--
     } else {
       ctx.drawImage(
         this.sprite,
-        this.direction,
+        this.pos.direction,
         this.frame,
         48,
         48,
@@ -952,6 +983,66 @@ class Player {
     this.lastPos.x = this.pos.x;
     this.lastPos.y = this.pos.y;
   }
+  // draw(ctx) {
+  //   if (this.swordHitBox && !this.attackFrame) this.swordHitBox = null;
+  //   if (this.cooldown) this.cooldown--
+  //   if (this.runCycle < 9) {
+  //     this.frame = 0;
+  //   } else {
+  //     this.frame = 48;
+  //   }
+  //   if (this.runCycle > 15) this.runCycle = 0;
+  //   if (this.attackFrame) {
+  //     ctx.drawImage(
+  //       this.sprite,
+  //       this.pos.direction,
+  //       153,
+  //       48,
+  //       48,
+  //       this.pos.x,
+  //       this.pos.y,
+  //       48,
+  //       48
+  //     )
+  //     this.swordX = this.pos.x
+  //     this.swordY = this.pos.y
+  //     if (this.pos.direction === 0) {
+  //       this.swordY += 48;
+  //     } else if (this.pos.direction === 48) {
+  //       this.swordX -= 48;
+  //     } else if (this.pos.direction === 96) {
+  //      this.swordY -= 48
+  //     } else if (this.pos.direction === 144) {
+  //       this.swordX += 48;
+  //     }
+  //     ctx.drawImage(
+  //       this.sprite,
+  //       this.direction,
+  //       204,
+  //       48,
+  //       48,
+  //       this.swordX,
+  //       this.swordY,
+  //       48,
+  //       48
+  //     )
+  //     this.attackFrame--
+  //   } else {
+  //     ctx.drawImage(
+  //       this.sprite,
+  //       this.pos.direction,
+  //       this.frame,
+  //       48,
+  //       48,
+  //       this.pos.x,
+  //       this.pos.y,
+  //       48,
+  //       48
+  //     )
+  //   }
+  //   this.lastPos.x = this.pos.x;
+  //   this.lastPos.y = this.pos.y;
+  // }
 
   clear(ctx) {
     ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
@@ -960,6 +1051,71 @@ class Player {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Player);
+
+/***/ }),
+
+/***/ "./src/player/sword.js":
+/*!*****************************!*\
+  !*** ./src/player/sword.js ***!
+  \*****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Sword {
+  constructor(position, direction) {
+    this.sprite = new Image();
+    this.sprite.src = "./assets/images/player/attacks.png"
+    this.swordSfx = new Audio("./assets/sfx/sword.wav");
+    this.swordSfx.play()
+
+    if (direction === 96) {
+      this.pos = {
+        x: position.x, y: position.y - 48,
+        width: 48, height: 48, direction: 96,
+      }
+    } else if (direction === 144) {
+      this.pos = {
+        x: position.x + 48, y: position.y,
+        width: 48, height: 48, direction: 144
+      }
+    } else if (direction === 0) {
+      this.pos = {
+        x: position.x, y: position.y + 48,
+        width: 48, height: 48, direction: 0,
+      }
+    } else if (direction === 48) {
+      this.pos = {
+        x: position.x - 48, y: position.y,
+        width: 48, height: 48, direction: 48
+      }
+    }
+  }
+
+
+  draw(ctx) {
+      ctx.drawImage(
+        this.sprite,
+        this.direction,
+        204,
+        48,
+        48,
+        this.pos.x,
+        this.pos.y,
+        48,
+        48
+      )
+      this.attackFrame--
+  }
+
+  clear(ctx) {
+    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
+    if (this.cooldown) ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Sword);
 
 /***/ }),
 
@@ -978,7 +1134,7 @@ __webpack_require__.r(__webpack_exports__);
 class Octorok {
   constructor(pixelPos, grid) {
     this.sprite = new Image();
-    this.sprite.src = "./assets/images/units/octorok.png"
+    this.sprite.src = "./assets/images/units/overworld-enemies.png"
     
     this.grid = grid;
     
@@ -1003,7 +1159,7 @@ class Octorok {
     this.direction = 0;
     this.frame = 0;
     this.speed = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](1,3)
-    
+    this.invincibilityFrames = 0;
     //start action cycle
     this.updateAction();
   }
@@ -1016,23 +1172,24 @@ class Octorok {
     
     if (this.actionCycle <= 0) this.updateAction();
     
-    if (this.direction === 102) { // north
+    if (this.direction === 96) { // north
       this.pos.y -= 1 * this.speed
-    } else if (this.direction === 153) { // east
+    } else if (this.direction === 144) { // east
       this.pos.x += 1 * this.speed
     } else if (this.direction === 0) { // south
       this.pos.y += 1 * this.speed
-    } else if (this.direction === 51) { // west
+    } else if (this.direction === 48) { // west
       this.pos.x -= 1 * this.speed
     }
-    this.actionCycle -= 1 * this.speed
+    this.runCycle += 1 * this.speed;
+    this.actionCycle -= 1 * this.speed;
   }
   
   draw(ctx) {
     if (this.runCycle < 14) {
       this.frame = 0;
     } else {
-      this.frame = 51;
+      this.frame = 48;
     }
     if (this.runCycle > 25) this.runCycle = 0;
     if (this.attacking) this.frame = 153;
@@ -1054,16 +1211,16 @@ class Octorok {
   checkAvailableActions() {
     let neighbors = [];
     if (this.pos.row > 0 && this.grid[this.pos.row - 1][this.pos.col] === 1020) {
-      neighbors.push([102, 0, -1]); // north
+      neighbors.push([96, 0, -1]); // north
     }
     if (this.grid[this.pos.row][this.pos.col + 1] === 1020) {
-      neighbors.push([153, 1, 0]); // east
+      neighbors.push([144, 1, 0]); // east
     }
     if (this.pos.row < 10 && this.grid[this.pos.row + 1][this.pos.col] === 1020) {
       neighbors.push([0, 0, 1]); // south
     }
     if (this.grid[this.pos.row][this.pos.col - 1] === 1020) {
-      neighbors.push([51, -1, 0]); // west
+      neighbors.push([48, -1, 0]); // west
     }
     return neighbors;
   }
@@ -1104,28 +1261,32 @@ class Spawn {
     }
     this.pixelPos = pixelPos;
     this.sprite = new Image();
-    this.sprite.src = "./assets/images/units/spawn.png"
-    this.runCycle = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](0,150);
+    this.sprite.src = "./assets/images/effects.png"
+    this.runCycle = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](20,150);
+
+    this.invincibilityFrames = 100;
   }
 
-  step() {}
+  step() {
+    this.runCycle --
+  }
 
   draw(ctx) {
     ctx.drawImage(
       this.sprite,
-      0,
+      this.runCycle >= 8 ? 0 : 48,
       0,
       48,
       48,
-      this.pixelPos[0],
-      this.pixelPos[1],
+      this.pos.x,
+      this.pos.y,
       48,
       48
     )
   }
 
   clear(ctx) {
-    ctx.clearRect(this.pixelPos[0], this.pixelPos[1], 48, 48);
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 }
 

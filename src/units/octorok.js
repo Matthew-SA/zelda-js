@@ -3,7 +3,7 @@ import * as util from '../util/util'
 class Octorok {
   constructor(pixelPos, grid) {
     this.sprite = new Image();
-    this.sprite.src = "./assets/images/units/octorok.png"
+    this.sprite.src = "./assets/images/units/overworld-enemies.png"
     
     this.grid = grid;
     
@@ -28,7 +28,7 @@ class Octorok {
     this.direction = 0;
     this.frame = 0;
     this.speed = util.random(1,3)
-    
+    this.invincibilityFrames = 0;
     //start action cycle
     this.updateAction();
   }
@@ -41,23 +41,24 @@ class Octorok {
     
     if (this.actionCycle <= 0) this.updateAction();
     
-    if (this.direction === 102) { // north
+    if (this.direction === 96) { // north
       this.pos.y -= 1 * this.speed
-    } else if (this.direction === 153) { // east
+    } else if (this.direction === 144) { // east
       this.pos.x += 1 * this.speed
     } else if (this.direction === 0) { // south
       this.pos.y += 1 * this.speed
-    } else if (this.direction === 51) { // west
+    } else if (this.direction === 48) { // west
       this.pos.x -= 1 * this.speed
     }
-    this.actionCycle -= 1 * this.speed
+    this.runCycle += 1 * this.speed;
+    this.actionCycle -= 1 * this.speed;
   }
   
   draw(ctx) {
     if (this.runCycle < 14) {
       this.frame = 0;
     } else {
-      this.frame = 51;
+      this.frame = 48;
     }
     if (this.runCycle > 25) this.runCycle = 0;
     if (this.attacking) this.frame = 153;
@@ -79,16 +80,16 @@ class Octorok {
   checkAvailableActions() {
     let neighbors = [];
     if (this.pos.row > 0 && this.grid[this.pos.row - 1][this.pos.col] === 1020) {
-      neighbors.push([102, 0, -1]); // north
+      neighbors.push([96, 0, -1]); // north
     }
     if (this.grid[this.pos.row][this.pos.col + 1] === 1020) {
-      neighbors.push([153, 1, 0]); // east
+      neighbors.push([144, 1, 0]); // east
     }
     if (this.pos.row < 10 && this.grid[this.pos.row + 1][this.pos.col] === 1020) {
       neighbors.push([0, 0, 1]); // south
     }
     if (this.grid[this.pos.row][this.pos.col - 1] === 1020) {
-      neighbors.push([51, -1, 0]); // west
+      neighbors.push([48, -1, 0]); // west
     }
     return neighbors;
   }

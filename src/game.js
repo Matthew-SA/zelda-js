@@ -1,5 +1,5 @@
-import Menu from './menu.js'
-import Player from './player'
+import Menu from './menu/menu.js'
+import Player from './player/player'
 import Spawn from './units/spawn'
 import Octorok from './units/octorok'
 import Overworld from './maps/overworld'
@@ -15,6 +15,10 @@ class Game {
     this.player = new Player;
     this.overworld = new Overworld;
     
+    // game sounds
+    this.hitEnemy = new Audio("./assets/sfx/hit-enemy.wav");
+    this.destroyEnemy = new Audio("./assets/sfx/destroy-enemy.wav");
+
     // game scroll logic
     this.scrolling = false;
     this.scrollQueue = 0;
@@ -36,13 +40,12 @@ class Game {
 
   stepUnits(ctx) {
     for (let i = 0; i < this.units.length; i++) {
-      this.units[i].runCycle++
-      this.checkCollisions(this.units[i])
-      if (this.units[i] instanceof Spawn && this.units[i].runCycle >= 160) {
-        this.units[i].clear(ctx)
+      if (this.units[i] instanceof Spawn && this.units[i].runCycle <= 0) {
         this.units[i] = new Octorok(this.units[i].pixelPos, this.grid);
       }
       this.units[i].step();
+      this.checkCollisionsAgainstPlayer(this.units[i])
+      this.checkCollisionAgainstOther(this.units[i])
     }
   }
 
@@ -53,20 +56,39 @@ class Game {
     this.player.draw(ctx);
   }
 
-  checkCollisions(other) {
+  checkCollisionsAgainstPlayer(other) {
     const playerHitbox = {
       x: this.player.pos.x + 2,
       y: this.player.pos.y + 2,
       width: 44,
       height: 44,
     }
-    // console.log(playerHitbox)
-    console.log
     if (playerHitbox.x < other.pos.x + other.pos.width &&
       playerHitbox.x + playerHitbox.width > other.pos.x &&
       playerHitbox.y < other.pos.y + other.pos.height &&
       playerHitbox.y + playerHitbox.height > other.pos.y) {
-      console.log('collision detected!')
+      console.log('ouch!')
+    }
+  }
+
+  checkCollisionAgainstOther(other) {
+    if (!this.player.swordHitBox) return
+    if (this.player.swordHitBox.x < other.pos.x + other.pos.width &&
+      this.player.swordHitBox.x + this.player.swordHitBox.width > other.pos.x &&
+      this.player.swordHitBox.y < other.pos.y + other.pos.height &&
+      this.player.swordHitBox.y + this.player.swordHitBox.height > other.pos.y) {
+      this.damageUnit(other);
+    }
+  }
+
+  damageUnit(unit) {
+    if (unit.invincibilityFrames) return;
+    unit.hp -= 1
+    if (unit.hp) {
+      this.hitEnemy.play();
+    } else {
+      this.destroyEnemy.play();
+      this.units.splice(this.units.indexOf(unit), 1)
     }
   }
 
@@ -86,7 +108,7 @@ class Game {
     this.grid = newGrid;
   }
 
-  spawnUnits() {
+  setSpawns() {
     for (let i = 0; i < this.enemyCount; i++) {
       let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
       this.units.push(new Spawn(pixelPos));
@@ -106,21 +128,21 @@ class Game {
       this.scrolling = false;
       this.overworld.drawCollisionMap(collisionCtx)
       this.scanGrid(collisionCtx);
-      this.spawnUnits();
+      this.setSpawns();
     } else {
-      if (this.player.direction === 102) {
+      if (this.player.pos.direction === 96) {
         this.overworld.pos[1] -= 8;
         if (this.scrollQueue > 48) this.player.step(0, 8)
       }
-      if (this.player.direction === 153) {
+      if (this.player.pos.direction === 144) {
         this.overworld.pos[0] += 8;
         if (this.scrollQueue > 48) this.player.step(-8, 0)
       }
-      if (this.player.direction === 0) {
+      if (this.player.pos.direction === 0) {
         this.overworld.pos[1] += 8;
         if (this.scrollQueue > 48) this.player.step(0, -8)
       }
-      if (this.player.direction === 51) {
+      if (this.player.pos.direction === 48) {
         this.overworld.pos[0] -= 8;
         if (this.scrollQueue > 48) this.player.step(8, 0)
       }
@@ -146,6 +168,7 @@ class Game {
     this.clearUnits(ctx);
     this.units = [];
     this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
+    // this.enemyCount = 100 // stress test!
   }
 }
 
