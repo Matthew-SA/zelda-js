@@ -50,7 +50,9 @@ class Game {
       }
       this.units[i].step();
       this.checkCollisionsAgainstPlayer(this.units[i])
-      this.checkCollisionAgainstOther(this.units[i])
+      for (let j = 0; j < this.player.attacks.length; j++) {
+        this.checkCollisionAgainstOther(this.player.attacks[j], this.units[i])
+      }
     }
   }
 
@@ -75,12 +77,11 @@ class Game {
     }
   }
 
-  checkCollisionAgainstOther(other) {
-    if (!this.player.swordHitBox) return
-    if (this.player.swordHitBox.x < other.pos.x + other.pos.width &&
-      this.player.swordHitBox.x + this.player.swordHitBox.width > other.pos.x &&
-      this.player.swordHitBox.y < other.pos.y + other.pos.height &&
-      this.player.swordHitBox.y + this.player.swordHitBox.height > other.pos.y) {
+  checkCollisionAgainstOther(attack, other) {
+    if (attack.pos.hurtBoxX < other.pos.x + other.pos.width &&
+      attack.pos.hurtBoxX + attack.pos.width > other.pos.x &&
+      attack.pos.hurtBoxY < other.pos.y + other.pos.height &&
+      attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
       this.damageUnit(other);
     }
   }

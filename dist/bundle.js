@@ -461,7 +461,9 @@ class Game {
       }
       this.units[i].step();
       this.checkCollisionsAgainstPlayer(this.units[i])
-      this.checkCollisionAgainstOther(this.units[i])
+      for (let j = 0; j < this.player.attacks.length; j++) {
+        this.checkCollisionAgainstOther(this.player.attacks[j], this.units[i])
+      }
     }
   }
 
@@ -486,12 +488,11 @@ class Game {
     }
   }
 
-  checkCollisionAgainstOther(other) {
-    if (!this.player.swordHitBox) return
-    if (this.player.swordHitBox.x < other.pos.x + other.pos.width &&
-      this.player.swordHitBox.x + this.player.swordHitBox.width > other.pos.x &&
-      this.player.swordHitBox.y < other.pos.y + other.pos.height &&
-      this.player.swordHitBox.y + this.player.swordHitBox.height > other.pos.y) {
+  checkCollisionAgainstOther(attack, other) {
+    if (attack.pos.hurtBoxX < other.pos.x + other.pos.width &&
+      attack.pos.hurtBoxX + attack.pos.width > other.pos.x &&
+      attack.pos.hurtBoxY < other.pos.y + other.pos.height &&
+      attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
       this.damageUnit(other);
     }
   }
@@ -666,6 +667,7 @@ class GameView {
     this.game.drawUnits(this.spriteCtx);
     this.game.drawAttacks(this.spriteCtx);
     this.player.draw(this.spriteCtx);
+    this.player.sword
 
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
@@ -1003,27 +1005,32 @@ class Sword {
     this.swordSfx = new Audio("./assets/sfx/sword.wav");
     this.swordSfx.play()
 
-    if (pos.direction === 96) {
+    if (pos.direction === 96) { // up
       this.pos = {
         x: pos.x, y: pos.y - 36,
-        width: 48, height: 48, direction: 96,
+        hurtBoxX: pos.x + 18, hurtBoxY: pos.y - 36,
+        width: 9, height: 48, direction: 96,
       }
-    } else if (pos.direction === 144) {
+    } else if (pos.direction === 144) { // right
       this.pos = {
         x: pos.x + 36, y: pos.y,
-        width: 48, height: 48, direction: 144
+        hurtBoxX: pos.x + 36, hurtBoxY: pos.y + 24,
+        width: 48, height: 9, direction: 144
       }
-    } else if (pos.direction === 0) {
+    } else if (pos.direction === 0) { // down
       this.pos = {
         x: pos.x, y: pos.y + 36,
-        width: 48, height: 48, direction: 0,
+        hurtBoxX: pos.x + 21, hurtBoxY: pos.y + 36,
+        width: 9, height: 48, direction: 0,
       }
-    } else if (pos.direction === 48) {
+    } else if (pos.direction === 48) { // left
       this.pos = {
         x: pos.x - 36, y: pos.y,
-        width: 48, height: 48, direction: 48
+        hurtBoxX: pos.x - 36, hurtBoxY: pos.y + 24,
+        width: 48, height: 9, direction: 48
       }
     }
+    console.log(this.pos)
   }
 
   clear(ctx) {
@@ -1032,22 +1039,29 @@ class Sword {
   }
 
   step() {}
-  
+
   draw(ctx) {
-      ctx.drawImage(
-        this.sprite,
-        this.pos.direction,
-        0,
-        48,
-        48,
-        this.pos.x,
-        this.pos.y,
-        48,
-        48
+    ctx.drawImage(
+      this.sprite,
+      this.pos.direction,
+      0,
+      48,
+      48,
+      this.pos.x,
+      this.pos.y,
+      48,
+      48,
       )
       this.attackFrame--
-  }
 
+      // hurtbox debugger //
+      // ctx.fillStyle = 'red';
+      // ctx.fillRect(
+      //   this.pos.hurtBoxX,
+      //   this.pos.hurtBoxY,
+      //   this.pos.width,
+      //   this.pos.height)
+  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Sword);

@@ -51,6 +51,7 @@ class GameView {
     this.game.drawUnits(this.spriteCtx);
     this.game.drawAttacks(this.spriteCtx);
     this.player.draw(this.spriteCtx);
+    this.player.sword
 
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
