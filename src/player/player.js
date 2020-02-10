@@ -25,9 +25,9 @@ class Player {
   }
 
   attack() {
-    // this.swordSound.play()
+    this.attackFrame = 15;
+    this.cooldown = 18;
     this.attacks.push(new Sword(this.pos))
-    console.log(this.attacks)
   }
   
   step(x,y) {
@@ -54,7 +54,7 @@ class Player {
       ctx.drawImage(
         this.sprite,
         this.pos.direction,
-        153,
+        96,
         48,
         48,
         this.pos.x,
@@ -62,28 +62,6 @@ class Player {
         48,
         48
       )
-      // this.swordX = this.pos.x
-      // this.swordY = this.pos.y
-      // if (this.pos.direction === 0) {
-      //   this.swordY += 48;
-      // } else if (this.pos.direction === 48) {
-      //   this.swordX -= 48;
-      // } else if (this.pos.direction === 96) {
-      //  this.swordY -= 48
-      // } else if (this.pos.direction === 144) {
-      //   this.swordX += 48;
-      // }
-      // ctx.drawImage(
-      //   this.sprite,
-      //   this.direction,
-      //   204,
-      //   48,
-      //   48,
-      //   this.swordX,
-      //   this.swordY,
-      //   48,
-      //   48
-      // )
       this.attackFrame--
     } else {
       ctx.drawImage(
