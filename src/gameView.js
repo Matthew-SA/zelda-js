@@ -39,10 +39,19 @@ class GameView {
     this.game.scroll(this.worldCtx, this.collisionCtx);
     this.getLastInput();
     this.checkKey();
+
     this.game.clearUnits(this.spriteCtx);
-    this.game.stepUnits(this.spriteCtx);
+    this.game.clearAttacks(this.spriteCtx);
+    this.player.clear(this.spriteCtx);
+
+    this.game.stepUnits();
+    this.game.stepAttacks();
+    this.player.step();
+
     this.game.drawUnits(this.spriteCtx);
-    // this.game.removeDeadUnits()
+    this.game.drawAttacks(this.spriteCtx);
+    this.player.draw(this.spriteCtx);
+
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
   }
@@ -140,22 +149,22 @@ class GameView {
     if ((this.currentInput === 'w')) {
       this.player.pos.direction = 96 // 'up'
       if (this.impassableTerrain('north')) return
-      this.player.step(0, -4)
+      this.player.move(0, -4)
     }
     if ((this.currentInput === 'd')) {
       this.player.pos.direction = 144 // 'right'
       if (this.impassableTerrain('east')) return
-      this.player.step(4, 0)
+      this.player.move(4, 0)
     }
     if ((this.currentInput === 's')) {
       this.player.pos.direction = 0 // 'down'
       if (this.impassableTerrain('south')) return
-      this.player.step(0, 4)
+      this.player.move(0, 4)
     }
     if ((this.currentInput === 'a')) {
       this.player.pos.direction = 48 // 'left'
       if (this.impassableTerrain('west')) return
-      this.player.step(-4, 0)
+      this.player.move(-4, 0)
     }
   }
 }

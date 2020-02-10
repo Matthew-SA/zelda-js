@@ -16,6 +16,10 @@ class Spawn {
     this.invincibilityFrames = 100;
   }
 
+  clear(ctx) {
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  }
+
   step() {
     this.runCycle --
   }
@@ -32,10 +36,6 @@ class Spawn {
       48,
       48
     )
-  }
-
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 }
 

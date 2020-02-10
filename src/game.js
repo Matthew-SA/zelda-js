@@ -35,10 +35,15 @@ class Game {
     for (let i = 0; i < this.units.length; i++) {
       this.units[i].clear(ctx);
     }
-    this.player.clear(ctx);
   }
 
-  stepUnits(ctx) {
+  clearAttacks(ctx) {
+    for (let i = 0; i < this.player.attacks.length; i++) {
+      this.player.attacks[i].clear(ctx)
+    }
+  }
+
+  stepUnits() {
     for (let i = 0; i < this.units.length; i++) {
       if (this.units[i] instanceof Spawn && this.units[i].runCycle <= 0) {
         this.units[i] = new Octorok(this.units[i].pixelPos, this.grid);
@@ -49,11 +54,10 @@ class Game {
     }
   }
 
-  drawUnits(ctx) {
-    for (let i = 0; i < this.units.length; i++ ) {
-      this.units[i].draw(ctx)
+  stepAttacks() {
+    for (let i = 0; i < this.player.attacks.length; i++) {
+      // TODO: ADD MORE ATTACKS!
     }
-    this.player.draw(ctx);
   }
 
   checkCollisionsAgainstPlayer(other) {
@@ -92,6 +96,19 @@ class Game {
     }
   }
 
+  drawUnits(ctx) {
+    for (let i = 0; i < this.units.length; i++ ) {
+      this.units[i].draw(ctx)
+    }
+  }
+
+  drawAttacks(ctx) {
+    for (let i = 0; i < this.player.attacks.length; i++) {
+      this.player.attacks[i].draw(ctx)
+    }
+  }
+
+
   scanGrid(ctx) {
     let newGrid = [];
     let openSpaces = [];
@@ -115,12 +132,6 @@ class Game {
     }
   }
   
-
-  hatchSpawn(spawn) {
-    new Octorok(spawn.pixelPos[0], spawn.pixelPos[1])
-  }
-  
-
   // Scrolling logic below
   scroll(worldCtx, collisionCtx) {
     if (!this.scrolling) return;
@@ -132,19 +143,19 @@ class Game {
     } else {
       if (this.player.pos.direction === 96) {
         this.overworld.pos[1] -= 8;
-        if (this.scrollQueue > 48) this.player.step(0, 8)
+        if (this.scrollQueue > 48) this.player.move(0, 8)
       }
       if (this.player.pos.direction === 144) {
         this.overworld.pos[0] += 8;
-        if (this.scrollQueue > 48) this.player.step(-8, 0)
+        if (this.scrollQueue > 48) this.player.move(-8, 0)
       }
       if (this.player.pos.direction === 0) {
         this.overworld.pos[1] += 8;
-        if (this.scrollQueue > 48) this.player.step(0, -8)
+        if (this.scrollQueue > 48) this.player.move(0, -8)
       }
       if (this.player.pos.direction === 48) {
         this.overworld.pos[0] -= 8;
-        if (this.scrollQueue > 48) this.player.step(8, 0)
+        if (this.scrollQueue > 48) this.player.move(8, 0)
       }
       this.scrollQueue -= 8;
       this.overworld.drawWorld(worldCtx)

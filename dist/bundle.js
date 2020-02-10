@@ -446,10 +446,15 @@ class Game {
     for (let i = 0; i < this.units.length; i++) {
       this.units[i].clear(ctx);
     }
-    this.player.clear(ctx);
   }
 
-  stepUnits(ctx) {
+  clearAttacks(ctx) {
+    for (let i = 0; i < this.player.attacks.length; i++) {
+      this.player.attacks[i].clear(ctx)
+    }
+  }
+
+  stepUnits() {
     for (let i = 0; i < this.units.length; i++) {
       if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle <= 0) {
         this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](this.units[i].pixelPos, this.grid);
@@ -460,11 +465,10 @@ class Game {
     }
   }
 
-  drawUnits(ctx) {
-    for (let i = 0; i < this.units.length; i++ ) {
-      this.units[i].draw(ctx)
+  stepAttacks() {
+    for (let i = 0; i < this.player.attacks.length; i++) {
+      // TODO: ADD MORE ATTACKS!
     }
-    this.player.draw(ctx);
   }
 
   checkCollisionsAgainstPlayer(other) {
@@ -503,6 +507,19 @@ class Game {
     }
   }
 
+  drawUnits(ctx) {
+    for (let i = 0; i < this.units.length; i++ ) {
+      this.units[i].draw(ctx)
+    }
+  }
+
+  drawAttacks(ctx) {
+    for (let i = 0; i < this.player.attacks.length; i++) {
+      this.player.attacks[i].draw(ctx)
+    }
+  }
+
+
   scanGrid(ctx) {
     let newGrid = [];
     let openSpaces = [];
@@ -526,12 +543,6 @@ class Game {
     }
   }
   
-
-  hatchSpawn(spawn) {
-    new _units_octorok__WEBPACK_IMPORTED_MODULE_3__["default"](spawn.pixelPos[0], spawn.pixelPos[1])
-  }
-  
-
   // Scrolling logic below
   scroll(worldCtx, collisionCtx) {
     if (!this.scrolling) return;
@@ -543,19 +554,19 @@ class Game {
     } else {
       if (this.player.pos.direction === 96) {
         this.overworld.pos[1] -= 8;
-        if (this.scrollQueue > 48) this.player.step(0, 8)
+        if (this.scrollQueue > 48) this.player.move(0, 8)
       }
       if (this.player.pos.direction === 144) {
         this.overworld.pos[0] += 8;
-        if (this.scrollQueue > 48) this.player.step(-8, 0)
+        if (this.scrollQueue > 48) this.player.move(-8, 0)
       }
       if (this.player.pos.direction === 0) {
         this.overworld.pos[1] += 8;
-        if (this.scrollQueue > 48) this.player.step(0, -8)
+        if (this.scrollQueue > 48) this.player.move(0, -8)
       }
       if (this.player.pos.direction === 48) {
         this.overworld.pos[0] -= 8;
-        if (this.scrollQueue > 48) this.player.step(8, 0)
+        if (this.scrollQueue > 48) this.player.move(8, 0)
       }
       this.scrollQueue -= 8;
       this.overworld.drawWorld(worldCtx)
@@ -643,10 +654,19 @@ class GameView {
     this.game.scroll(this.worldCtx, this.collisionCtx);
     this.getLastInput();
     this.checkKey();
+
     this.game.clearUnits(this.spriteCtx);
-    this.game.stepUnits(this.spriteCtx);
+    this.game.clearAttacks(this.spriteCtx);
+    this.player.clear(this.spriteCtx);
+
+    this.game.stepUnits();
+    this.game.stepAttacks();
+    this.player.step();
+
     this.game.drawUnits(this.spriteCtx);
-    // this.game.removeDeadUnits()
+    this.game.drawAttacks(this.spriteCtx);
+    this.player.draw(this.spriteCtx);
+
     if (this.currentInput) this.player.runCycle++;
     window.requestAnimationFrame(() => this.gameLoop())
   }
@@ -744,22 +764,22 @@ class GameView {
     if ((this.currentInput === 'w')) {
       this.player.pos.direction = 96 // 'up'
       if (this.impassableTerrain('north')) return
-      this.player.step(0, -4)
+      this.player.move(0, -4)
     }
     if ((this.currentInput === 'd')) {
       this.player.pos.direction = 144 // 'right'
       if (this.impassableTerrain('east')) return
-      this.player.step(4, 0)
+      this.player.move(4, 0)
     }
     if ((this.currentInput === 's')) {
       this.player.pos.direction = 0 // 'down'
       if (this.impassableTerrain('south')) return
-      this.player.step(0, 4)
+      this.player.move(0, 4)
     }
     if ((this.currentInput === 'a')) {
       this.player.pos.direction = 48 // 'left'
       if (this.impassableTerrain('west')) return
-      this.player.step(-4, 0)
+      this.player.move(-4, 0)
     }
   }
 }
@@ -884,17 +904,12 @@ __webpack_require__.r(__webpack_exports__);
 
 class Player {
   constructor() {
-    this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
-    this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
-
     this.sprite = new Image();
     this.sprite.src = "./assets/images/player/link.png"
     this.swordSound = new Audio("./assets/sfx/sword.wav");
 
-    this.runCycle = 0;
-    this.frame = 0;
-    this.attackFrame = 0;
-    this.cooldown = 0;
+    this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
+    this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
     this.tracebox = {
       topLeft: [this.pos.x + 9, this.pos.y + 24],
       topRight: [this.pos.x + 39, this.pos.y + 24],
@@ -902,8 +917,52 @@ class Player {
       bottomRight: [this.pos.x + 39, this.pos.y + 45],
     }
 
+    this.runCycle = 0;
+    this.frame = 0;
+
+    this.attackFrame = 0;
+    this.cooldown = 0;
     this.attacks = [];
-    this.swordHitBox = null;
+  }
+
+  clear(ctx) {
+    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
+  }
+
+  step() {
+    if (this.runCycle > 15) this.runCycle = 0;
+    if (this.cooldown) this.cooldown--
+    this.attackFrame ? this.attackFrame-- : this.attacks.splice(0,1)
+    this.lastPos.x = this.pos.x;
+    this.lastPos.y = this.pos.y;
+  }
+
+  draw(ctx) {
+    if (this.attackFrame) {
+      ctx.drawImage(
+        this.sprite,
+        this.pos.direction,
+        96, // attack sprite pose
+        48,
+        48,
+        this.pos.x,
+        this.pos.y,
+        48,
+        48
+      )
+    } else {
+      ctx.drawImage(
+        this.sprite,
+        this.pos.direction,
+        this.runCycle < 9 ? 0 : 48,
+        48,
+        48,
+        this.pos.x,
+        this.pos.y,
+        48,
+        48
+      )
+    }
   }
 
   attack() {
@@ -912,7 +971,7 @@ class Player {
     this.attacks.push(new _sword_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.pos))
   }
   
-  step(x,y) {
+  move(x,y) {
     // this.lastPos[0] = this.pos[0];
     // this.lastPos[1] = this.pos[1];
     this.pos.x += x;
@@ -921,110 +980,6 @@ class Player {
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
     this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
-  }
-
-  draw(ctx) {
-    if (this.swordHitBox && !this.attackFrame) this.swordHitBox = null;
-    if (this.cooldown) this.cooldown--
-    if (this.runCycle < 9) {
-      this.frame = 0;
-    } else {
-      this.frame = 48;
-    }
-    if (this.runCycle > 15) this.runCycle = 0;
-    if (this.attackFrame) {
-      ctx.drawImage(
-        this.sprite,
-        this.pos.direction,
-        96,
-        48,
-        48,
-        this.pos.x,
-        this.pos.y,
-        48,
-        48
-      )
-      this.attackFrame--
-    } else {
-      ctx.drawImage(
-        this.sprite,
-        this.pos.direction,
-        this.frame,
-        48,
-        48,
-        this.pos.x,
-        this.pos.y,
-        48,
-        48
-      )
-    }
-    this.lastPos.x = this.pos.x;
-    this.lastPos.y = this.pos.y;
-  }
-  // draw(ctx) {
-  //   if (this.swordHitBox && !this.attackFrame) this.swordHitBox = null;
-  //   if (this.cooldown) this.cooldown--
-  //   if (this.runCycle < 9) {
-  //     this.frame = 0;
-  //   } else {
-  //     this.frame = 48;
-  //   }
-  //   if (this.runCycle > 15) this.runCycle = 0;
-  //   if (this.attackFrame) {
-  //     ctx.drawImage(
-  //       this.sprite,
-  //       this.pos.direction,
-  //       153,
-  //       48,
-  //       48,
-  //       this.pos.x,
-  //       this.pos.y,
-  //       48,
-  //       48
-  //     )
-  //     this.swordX = this.pos.x
-  //     this.swordY = this.pos.y
-  //     if (this.pos.direction === 0) {
-  //       this.swordY += 48;
-  //     } else if (this.pos.direction === 48) {
-  //       this.swordX -= 48;
-  //     } else if (this.pos.direction === 96) {
-  //      this.swordY -= 48
-  //     } else if (this.pos.direction === 144) {
-  //       this.swordX += 48;
-  //     }
-  //     ctx.drawImage(
-  //       this.sprite,
-  //       this.direction,
-  //       204,
-  //       48,
-  //       48,
-  //       this.swordX,
-  //       this.swordY,
-  //       48,
-  //       48
-  //     )
-  //     this.attackFrame--
-  //   } else {
-  //     ctx.drawImage(
-  //       this.sprite,
-  //       this.pos.direction,
-  //       this.frame,
-  //       48,
-  //       48,
-  //       this.pos.x,
-  //       this.pos.y,
-  //       48,
-  //       48
-  //     )
-  //   }
-  //   this.lastPos.x = this.pos.x;
-  //   this.lastPos.y = this.pos.y;
-  // }
-
-  clear(ctx) {
-    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
-    if (this.cooldown) ctx.clearRect(this.swordX, this.swordY, 48, 48);
   }
 }
 
@@ -1042,41 +997,47 @@ class Player {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 class Sword {
-  constructor(position, direction) {
+  constructor(pos) {
     this.sprite = new Image();
     this.sprite.src = "./assets/images/player/attacks.png"
     this.swordSfx = new Audio("./assets/sfx/sword.wav");
     this.swordSfx.play()
 
-    if (direction === 96) {
+    if (pos.direction === 96) {
       this.pos = {
-        x: position.x, y: position.y - 48,
+        x: pos.x, y: pos.y - 36,
         width: 48, height: 48, direction: 96,
       }
-    } else if (direction === 144) {
+    } else if (pos.direction === 144) {
       this.pos = {
-        x: position.x + 48, y: position.y,
+        x: pos.x + 36, y: pos.y,
         width: 48, height: 48, direction: 144
       }
-    } else if (direction === 0) {
+    } else if (pos.direction === 0) {
       this.pos = {
-        x: position.x, y: position.y + 48,
+        x: pos.x, y: pos.y + 36,
         width: 48, height: 48, direction: 0,
       }
-    } else if (direction === 48) {
+    } else if (pos.direction === 48) {
       this.pos = {
-        x: position.x - 48, y: position.y,
+        x: pos.x - 36, y: pos.y,
         width: 48, height: 48, direction: 48
       }
     }
   }
 
+  clear(ctx) {
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+    if (this.cooldown) ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  }
 
+  step() {}
+  
   draw(ctx) {
       ctx.drawImage(
         this.sprite,
-        this.direction,
-        204,
+        this.pos.direction,
+        0,
         48,
         48,
         this.pos.x,
@@ -1087,10 +1048,6 @@ class Sword {
       this.attackFrame--
   }
 
-  clear(ctx) {
-    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
-    if (this.cooldown) ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
-  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Sword);
@@ -1245,6 +1202,10 @@ class Spawn {
     this.invincibilityFrames = 100;
   }
 
+  clear(ctx) {
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  }
+
   step() {
     this.runCycle --
   }
@@ -1261,10 +1222,6 @@ class Spawn {
       48,
       48
     )
-  }
-
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 }
 
