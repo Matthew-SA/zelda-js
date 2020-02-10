@@ -1,6 +1,7 @@
 import Menu from './menu/menu.js'
 import Player from './player/player'
 import Spawn from './units/spawn'
+import Spark from './units/spark'
 import Octorok from './units/octorok'
 import Overworld from './maps/overworld'
 import * as constants from './util/constants'
@@ -53,6 +54,9 @@ class Game {
       for (let j = 0; j < this.player.attacks.length; j++) {
         this.checkCollisionAgainstOther(this.player.attacks[j], this.units[i])
       }
+      if (this.units[i] instanceof Spark && this.units[i].runCycle > 16) {
+        this.units.splice(this.units.indexOf(this.units[i]), 1)
+      }
     }
   }
 
@@ -94,6 +98,7 @@ class Game {
     } else {
       this.destroyEnemy.play();
       this.units.splice(this.units.indexOf(unit), 1)
+      this.units.push(new Spark(unit.pos))
     }
   }
 

@@ -1,18 +1,16 @@
-import * as util from '../util/util'
-
-class Spawn {
-  constructor(pixelPos) {
+class Spark {
+  constructor(pos) {
     this.sprite = new Image();
     this.sprite.src = "./assets/images/effects.png"
+
     this.pos = {
-      x: pixelPos[0],
-      y: pixelPos[1],
+      x: pos.x,
+      y: pos.y,
       width: 48,
       height: 48,
     }
-    this.pixelPos = pixelPos;
-    this.runCycle = util.random(20,150);
 
+    this.runCycle = 0;
     this.invincibilityFrames = 100;
   }
 
@@ -21,13 +19,13 @@ class Spawn {
   }
 
   step() {
-    this.runCycle --
+    this.runCycle++
   }
 
   draw(ctx) {
     ctx.drawImage(
       this.sprite,
-      this.runCycle >= 8 ? 0 : 48,
+      96 + (48 * Math.floor(this.runCycle / 2)),
       0,
       48,
       48,
@@ -39,4 +37,4 @@ class Spawn {
   }
 }
 
-export default Spawn;
+export default Spark;
