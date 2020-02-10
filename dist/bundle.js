@@ -980,8 +980,6 @@ class Player {
   }
   
   move(x,y) {
-    // this.lastPos[0] = this.pos[0];
-    // this.lastPos[1] = this.pos[1];
     this.pos.x += x;
     this.pos.y += y;
     this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y

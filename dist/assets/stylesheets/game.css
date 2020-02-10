@@ -39,6 +39,7 @@ header {
   margin: 20px auto;
   z-index: 2;
 }
+
 #collision-canvas {
   position: absolute;
   left: 0;
