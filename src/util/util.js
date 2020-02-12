@@ -15,7 +15,6 @@ export function sumArr(arr) {
 
 export function getMapPixel(ctx, x, y) {
   const pixel = ctx.getImageData(x, y, 1, 1);
-  // console.log([pixel.data[0], pixel.data[1], pixel.data[2]]);
   return [pixel.data[0], pixel.data[1], pixel.data[2]];
 }
 

@@ -522,6 +522,10 @@ class Game {
     }
   }
 
+  getknockedbackfrom(ctx) {
+    
+  }
+
   drawUnits(ctx) {
     for (let i = 0; i < this.units.length; i++ ) {
       this.units[i].draw(ctx)
@@ -618,7 +622,7 @@ class Game {
   }
 
   impassableTerrain(direction, ctx) {
-    if (direction === 'north') {
+    if (direction === 96) {
       const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
         ctx,
         this.player.tracebox.topLeft[0],
@@ -628,7 +632,7 @@ class Game {
         this.player.tracebox.topRight[0],
         this.player.tracebox.topRight[1] - 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 'east') {
+    } else if (direction === 144) {
       const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
         ctx,
         this.player.tracebox.topRight[0] + 3,
@@ -638,7 +642,7 @@ class Game {
         this.player.tracebox.bottomRight[0] + 3,
         this.player.tracebox.bottomRight[1])
       return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 'south') {
+    } else if (direction === 0) {
       const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
         ctx,
         this.player.tracebox.bottomLeft[0],
@@ -648,7 +652,7 @@ class Game {
         this.player.tracebox.bottomRight[0],
         this.player.tracebox.bottomRight[1] + 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 'west') {
+    } else if (direction === 48) {
       const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
         ctx,
         this.player.tracebox.topLeft[0] - 3,
@@ -695,28 +699,23 @@ class Game {
     const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
     this.currentInput = entry[0]
     if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('/')) {
-      this.currentInput = 'attack'
       this.player.attack();
     }
     if ((this.currentInput === 'w')) {
       this.player.pos.direction = 96 // 'up'
-      if (this.impassableTerrain('north', ctx)) return
-      this.player.move(0, -4)
+      return this.impassableTerrain(96,ctx) ? '' : this.player.move(0, -4)
     }
     if ((this.currentInput === 'd')) {
       this.player.pos.direction = 144 // 'right'
-      if (this.impassableTerrain('east', ctx)) return
-      this.player.move(4, 0)
+      return this.impassableTerrain(144, ctx) ? '' : this.player.move(4, 0)
     }
     if ((this.currentInput === 's')) {
       this.player.pos.direction = 0 // 'down'
-      if (this.impassableTerrain('south', ctx)) return
-      this.player.move(0, 4)
+      return this.impassableTerrain(0, ctx) ? '' : this.player.move(0, 4)
     }
     if ((this.currentInput === 'a')) {
       this.player.pos.direction = 48 // 'left'
-      if (this.impassableTerrain('west', ctx)) return
-      this.player.move(-4, 0)
+      return this.impassableTerrain(48, ctx) ? '' : this.player.move(-4, 0)
     }
   }
 }
@@ -945,6 +944,7 @@ class Player {
       attack: 0,
       cooldown: 0,
       invincibility: 0,
+      knockback: 0,
     }
 
     this.hp = 3;
@@ -1013,6 +1013,18 @@ class Player {
       this.frameData.invincibility = 45;
       this.ouch.play()
       this.hp--
+    }
+  }
+
+  knockedBack(direction) {
+    if (direction === 96) {
+      this.move(0,9)
+    } else if (direction === 144) {
+      this.move(-9, 0)
+    } else if (direction === 0) {
+      this.move(0, -9)
+    } else if (direction === 48) {
+      this.move(9, 0)
     }
   }
 }
@@ -1396,7 +1408,6 @@ function sumArr(arr) {
 
 function getMapPixel(ctx, x, y) {
   const pixel = ctx.getImageData(x, y, 1, 1);
-  // console.log([pixel.data[0], pixel.data[1], pixel.data[2]]);
   return [pixel.data[0], pixel.data[1], pixel.data[2]];
 }
 

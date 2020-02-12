@@ -21,6 +21,7 @@ class Player {
       attack: 0,
       cooldown: 0,
       invincibility: 0,
+      knockback: 0,
     }
 
     this.hp = 3;
@@ -89,6 +90,18 @@ class Player {
       this.frameData.invincibility = 45;
       this.ouch.play()
       this.hp--
+    }
+  }
+
+  knockedBack(direction) {
+    if (direction === 96) {
+      this.move(0,9)
+    } else if (direction === 144) {
+      this.move(-9, 0)
+    } else if (direction === 0) {
+      this.move(0, -9)
+    } else if (direction === 48) {
+      this.move(9, 0)
     }
   }
 }
