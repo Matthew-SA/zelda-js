@@ -36,6 +36,7 @@ class Player {
   step() {
     if (this.frameData.run > 15) this.frameData.run = 0;
     if (this.frameData.cooldown) this.frameData.cooldown--
+    if (this.frameData.knockback) this.frameData.knockback--
     if (this.frameData.invincibility) this.frameData.invincibility--
     this.frameData.attack ? this.frameData.attack-- : this.attacks.splice(0,1)
     this.lastPos.x = this.pos.x;
@@ -89,19 +90,10 @@ class Player {
     if (!this.frameData.invincibility) {
       this.frameData.invincibility = 45;
       this.ouch.play()
+      this.frameData.cooldown = 8;
+      this.frameData.knockback = 8;
       this.hp--
-    }
-  }
-
-  knockedBack(direction) {
-    if (direction === 96) {
-      this.move(0,9)
-    } else if (direction === 144) {
-      this.move(-9, 0)
-    } else if (direction === 0) {
-      this.move(0, -9)
-    } else if (direction === 48) {
-      this.move(9, 0)
+      this.attacks.pop()
     }
   }
 }

@@ -50,7 +50,7 @@ class GameView {
     this.game.scroll(worldCtx, collisionCtx);
     this.game.getLastInput();
     this.game.checkKey(collisionCtx);
-    this.game.stepUnits();
+    this.game.stepUnits(collisionCtx);
     this.game.stepAttacks();
     this.player.step();
   }
