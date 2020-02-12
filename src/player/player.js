@@ -71,8 +71,8 @@ class Player {
   }
 
   attack() {
+    this.frameData.cooldown = 20;
     this.frameData.attack = 15;
-    this.frameData.cooldown = 18;
     this.attacks.push(new Sword(this.pos))
   }
   

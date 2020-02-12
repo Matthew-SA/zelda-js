@@ -286,22 +286,23 @@ class Game {
     this.currentInput = entry[0]
     if (key.isPressed('/')) {
       this.player.attack();
+      this.currentInput = 'attack';
     }
     if ((this.currentInput === 'w')) {
       this.player.pos.direction = 96 // 'up'
-      return this.impassableTerrain(96,ctx) ? '' : this.player.move(0, -4)
+      return this.impassableTerrain(96,ctx) ? null : this.player.move(0, -4)
     }
     if ((this.currentInput === 'd')) {
       this.player.pos.direction = 144 // 'right'
-      return this.impassableTerrain(144, ctx) ? '' : this.player.move(4, 0)
+      return this.impassableTerrain(144, ctx) ? null : this.player.move(4, 0)
     }
     if ((this.currentInput === 's')) {
       this.player.pos.direction = 0 // 'down'
-      return this.impassableTerrain(0, ctx) ? '' : this.player.move(0, 4)
+      return this.impassableTerrain(0, ctx) ? null : this.player.move(0, 4)
     }
     if ((this.currentInput === 'a')) {
       this.player.pos.direction = 48 // 'left'
-      return this.impassableTerrain(48, ctx) ? '' : this.player.move(-4, 0)
+      return this.impassableTerrain(48, ctx) ? null : this.player.move(-4, 0)
     }
   }
 }
