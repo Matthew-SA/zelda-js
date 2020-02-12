@@ -34,7 +34,6 @@ class Sword {
 
   clear(ctx) {
     ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
-    if (this.cooldown) ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {}
@@ -51,7 +50,6 @@ class Sword {
       48,
       48,
       )
-      this.attackFrame--
 
       // hurtbox debugger //
       // ctx.fillStyle = 'red';

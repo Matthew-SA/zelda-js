@@ -53,7 +53,7 @@ class GameView {
     this.player.draw(this.spriteCtx);
     this.player.sword
 
-    if (this.currentInput) this.player.runCycle++;
+    if (this.currentInput) this.player.frameData.run++;
     window.requestAnimationFrame(() => this.gameLoop())
   }
 
@@ -139,7 +139,7 @@ class GameView {
 
   checkKey() {
     if (this.game.scrolling) return;
-    if (this.player.cooldown) return;
+    if (this.player.frameData.cooldown) return;
 
     const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
     this.currentInput = entry[0]

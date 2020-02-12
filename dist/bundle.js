@@ -675,7 +675,7 @@ class GameView {
     this.player.draw(this.spriteCtx);
     this.player.sword
 
-    if (this.currentInput) this.player.runCycle++;
+    if (this.currentInput) this.player.frameData.run++;
     window.requestAnimationFrame(() => this.gameLoop())
   }
 
@@ -761,7 +761,7 @@ class GameView {
 
   checkKey() {
     if (this.game.scrolling) return;
-    if (this.player.cooldown) return;
+    if (this.player.frameData.cooldown) return;
 
     const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
     this.currentInput = entry[0]
@@ -925,28 +925,29 @@ class Player {
       bottomRight: [this.pos.x + 39, this.pos.y + 45],
     }
 
-    this.runCycle = 0;
-    this.frame = 0;
-
-    this.attackFrame = 0;
-    this.cooldown = 0;
+    this.frameData = {
+      run: 0,
+      attack: 0,
+      cooldown: 0,
+    }
+    
     this.attacks = [];
   }
-
+  
   clear(ctx) {
     ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
   }
 
   step() {
-    if (this.runCycle > 15) this.runCycle = 0;
-    if (this.cooldown) this.cooldown--
-    this.attackFrame ? this.attackFrame-- : this.attacks.splice(0,1)
+    if (this.frameData.run > 15) this.frameData.run = 0;
+    if (this.frameData.cooldown) this.frameData.cooldown--
+    this.frameData.attack ? this.frameData.attack-- : this.attacks.splice(0,1)
     this.lastPos.x = this.pos.x;
     this.lastPos.y = this.pos.y;
   }
 
   draw(ctx) {
-    if (this.attackFrame) {
+    if (this.frameData.attack) {
       ctx.drawImage(
         this.sprite,
         this.pos.direction,
@@ -962,7 +963,7 @@ class Player {
       ctx.drawImage(
         this.sprite,
         this.pos.direction,
-        this.runCycle < 9 ? 0 : 48,
+        this.frameData.run < 9 ? 0 : 48,
         48,
         48,
         this.pos.x,
@@ -974,8 +975,8 @@ class Player {
   }
 
   attack() {
-    this.attackFrame = 15;
-    this.cooldown = 18;
+    this.frameData.attack = 15;
+    this.frameData.cooldown = 18;
     this.attacks.push(new _sword_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.pos))
   }
   
@@ -1038,7 +1039,6 @@ class Sword {
 
   clear(ctx) {
     ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
-    if (this.cooldown) ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {}
@@ -1055,7 +1055,6 @@ class Sword {
       48,
       48,
       )
-      this.attackFrame--
 
       // hurtbox debugger //
       // ctx.fillStyle = 'red';
