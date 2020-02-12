@@ -4,7 +4,7 @@ class Player {
   constructor() {
     this.sprite = new Image();
     this.sprite.src = "./assets/images/player/link.png"
-    this.swordSound = new Audio("./assets/sfx/sword.wav");
+    this.ouch = new Audio("./assets/sfx/link-hurt.wav");
 
     this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
@@ -87,9 +87,8 @@ class Player {
   takeDamage() {
     if (!this.frameData.invincibility) {
       this.frameData.invincibility = 45;
+      this.ouch.play()
       this.hp--
-      console.log('ouch!')
-      console.log(this.hp)
     }
   }
 }

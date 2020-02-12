@@ -1,3 +1,4 @@
+import key from 'keymaster'
 import Menu from './menu/menu.js'
 import Player from './player/player'
 import Spawn from './units/spawn'
@@ -15,7 +16,7 @@ class Game {
     this.menu = new Menu;
     this.player = new Player;
     this.overworld = new Overworld;
-    
+
     // game sounds
     this.hitEnemy = new Audio("./assets/sfx/hit-enemy.wav");
     this.destroyEnemy = new Audio("./assets/sfx/destroy-enemy.wav");
@@ -29,6 +30,9 @@ class Game {
     this.grid = null; // collection of grid squares with color data of center 4 pixels.
     this.openSpaces = null; // Array of subarrays.  Each contain a x/y pixel position pair.
     this.enemyCount = 0;
+
+    this.lastInput = { 'a': null, 'w': null, 'd': null, 's': null };
+    this.currentInput = null;
 
   }
   
@@ -45,6 +49,7 @@ class Game {
   }
 
   stepUnits() {
+    if (this.currentInput) this.player.frameData.run++;
     for (let i = 0; i < this.units.length; i++) {
       if (this.units[i] instanceof Spawn && this.units[i].runCycle <= 0) {
         this.units[i] = new Octorok(this.units[i].pixelPos, this.grid);
@@ -187,6 +192,118 @@ class Game {
     this.units = [];
     this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
     // this.enemyCount = 100 // stress test!
+  }
+
+  // collision layer check below
+  checkIfBarrier(pixel1, pixel2) {
+    let pixel1value = util.sumArr(pixel1)
+    let pixel2value = util.sumArr(pixel2)
+    if (pixel1value === constants.WALL || pixel1value === constants.WATER) return true;
+    if (pixel2value === constants.WALL || pixel2value === constants.WATER) return true;
+    return false;
+  }
+
+  impassableTerrain(direction, ctx) {
+    if (direction === 'north') {
+      const topPixel = util.getMapPixel(
+        ctx,
+        this.player.tracebox.topLeft[0],
+        this.player.tracebox.topLeft[1] - 3)
+      const bottomPixel = util.getMapPixel(
+        ctx,
+        this.player.tracebox.topRight[0],
+        this.player.tracebox.topRight[1] - 3)
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'east') {
+      const topPixel = util.getMapPixel(
+        ctx,
+        this.player.tracebox.topRight[0] + 3,
+        this.player.tracebox.topRight[1])
+      const bottomPixel = util.getMapPixel(
+        ctx,
+        this.player.tracebox.bottomRight[0] + 3,
+        this.player.tracebox.bottomRight[1])
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'south') {
+      const topPixel = util.getMapPixel(
+        ctx,
+        this.player.tracebox.bottomLeft[0],
+        this.player.tracebox.bottomLeft[1] + 3)
+      const bottomPixel = util.getMapPixel(
+        ctx,
+        this.player.tracebox.bottomRight[0],
+        this.player.tracebox.bottomRight[1] + 3)
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'west') {
+      const topPixel = util.getMapPixel(
+        ctx,
+        this.player.tracebox.topLeft[0] - 3,
+        this.player.tracebox.topRight[1])
+      const bottomPixel = util.getMapPixel(
+        ctx,
+        this.player.tracebox.bottomLeft[0] - 3,
+        this.player.tracebox.bottomLeft[1])
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    }
+  }
+
+  // player input below
+  getLastInput() {
+    if (key.isPressed('w') && this.lastInput.w === null) {
+      this.lastInput.w = Date.now();
+    } else if (!key.isPressed('w') && this.lastInput.w !== null) {
+      this.lastInput.w = null;
+    }
+
+    if (key.isPressed('d') && this.lastInput.d === null) {
+      this.lastInput.d = Date.now();
+    } else if (!key.isPressed('d') && this.lastInput.d !== null) {
+      this.lastInput.d = null;
+    }
+
+    if (key.isPressed('s') && this.lastInput.s === null) {
+      this.lastInput.s = Date.now();
+    } else if (!key.isPressed('s') && this.lastInput.s !== null) {
+      this.lastInput.s = null;
+    }
+
+    if (key.isPressed('a') && this.lastInput.a === null) {
+      this.lastInput.a = Date.now();
+    } else if (!key.isPressed('a') && this.lastInput.a !== null) {
+      this.lastInput.a = null;
+    }
+  }
+
+  checkKey(ctx) {
+    if (this.scrolling) return;
+    if (this.player.frameData.cooldown) return;
+
+    const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
+    this.currentInput = entry[0]
+    if (key.isPressed('/')) {
+      this.currentInput = 'attack'
+      this.player.attack();
+    }
+    if ((this.currentInput === 'w')) {
+      this.player.pos.direction = 96 // 'up'
+      if (this.impassableTerrain('north', ctx)) return
+      this.player.move(0, -4)
+    }
+    if ((this.currentInput === 'd')) {
+      this.player.pos.direction = 144 // 'right'
+      if (this.impassableTerrain('east', ctx)) return
+      this.player.move(4, 0)
+    }
+    if ((this.currentInput === 's')) {
+      this.player.pos.direction = 0 // 'down'
+      if (this.impassableTerrain('south', ctx)) return
+      this.player.move(0, 4)
+    }
+    if ((this.currentInput === 'a')) {
+      this.player.pos.direction = 48 // 'left'
+      if (this.impassableTerrain('west', ctx)) return
+      this.player.move(-4, 0)
+    }
   }
 }
 

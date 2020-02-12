@@ -402,14 +402,17 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _menu_menu_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./menu/menu.js */ "./src/menu/menu.js");
-/* harmony import */ var _player_player__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./player/player */ "./src/player/player.js");
-/* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
-/* harmony import */ var _units_spark__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/spark */ "./src/units/spark.js");
-/* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
-/* harmony import */ var _maps_overworld__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./maps/overworld */ "./src/maps/overworld.js");
-/* harmony import */ var _util_constants__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./util/constants */ "./src/util/constants.js");
-/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./util/util */ "./src/util/util.js");
+/* harmony import */ var keymaster__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! keymaster */ "./node_modules/keymaster/keymaster.js");
+/* harmony import */ var keymaster__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(keymaster__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _menu_menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./menu/menu.js */ "./src/menu/menu.js");
+/* harmony import */ var _player_player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./player/player */ "./src/player/player.js");
+/* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
+/* harmony import */ var _units_spark__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./units/spark */ "./src/units/spark.js");
+/* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
+/* harmony import */ var _maps_overworld__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./maps/overworld */ "./src/maps/overworld.js");
+/* harmony import */ var _util_constants__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./util/constants */ "./src/util/constants.js");
+/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./util/util */ "./src/util/util.js");
+
 
 
 
@@ -424,10 +427,10 @@ __webpack_require__.r(__webpack_exports__);
 
 class Game {
   constructor() {
-    this.menu = new _menu_menu_js__WEBPACK_IMPORTED_MODULE_0__["default"];
-    this.player = new _player_player__WEBPACK_IMPORTED_MODULE_1__["default"];
-    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_5__["default"];
-    
+    this.menu = new _menu_menu_js__WEBPACK_IMPORTED_MODULE_1__["default"];
+    this.player = new _player_player__WEBPACK_IMPORTED_MODULE_2__["default"];
+    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_6__["default"];
+
     // game sounds
     this.hitEnemy = new Audio("./assets/sfx/hit-enemy.wav");
     this.destroyEnemy = new Audio("./assets/sfx/destroy-enemy.wav");
@@ -441,6 +444,9 @@ class Game {
     this.grid = null; // collection of grid squares with color data of center 4 pixels.
     this.openSpaces = null; // Array of subarrays.  Each contain a x/y pixel position pair.
     this.enemyCount = 0;
+
+    this.lastInput = { 'a': null, 'w': null, 'd': null, 's': null };
+    this.currentInput = null;
 
   }
   
@@ -457,16 +463,17 @@ class Game {
   }
 
   stepUnits() {
+    if (this.currentInput) this.player.frameData.run++;
     for (let i = 0; i < this.units.length; i++) {
-      if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] && this.units[i].runCycle <= 0) {
-        this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_4__["default"](this.units[i].pixelPos, this.grid);
+      if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] && this.units[i].runCycle <= 0) {
+        this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_5__["default"](this.units[i].pixelPos, this.grid);
       }
       this.units[i].step();
       this.checkCollisionsAgainstPlayer(this.units[i])
       for (let j = 0; j < this.player.attacks.length; j++) {
         this.checkCollisionAgainstOther(this.player.attacks[j], this.units[i])
       }
-      if (this.units[i] instanceof _units_spark__WEBPACK_IMPORTED_MODULE_3__["default"] && this.units[i].runCycle > 16) {
+      if (this.units[i] instanceof _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"] && this.units[i].runCycle > 16) {
         this.units.splice(this.units.indexOf(this.units[i]), 1)
       }
     }
@@ -479,7 +486,7 @@ class Game {
   }
 
   checkCollisionsAgainstPlayer(other) {
-    if (other instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] || other instanceof _units_spark__WEBPACK_IMPORTED_MODULE_3__["default"]) return;
+    if (other instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] || other instanceof _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"]) return;
     const playerHitbox = {
       x: this.player.pos.x + 2,
       y: this.player.pos.y + 2,
@@ -511,7 +518,7 @@ class Game {
     } else {
       this.destroyEnemy.play();
       this.units.splice(this.units.indexOf(unit), 1)
-      this.units.push(new _units_spark__WEBPACK_IMPORTED_MODULE_3__["default"](unit.pos))
+      this.units.push(new _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"](unit.pos))
     }
   }
 
@@ -534,7 +541,7 @@ class Game {
     for (let y = 168; y < 696; y += 48) {
       let row = [];
       for (let x = 0; x < 768; x += 48) {
-        let value = _util_util__WEBPACK_IMPORTED_MODULE_7__["scanMapTile"](ctx, x, y);
+        let value = _util_util__WEBPACK_IMPORTED_MODULE_8__["scanMapTile"](ctx, x, y);
         row.push(value);
         if (value === 1020) openSpaces.push([x, y]);
       }
@@ -547,7 +554,7 @@ class Game {
   setSpawns() {
     for (let i = 0; i < this.enemyCount; i++) {
       let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
-      this.units.push(new _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"](pixelPos));
+      this.units.push(new _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"](pixelPos));
     }
   }
   
@@ -582,12 +589,12 @@ class Game {
   }
 
   checkBorder(ctx) {
-    if (this.player.pos.y < _util_constants__WEBPACK_IMPORTED_MODULE_6__["BORDERTOP"] || this.player.pos.y > _util_constants__WEBPACK_IMPORTED_MODULE_6__["BORDERBOTTOM"]) {
+    if (this.player.pos.y < _util_constants__WEBPACK_IMPORTED_MODULE_7__["BORDERTOP"] || this.player.pos.y > _util_constants__WEBPACK_IMPORTED_MODULE_7__["BORDERBOTTOM"]) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 528;
     }
-    if (this.player.pos.x > _util_constants__WEBPACK_IMPORTED_MODULE_6__["BORDERRIGHT"] || this.player.pos.x < _util_constants__WEBPACK_IMPORTED_MODULE_6__["BORDERLEFT"]) {
+    if (this.player.pos.x > _util_constants__WEBPACK_IMPORTED_MODULE_7__["BORDERRIGHT"] || this.player.pos.x < _util_constants__WEBPACK_IMPORTED_MODULE_7__["BORDERLEFT"]) {
       this.scrolling = true;
       this.destroyUnits(ctx)
       this.scrollQueue = 768;
@@ -597,8 +604,120 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    this.enemyCount = (_util_util__WEBPACK_IMPORTED_MODULE_7__["random"](1, 6)) // reload enemy count for next screen.
+    this.enemyCount = (_util_util__WEBPACK_IMPORTED_MODULE_8__["random"](1, 6)) // reload enemy count for next screen.
     // this.enemyCount = 100 // stress test!
+  }
+
+  // collision layer check below
+  checkIfBarrier(pixel1, pixel2) {
+    let pixel1value = _util_util__WEBPACK_IMPORTED_MODULE_8__["sumArr"](pixel1)
+    let pixel2value = _util_util__WEBPACK_IMPORTED_MODULE_8__["sumArr"](pixel2)
+    if (pixel1value === _util_constants__WEBPACK_IMPORTED_MODULE_7__["WALL"] || pixel1value === _util_constants__WEBPACK_IMPORTED_MODULE_7__["WATER"]) return true;
+    if (pixel2value === _util_constants__WEBPACK_IMPORTED_MODULE_7__["WALL"] || pixel2value === _util_constants__WEBPACK_IMPORTED_MODULE_7__["WATER"]) return true;
+    return false;
+  }
+
+  impassableTerrain(direction, ctx) {
+    if (direction === 'north') {
+      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
+        ctx,
+        this.player.tracebox.topLeft[0],
+        this.player.tracebox.topLeft[1] - 3)
+      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
+        ctx,
+        this.player.tracebox.topRight[0],
+        this.player.tracebox.topRight[1] - 3)
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'east') {
+      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
+        ctx,
+        this.player.tracebox.topRight[0] + 3,
+        this.player.tracebox.topRight[1])
+      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
+        ctx,
+        this.player.tracebox.bottomRight[0] + 3,
+        this.player.tracebox.bottomRight[1])
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'south') {
+      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
+        ctx,
+        this.player.tracebox.bottomLeft[0],
+        this.player.tracebox.bottomLeft[1] + 3)
+      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
+        ctx,
+        this.player.tracebox.bottomRight[0],
+        this.player.tracebox.bottomRight[1] + 3)
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    } else if (direction === 'west') {
+      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
+        ctx,
+        this.player.tracebox.topLeft[0] - 3,
+        this.player.tracebox.topRight[1])
+      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_8__["getMapPixel"](
+        ctx,
+        this.player.tracebox.bottomLeft[0] - 3,
+        this.player.tracebox.bottomLeft[1])
+      return this.checkIfBarrier(topPixel, bottomPixel)
+    }
+  }
+
+  // player input below
+  getLastInput() {
+    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('w') && this.lastInput.w === null) {
+      this.lastInput.w = Date.now();
+    } else if (!keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('w') && this.lastInput.w !== null) {
+      this.lastInput.w = null;
+    }
+
+    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('d') && this.lastInput.d === null) {
+      this.lastInput.d = Date.now();
+    } else if (!keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('d') && this.lastInput.d !== null) {
+      this.lastInput.d = null;
+    }
+
+    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('s') && this.lastInput.s === null) {
+      this.lastInput.s = Date.now();
+    } else if (!keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('s') && this.lastInput.s !== null) {
+      this.lastInput.s = null;
+    }
+
+    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('a') && this.lastInput.a === null) {
+      this.lastInput.a = Date.now();
+    } else if (!keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('a') && this.lastInput.a !== null) {
+      this.lastInput.a = null;
+    }
+  }
+
+  checkKey(ctx) {
+    if (this.scrolling) return;
+    if (this.player.frameData.cooldown) return;
+
+    const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
+    this.currentInput = entry[0]
+    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('/')) {
+      this.currentInput = 'attack'
+      this.player.attack();
+    }
+    if ((this.currentInput === 'w')) {
+      this.player.pos.direction = 96 // 'up'
+      if (this.impassableTerrain('north', ctx)) return
+      this.player.move(0, -4)
+    }
+    if ((this.currentInput === 'd')) {
+      this.player.pos.direction = 144 // 'right'
+      if (this.impassableTerrain('east', ctx)) return
+      this.player.move(4, 0)
+    }
+    if ((this.currentInput === 's')) {
+      this.player.pos.direction = 0 // 'down'
+      if (this.impassableTerrain('south', ctx)) return
+      this.player.move(0, 4)
+    }
+    if ((this.currentInput === 'a')) {
+      this.player.pos.direction = 48 // 'left'
+      if (this.impassableTerrain('west', ctx)) return
+      this.player.move(-4, 0)
+    }
   }
 }
 
@@ -643,8 +762,6 @@ class GameView {
     this.menu = this.game.menu;
     this.player = this.game.player;
     this.overworld = this.game.overworld;
-    this.lastInput = {'a': null, 'w': null, 'd': null, 's': null};
-    this.currentInput = null;
   }
 
   // start primary game loop
@@ -660,138 +777,32 @@ class GameView {
   gameLoop() {
     // let now = Date.now();
     // let dt = (now - lastTime) / 1000.0;
-    this.game.checkBorder(this.spriteCtx);
-    this.game.scroll(this.worldCtx, this.collisionCtx);
-    this.getLastInput();
-    this.checkKey();
-
-    this.game.clearUnits(this.spriteCtx);
-    this.game.clearAttacks(this.spriteCtx);
-    this.player.clear(this.spriteCtx);
-
-    this.game.stepUnits();
-    this.game.stepAttacks();
-    this.player.step();
-
-    this.game.drawUnits(this.spriteCtx);
-    this.game.drawAttacks(this.spriteCtx);
-    this.player.draw(this.spriteCtx);
-    this.player.sword
-
-    if (this.currentInput) this.player.frameData.run++;
+    this.clear(this.spriteCtx)
+    this.step(this.spriteCtx, this.worldCtx, this.collisionCtx);
+    this.draw(this.spriteCtx)
     window.requestAnimationFrame(() => this.gameLoop())
   }
 
-  // collision layer check below
-  checkIfBarrier(pixel1, pixel2) {
-    let pixel1value = _util_util__WEBPACK_IMPORTED_MODULE_3__["sumArr"](pixel1)
-    let pixel2value = _util_util__WEBPACK_IMPORTED_MODULE_3__["sumArr"](pixel2)
-    if (pixel1value === _util_constants__WEBPACK_IMPORTED_MODULE_2__["WALL"] || pixel1value === _util_constants__WEBPACK_IMPORTED_MODULE_2__["WATER"]) return true;
-    if (pixel2value === _util_constants__WEBPACK_IMPORTED_MODULE_2__["WALL"] || pixel2value === _util_constants__WEBPACK_IMPORTED_MODULE_2__["WATER"]) return true;
-    return false;
+  clear(ctx) {
+    this.game.clearUnits(ctx);
+    this.game.clearAttacks(ctx);
+    this.game.player.clear(ctx)
   }
 
-  impassableTerrain(direction) {
-    if (direction === 'north') {
-      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
-        this.collisionCtx,
-        this.player.tracebox.topLeft[0], 
-        this.player.tracebox.topLeft[1] - 3)
-      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
-        this.collisionCtx,
-        this.player.tracebox.topRight[0],
-        this.player.tracebox.topRight[1] - 3)
-      return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 'east') {
-      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
-        this.collisionCtx,
-        this.player.tracebox.topRight[0] + 3,
-        this.player.tracebox.topRight[1])
-      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
-        this.collisionCtx,
-        this.player.tracebox.bottomRight[0] + 3,
-        this.player.tracebox.bottomRight[1])
-      return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 'south') {
-      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
-        this.collisionCtx,
-        this.player.tracebox.bottomLeft[0],
-        this.player.tracebox.bottomLeft[1] + 3)
-      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
-        this.collisionCtx,
-        this.player.tracebox.bottomRight[0],
-        this.player.tracebox.bottomRight[1] + 3)
-      return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 'west') {
-      const topPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
-        this.collisionCtx,
-        this.player.tracebox.topLeft[0] - 3,
-        this.player.tracebox.topRight[1])
-      const bottomPixel = _util_util__WEBPACK_IMPORTED_MODULE_3__["getMapPixel"](
-        this.collisionCtx,
-        this.player.tracebox.bottomLeft[0] - 3, 
-        this.player.tracebox.bottomLeft[1])
-      return this.checkIfBarrier(topPixel, bottomPixel)
-    }
+  step(spriteCtx, worldCtx, collisionCtx) {
+    this.game.checkBorder(spriteCtx);
+    this.game.scroll(worldCtx, collisionCtx);
+    this.game.getLastInput();
+    this.game.checkKey(collisionCtx);
+    this.game.stepUnits();
+    this.game.stepAttacks();
+    this.player.step();
   }
 
-  // player input below
-  getLastInput() {
-    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('w') && this.lastInput.w === null) {
-      this.lastInput.w = Date.now();
-    } else if (!keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('w') && this.lastInput.w !== null) {
-      this.lastInput.w = null;
-    }
-
-    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('d') && this.lastInput.d === null) {
-      this.lastInput.d = Date.now();
-    } else if (!keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('d') && this.lastInput.d !== null) {
-      this.lastInput.d = null;
-    }
-    
-    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('s') && this.lastInput.s === null) {
-      this.lastInput.s = Date.now();
-    } else if (!keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('s') && this.lastInput.s !== null) {
-      this.lastInput.s = null;
-    }
-
-    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('a') && this.lastInput.a === null) {
-      this.lastInput.a = Date.now();
-    } else if (!keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('a') && this.lastInput.a !== null) {
-      this.lastInput.a = null;
-    }
-  }
-
-  checkKey() {
-    if (this.game.scrolling) return;
-    if (this.player.frameData.cooldown) return;
-
-    const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
-    this.currentInput = entry[0]
-    if (keymaster__WEBPACK_IMPORTED_MODULE_0___default.a.isPressed('/')) {
-      this.currentInput = 'attack'
-      this.player.attack();
-    }
-    if ((this.currentInput === 'w')) {
-      this.player.pos.direction = 96 // 'up'
-      if (this.impassableTerrain('north')) return
-      this.player.move(0, -4)
-    }
-    if ((this.currentInput === 'd')) {
-      this.player.pos.direction = 144 // 'right'
-      if (this.impassableTerrain('east')) return
-      this.player.move(4, 0)
-    }
-    if ((this.currentInput === 's')) {
-      this.player.pos.direction = 0 // 'down'
-      if (this.impassableTerrain('south')) return
-      this.player.move(0, 4)
-    }
-    if ((this.currentInput === 'a')) {
-      this.player.pos.direction = 48 // 'left'
-      if (this.impassableTerrain('west')) return
-      this.player.move(-4, 0)
-    }
+  draw(ctx) {
+    this.game.drawUnits(ctx);
+    this.game.drawAttacks(ctx);
+    this.player.draw(ctx);
   }
 }
 
@@ -917,7 +928,7 @@ class Player {
   constructor() {
     this.sprite = new Image();
     this.sprite.src = "./assets/images/player/link.png"
-    this.swordSound = new Audio("./assets/sfx/sword.wav");
+    this.ouch = new Audio("./assets/sfx/link-hurt.wav");
 
     this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
@@ -1000,9 +1011,8 @@ class Player {
   takeDamage() {
     if (!this.frameData.invincibility) {
       this.frameData.invincibility = 45;
+      this.ouch.play()
       this.hp--
-      console.log('ouch!')
-      console.log(this.hp)
     }
   }
 }
@@ -1397,8 +1407,6 @@ function sumMapPixel(ctx, x, y) {
 
 function scanMapTile(ctx, x, y) {
   const tile = ctx.getImageData(x+23, y+23, 2, 2);
-  // if (sumArr(tile.data) === 1020) return true;
-  // return false;
   return sumArr(tile.data)
 }
 

@@ -26,8 +26,6 @@ export function sumMapPixel(ctx, x, y) {
 
 export function scanMapTile(ctx, x, y) {
   const tile = ctx.getImageData(x+23, y+23, 2, 2);
-  // if (sumArr(tile.data) === 1020) return true;
-  // return false;
   return sumArr(tile.data)
 }
 
