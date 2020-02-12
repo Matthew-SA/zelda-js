@@ -462,8 +462,11 @@ class Game {
     }
   }
 
-  stepUnits() {
+  stepUnits(collisionCtx) {
     if (this.currentInput) this.player.frameData.run++;
+    if (this.player.frameData.knockback) {
+      this.getKnockedBackFrom(this.player.pos.direction, collisionCtx)
+    }
     for (let i = 0; i < this.units.length; i++) {
       if (this.units[i] instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] && this.units[i].runCycle <= 0) {
         this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_5__["default"](this.units[i].pixelPos, this.grid);
@@ -522,8 +525,17 @@ class Game {
     }
   }
 
-  getknockedbackfrom(ctx) {
-    
+  getKnockedBackFrom(direction, ctx) {
+    if (!this.player.frameData.knockback) return;
+    if (direction === 96 && this.player.pos.y < 634 && !this.impassableTerrain(0,ctx)) {
+      this.player.move(0, 12)
+    } else if (direction === 144 && this.player.pos.x > 14 && !this.impassableTerrain(48, ctx)) {
+      this.player.move(-12, 0)
+    } else if (direction === 0 && this.player.pos.y > 188 && !this.impassableTerrain(96, ctx)) {
+      this.player.move(0, -12)
+    } else if (direction === 48 && this.player.pos.x < 706 && !this.impassableTerrain(144, ctx)) {
+      this.player.move(12, 0)
+    }
   }
 
   drawUnits(ctx) {
@@ -794,7 +806,7 @@ class GameView {
     this.game.scroll(worldCtx, collisionCtx);
     this.game.getLastInput();
     this.game.checkKey(collisionCtx);
-    this.game.stepUnits();
+    this.game.stepUnits(collisionCtx);
     this.game.stepAttacks();
     this.player.step();
   }
@@ -960,6 +972,7 @@ class Player {
   step() {
     if (this.frameData.run > 15) this.frameData.run = 0;
     if (this.frameData.cooldown) this.frameData.cooldown--
+    if (this.frameData.knockback) this.frameData.knockback--
     if (this.frameData.invincibility) this.frameData.invincibility--
     this.frameData.attack ? this.frameData.attack-- : this.attacks.splice(0,1)
     this.lastPos.x = this.pos.x;
@@ -1013,19 +1026,10 @@ class Player {
     if (!this.frameData.invincibility) {
       this.frameData.invincibility = 45;
       this.ouch.play()
+      this.frameData.cooldown = 8;
+      this.frameData.knockback = 8;
       this.hp--
-    }
-  }
-
-  knockedBack(direction) {
-    if (direction === 96) {
-      this.move(0,9)
-    } else if (direction === 144) {
-      this.move(-9, 0)
-    } else if (direction === 0) {
-      this.move(0, -9)
-    } else if (direction === 48) {
-      this.move(9, 0)
+      this.attacks.pop()
     }
   }
 }
