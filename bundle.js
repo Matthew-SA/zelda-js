@@ -479,16 +479,17 @@ class Game {
   }
 
   checkCollisionsAgainstPlayer(other) {
+    if (other instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_2__["default"] || other instanceof _units_spark__WEBPACK_IMPORTED_MODULE_3__["default"]) return;
     const playerHitbox = {
       x: this.player.pos.x + 2,
       y: this.player.pos.y + 2,
       width: 44,
       height: 44,
     }
-    if (playerHitbox.x < other.pos.x + other.pos.width &&
-      playerHitbox.x + playerHitbox.width > other.pos.x &&
-      playerHitbox.y < other.pos.y + other.pos.height &&
-      playerHitbox.y + playerHitbox.height > other.pos.y) {
+    if (playerHitbox.x + 6 < other.pos.x + other.pos.width &&
+      playerHitbox.x + playerHitbox.width - 6> other.pos.x &&
+      playerHitbox.y - 6< other.pos.y + other.pos.height &&
+      playerHitbox.y + playerHitbox.height + 6> other.pos.y) {
       this.player.takeDamage();
     }
   }
