@@ -8,6 +8,7 @@ class Player {
 
     this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
+
     this.tracebox = {
       topLeft: [this.pos.x + 9, this.pos.y + 24],
       topRight: [this.pos.x + 39, this.pos.y + 24],
@@ -19,8 +20,11 @@ class Player {
       run: 0,
       attack: 0,
       cooldown: 0,
+      invincibility: 0,
     }
-    
+
+    this.hp = 3;
+
     this.attacks = [];
   }
   
@@ -31,6 +35,7 @@ class Player {
   step() {
     if (this.frameData.run > 15) this.frameData.run = 0;
     if (this.frameData.cooldown) this.frameData.cooldown--
+    if (this.frameData.invincibility) this.frameData.invincibility--
     this.frameData.attack ? this.frameData.attack-- : this.attacks.splice(0,1)
     this.lastPos.x = this.pos.x;
     this.lastPos.y = this.pos.y;
@@ -40,8 +45,8 @@ class Player {
     if (this.frameData.attack) {
       ctx.drawImage(
         this.sprite,
-        this.pos.direction,
-        96, // attack sprite pose
+        this.frameData.invincibility ? this.pos.direction + 240 : this.pos.direction,
+        this.frameData.invincibility ? 288 + (48 * (this.frameData.invincibility % 3)) : 96, // attack sprite pose
         48,
         48,
         this.pos.x,
@@ -52,8 +57,8 @@ class Player {
     } else {
       ctx.drawImage(
         this.sprite,
-        this.pos.direction,
-        this.frameData.run < 9 ? 0 : 48,
+        this.frameData.invincibility ? this.pos.direction + 240 : this.pos.direction,
+        this.frameData.invincibility ? this.frameData.run < 9 ? 0 + (48 * (this.frameData.invincibility % 3)) : 144 + (48 * (this.frameData.invincibility % 3)) : this.frameData.run < 9 ? 0 : 48,
         48,
         48,
         this.pos.x,
@@ -77,6 +82,15 @@ class Player {
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
     this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
+  }
+
+  takeDamage() {
+    if (!this.frameData.invincibility) {
+      this.frameData.invincibility = 45;
+      this.hp--
+      console.log('ouch!')
+      console.log(this.hp)
+    }
   }
 }
 

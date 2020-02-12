@@ -77,7 +77,7 @@ class Game {
       playerHitbox.x + playerHitbox.width > other.pos.x &&
       playerHitbox.y < other.pos.y + other.pos.height &&
       playerHitbox.y + playerHitbox.height > other.pos.y) {
-      console.log('ouch!')
+      this.player.takeDamage();
     }
   }
 
@@ -188,6 +188,8 @@ class Game {
     // this.enemyCount = 100 // stress test!
   }
 }
+
+
 
 
 export default Game;

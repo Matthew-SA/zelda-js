@@ -35,9 +35,16 @@ export function sample(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-
 export function random(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+export function knockbackcheck(pixel1, pixel2) {
+  let pixel1value = util.sumArr(pixel1)
+  let pixel2value = util.sumArr(pixel2)
+  if (pixel1value === constants.WALL || pixel1value === constants.WATER) return true;
+  if (pixel2value === constants.WALL || pixel2value === constants.WATER) return true;
+  return false;
 }
