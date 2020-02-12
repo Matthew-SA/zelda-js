@@ -489,7 +489,7 @@ class Game {
       playerHitbox.x + playerHitbox.width > other.pos.x &&
       playerHitbox.y < other.pos.y + other.pos.height &&
       playerHitbox.y + playerHitbox.height > other.pos.y) {
-      console.log('ouch!')
+      this.player.takeDamage();
     }
   }
 
@@ -600,6 +600,8 @@ class Game {
     // this.enemyCount = 100 // stress test!
   }
 }
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = (Game);
@@ -918,6 +920,7 @@ class Player {
 
     this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
+
     this.tracebox = {
       topLeft: [this.pos.x + 9, this.pos.y + 24],
       topRight: [this.pos.x + 39, this.pos.y + 24],
@@ -929,8 +932,11 @@ class Player {
       run: 0,
       attack: 0,
       cooldown: 0,
+      invincibility: 0,
     }
-    
+
+    this.hp = 3;
+
     this.attacks = [];
   }
   
@@ -941,6 +947,7 @@ class Player {
   step() {
     if (this.frameData.run > 15) this.frameData.run = 0;
     if (this.frameData.cooldown) this.frameData.cooldown--
+    if (this.frameData.invincibility) this.frameData.invincibility--
     this.frameData.attack ? this.frameData.attack-- : this.attacks.splice(0,1)
     this.lastPos.x = this.pos.x;
     this.lastPos.y = this.pos.y;
@@ -950,8 +957,8 @@ class Player {
     if (this.frameData.attack) {
       ctx.drawImage(
         this.sprite,
-        this.pos.direction,
-        96, // attack sprite pose
+        this.frameData.invincibility ? this.pos.direction + 240 : this.pos.direction,
+        this.frameData.invincibility ? 288 + (48 * (this.frameData.invincibility % 3)) : 96, // attack sprite pose
         48,
         48,
         this.pos.x,
@@ -962,8 +969,8 @@ class Player {
     } else {
       ctx.drawImage(
         this.sprite,
-        this.pos.direction,
-        this.frameData.run < 9 ? 0 : 48,
+        this.frameData.invincibility ? this.pos.direction + 240 : this.pos.direction,
+        this.frameData.invincibility ? this.frameData.run < 9 ? 0 + (48 * (this.frameData.invincibility % 3)) : 144 + (48 * (this.frameData.invincibility % 3)) : this.frameData.run < 9 ? 0 : 48,
         48,
         48,
         this.pos.x,
@@ -987,6 +994,15 @@ class Player {
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
     this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
+  }
+
+  takeDamage() {
+    if (!this.frameData.invincibility) {
+      this.frameData.invincibility = 45;
+      this.hp--
+      console.log('ouch!')
+      console.log(this.hp)
+    }
   }
 }
 
@@ -1339,7 +1355,7 @@ const VIEWHEIGHT = 528;
 /*!**************************!*\
   !*** ./src/util/util.js ***!
   \**************************/
-/*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, scanMapTile, sample, random */
+/*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, scanMapTile, sample, random, knockbackcheck */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1351,6 +1367,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scanMapTile", function() { return scanMapTile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sample", function() { return sample; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "random", function() { return random; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "knockbackcheck", function() { return knockbackcheck; });
 function equalArr(arr1,arr2) {
   for (let i = 0; i - arr1.length - 1; i++) {
     if (arr1[i] !== arr2[i]) return false;
@@ -1388,13 +1405,19 @@ function sample(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-
 function random(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function knockbackcheck(pixel1, pixel2) {
+  let pixel1value = util.sumArr(pixel1)
+  let pixel2value = util.sumArr(pixel2)
+  if (pixel1value === constants.WALL || pixel1value === constants.WATER) return true;
+  if (pixel2value === constants.WALL || pixel2value === constants.WATER) return true;
+  return false;
+}
 
 /***/ }),
 
