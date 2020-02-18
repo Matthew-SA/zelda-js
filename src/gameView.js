@@ -36,7 +36,7 @@ class GameView {
     this.clear(this.spriteCtx)
     this.step(this.spriteCtx, this.worldCtx, this.collisionCtx);
     this.draw(this.spriteCtx)
-    window.requestAnimationFrame(() => this.gameLoop())
+    requestAnimationFrame(() => this.gameLoop())
   }
 
   clear(ctx) {

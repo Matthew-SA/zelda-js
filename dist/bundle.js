@@ -496,9 +496,9 @@ class Game {
       width: 44,
       height: 44,
     }
-    if (playerHitbox.x + 6 < other.pos.x + other.pos.width &&
+    if (playerHitbox.x < other.pos.x + other.pos.width &&
       playerHitbox.x + playerHitbox.width - 6> other.pos.x &&
-      playerHitbox.y - 6< other.pos.y + other.pos.height &&
+      playerHitbox.y < other.pos.y + other.pos.height &&
       playerHitbox.y + playerHitbox.height + 6> other.pos.y) {
       this.player.takeDamage();
     }
@@ -792,7 +792,7 @@ class GameView {
     this.clear(this.spriteCtx)
     this.step(this.spriteCtx, this.worldCtx, this.collisionCtx);
     this.draw(this.spriteCtx)
-    window.requestAnimationFrame(() => this.gameLoop())
+    requestAnimationFrame(() => this.gameLoop())
   }
 
   clear(ctx) {
@@ -1024,6 +1024,7 @@ class Player {
 
   takeDamage() {
     if (!this.frameData.invincibility) {
+      console.log(this.hp)
       this.frameData.invincibility = 45;
       this.ouch.play()
       this.frameData.cooldown = 8;

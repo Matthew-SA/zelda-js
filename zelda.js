@@ -36,4 +36,4 @@ const gameView = new GameView(menuCtx, spriteCtx, worldCtx, collisionCtx)
 
 window.addEventListener('load',() => {
   gameView.init();
-  }, false);
+}, false);
