@@ -21,7 +21,7 @@ collisionCanvas.width = 768
 collisionCanvas.height = 696
 
 
-
+//TODO - truly split render logic.
 
 // const background = new Image();
 // background.src = "./images/board.jpg";
