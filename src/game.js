@@ -70,7 +70,6 @@ class Game {
 
   stepAttacks() {
     for (let i = 0; i < this.player.attacks.length; i++) {
-      // TODO: ADD MORE ATTACKS!
     }
   }
 
