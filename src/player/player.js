@@ -6,7 +6,7 @@ class Player {
     this.sprite.src = "./assets/images/player/link.png"
     this.ouch = new Audio("./assets/sfx/link-hurt.wav");
 
-    this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
+    // this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
 
     this.tracebox = {
@@ -30,7 +30,7 @@ class Player {
   }
   
   clear(ctx) {
-    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
@@ -39,8 +39,8 @@ class Player {
     if (this.frameData.knockback) this.frameData.knockback--
     if (this.frameData.invincibility) this.frameData.invincibility--
     this.frameData.attack ? this.frameData.attack-- : this.attacks.splice(0,1)
-    this.lastPos.x = this.pos.x;
-    this.lastPos.y = this.pos.y;
+    // this.lastPos.x = this.pos.x;
+    // this.lastPos.y = this.pos.y;
   }
 
   draw(ctx) {
