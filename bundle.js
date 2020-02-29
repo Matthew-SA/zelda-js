@@ -1146,7 +1146,7 @@ class Octorok {
       width: 48, 
       height: 48 
     }
-    this.lastPos = Object.assign({}, this.pos)
+    // this.lastPos = Object.assign({}, this.pos)
     
     // frame data
     this.runCycle = 0;
@@ -1160,7 +1160,7 @@ class Octorok {
   }
   
   clear(ctx) {
-    ctx.clearRect(this.lastPos.x, this.lastPos.y, 48, 48);
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
@@ -1199,8 +1199,8 @@ class Octorok {
       48,
       48
       )
-      this.lastPos.x = this.pos.x;
-      this.lastPos.y = this.pos.y;
+      // this.lastPos.x = this.pos.x;
+      // this.lastPos.y = this.pos.y;
     }
 
   checkAvailableActions() {
