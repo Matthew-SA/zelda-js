@@ -451,15 +451,11 @@ class Game {
   }
   
   clearUnits(ctx) {
-    for (let i = 0; i < this.units.length; i++) {
-      this.units[i].clear(ctx);
-    }
+    this.units.forEach(unit => unit.clear(ctx))
   }
 
   clearAttacks(ctx) {
-    for (let i = 0; i < this.player.attacks.length; i++) {
-      this.player.attacks[i].clear(ctx)
-    }
+    this.player.attacks.forEach(attack => attack.clear(ctx))
   }
 
   stepUnits(collisionCtx) {
@@ -538,17 +534,12 @@ class Game {
   }
 
   drawUnits(ctx) {
-    for (let i = 0; i < this.units.length; i++ ) {
-      this.units[i].draw(ctx)
-    }
+    this.units.forEach(unit => unit.draw(ctx))
   }
 
   drawAttacks(ctx) {
-    for (let i = 0; i < this.player.attacks.length; i++) {
-      this.player.attacks[i].draw(ctx)
-    }
+    this.player.attacks.forEach(attack => attack.draw(ctx))
   }
-
 
   scanGrid(ctx) {
     let newGrid = [];
@@ -941,7 +932,6 @@ class Player {
     this.sprite.src = "./assets/images/player/link.png"
     this.ouch = new Audio("./assets/sfx/link-hurt.wav");
 
-    // this.lastPos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
 
     this.tracebox = {
@@ -974,8 +964,6 @@ class Player {
     if (this.frameData.knockback) this.frameData.knockback--
     if (this.frameData.invincibility) this.frameData.invincibility--
     this.frameData.attack ? this.frameData.attack-- : this.attacks.splice(0,1)
-    // this.lastPos.x = this.pos.x;
-    // this.lastPos.y = this.pos.y;
   }
 
   draw(ctx) {
@@ -1146,7 +1134,6 @@ class Octorok {
       width: 48, 
       height: 48 
     }
-    // this.lastPos = Object.assign({}, this.pos)
     
     // frame data
     this.runCycle = 0;
@@ -1199,8 +1186,6 @@ class Octorok {
       48,
       48
       )
-      // this.lastPos.x = this.pos.x;
-      // this.lastPos.y = this.pos.y;
     }
 
   checkAvailableActions() {
