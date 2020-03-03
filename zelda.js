@@ -22,6 +22,7 @@ collisionCanvas.height = 696
 
 
 //TODO - truly split render logic.
+//TODO - drop keymaster dependancy.
 
 // const background = new Image();
 // background.src = "./images/board.jpg";
