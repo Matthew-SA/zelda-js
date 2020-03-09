@@ -85,7 +85,7 @@ class Player {
 
   takeDamage() {
     if (!this.frameData.invincibility) {
-      // console.log(this.hp)
+      console.log(this.hp)
       this.frameData.invincibility = 45;
       this.ouch.play()
       this.frameData.cooldown = 8;
