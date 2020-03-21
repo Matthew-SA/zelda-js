@@ -10,7 +10,7 @@ import * as util from './util/util'
 
 // gameView is 16 x 14.5 'tiles
 // gameplay is in 16 x 11 tiles
-// TODO: remove keymaster dependancy
+// TODO: remove keymaster dependancy!
 
 class Game {
   constructor() {
