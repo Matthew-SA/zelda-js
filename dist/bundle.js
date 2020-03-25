@@ -424,6 +424,7 @@ __webpack_require__.r(__webpack_exports__);
 
 // gameView is 16 x 14.5 'tiles
 // gameplay is in 16 x 11 tiles
+// TODO: remove keymaster dependancy!
 
 class Game {
   constructor() {
@@ -486,15 +487,15 @@ class Game {
   checkCollisionsAgainstPlayer(other) {
     if (other instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] || other instanceof _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"]) return;
     const playerHitbox = {
-      x: this.player.pos.x + 2,
-      y: this.player.pos.y + 2,
-      width: 44,
-      height: 44,
+      x: this.player.pos.x + 12,
+      y: this.player.pos.y + 12,
+      width: 24,
+      height: 24,
     }
     if (playerHitbox.x < other.pos.x + other.pos.width &&
-      playerHitbox.x + playerHitbox.width - 6> other.pos.x &&
+      playerHitbox.x + playerHitbox.width > other.pos.x &&
       playerHitbox.y < other.pos.y + other.pos.height &&
-      playerHitbox.y + playerHitbox.height + 6> other.pos.y) {
+      playerHitbox.y + playerHitbox.height > other.pos.y) {
       this.player.takeDamage();
     }
   }
@@ -1465,6 +1466,7 @@ collisionCanvas.height = 696
 
 
 //TODO - truly split render logic.
+//TODO - drop keymaster dependancy.
 
 // const background = new Image();
 // background.src = "./images/board.jpg";
