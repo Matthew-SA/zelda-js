@@ -5,10 +5,12 @@ class Octorok {
     this.sprite = new Image();
     this.sprite.src = "./assets/images/units/overworld-enemies.png"
     
+    this.ouch = new Audio("./assets/sfx/hit-enemy.wav");
+
     this.grid = grid;
     
     // unit stats
-    this.hp = 1;
+    this.hp = 5;
     this.ap = 1;
 
     //position data
@@ -22,49 +24,60 @@ class Octorok {
     }
     
     // frame data
-    this.runCycle = 0;
-    this.actionCycle = 48;
-    this.direction = 0;
-    this.frame = 0;
+    this.frameData ={
+      run: 0,
+      action: 48,
+      direction: 0,
+      frame: 0,
+      invincibility: 0,
+    }
+
     this.speed = util.random(1,3)
-    this.invincibilityFrames = 0;
     //start action cycle
     this.updateAction();
   }
   
+  takeDamage() {
+    if (this.frameData.invincibility) return;
+    this.hp -= 1;
+    this.frameData.invincibility = 20;
+    this.ouch.play();
+  }
+
   clear(ctx) {
     ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
+    console.log(this.frameData.invinciblity)
+    if (this.frameData.invincibility) this.frameData.invincibility--
+    if (this.frameData.action <= 0) this.updateAction();
     
-    if (this.actionCycle <= 0) this.updateAction();
-    
-    if (this.direction === 96) { // north
+    if (this.frameData.direction === 96) { // north
       this.pos.y -= 1 * this.speed
-    } else if (this.direction === 144) { // east
+    } else if (this.frameData.direction === 144) { // east
       this.pos.x += 1 * this.speed
-    } else if (this.direction === 0) { // south
+    } else if (this.frameData.direction === 0) { // south
       this.pos.y += 1 * this.speed
-    } else if (this.direction === 48) { // west
+    } else if (this.frameData.direction === 48) { // west
       this.pos.x -= 1 * this.speed
     }
-    this.runCycle += 1 * this.speed;
-    this.actionCycle -= 1 * this.speed;
+    this.frameData.run += 1 * this.speed;
+    this.frameData.action -= 1 * this.speed;
   }
   
   draw(ctx) {
-    if (this.runCycle < 14) {
-      this.frame = 0;
+    if (this.frameData.run < 14) {
+      this.frameData.frame = 0;
     } else {
-      this.frame = 48;
+      this.frameData.frame = 48;
     }
-    if (this.runCycle > 25) this.runCycle = 0;
-    if (this.attacking) this.frame = 153;
+    if (this.frameData.run > 25) this.frameData.run = 0;
+    if (this.attacking) this.frameData.frame = 153;
     ctx.drawImage(
       this.sprite,
-      this.direction,
-      this.frame,
+      this.frameData.direction,
+      this.frameData.frame,
       48,
       48,
       this.pos.x,
@@ -93,9 +106,9 @@ class Octorok {
 
   updateAction() {
     let possibleActions = this.checkAvailableActions();
-    this.actionCycle = 48;
+    this.frameData.action = 48;
     let action = util.sample(possibleActions);
-    this.direction = action[0];
+    this.frameData.direction = action[0];
     this.pos.col += action[1];
     this.pos.row += action[2];
   }

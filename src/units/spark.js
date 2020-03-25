@@ -10,22 +10,26 @@ class Spark {
       height: 48,
     }
 
-    this.runCycle = 0;
-    this.invincibilityFrames = 100;
+    this.frameData = {
+      run: 0,
+      invincibility: 100,
+    }
   }
+
+  takeDamage() {}
 
   clear(ctx) {
     ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
-    this.runCycle++
+    this.frameData.run++
   }
 
   draw(ctx) {
     ctx.drawImage(
       this.sprite,
-      96 + (48 * Math.floor(this.runCycle / 2)),
+      96 + (48 * Math.floor(this.frameData.run / 2)),
       0,
       48,
       48,

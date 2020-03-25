@@ -19,8 +19,7 @@ class Game {
     this.overworld = new Overworld;
 
     // game sounds
-    this.hitEnemy = new Audio("./assets/sfx/hit-enemy.wav");
-    this.destroyEnemy = new Audio("./assets/sfx/destroy-enemy.wav");
+    this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");
 
     // game scroll logic
     this.scrolling = false;
@@ -96,15 +95,15 @@ class Game {
   }
 
   damageUnit(unit) {
-    if (unit.invincibilityFrames) return;
-    unit.hp -= 1
-    if (unit.hp) {
-      this.hitEnemy.play();
-    } else {
-      this.destroyEnemy.play();
-      this.units.splice(this.units.indexOf(unit), 1)
-      this.units.push(new Spark(unit.pos))
-    }
+    unit.takeDamage();
+    if (unit.hp <= 0) this.killUnit(unit)
+    console.log(unit.hp)
+  }
+
+  killUnit(unit) {
+    this.unitDeath.play();
+    this.units.splice(this.units.indexOf(unit), 1)
+    this.units.push(new Spark(unit.pos))
   }
 
   getKnockedBackFrom(direction, ctx) {
@@ -197,8 +196,8 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
-    // this.enemyCount = 100 // stress test!
+    // this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
+    this.enemyCount = 1// stress test!
   }
 
   // collision layer check below

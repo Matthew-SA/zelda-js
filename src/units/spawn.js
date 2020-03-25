@@ -13,8 +13,13 @@ class Spawn {
     this.pixelPos = pixelPos;
     this.runCycle = util.random(20,150);
 
-    this.invincibilityFrames = 100;
+    this.frameData = {
+      // run: 0,
+      invincibility: 100,
+    }
   }
+
+  takeDamage() {}
 
   clear(ctx) {
     ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
