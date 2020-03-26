@@ -6,29 +6,21 @@ class Sword {
     this.swordSfx.play()
 
     if (pos.direction === 96) { // up
-      this.pos = {
-        x: pos.x, y: pos.y - 36,
-        hurtBoxX: pos.x + 18, hurtBoxY: pos.y - 36,
-        width: 9, height: 48, direction: 96,
-      }
+      this.pos = { x: pos.x, y: pos.y - 36 }
+      this.hitBox = { x: pos.x + 18, y: pos.y - 36, width: 9, height: 48}
+      this.direction = 96;
     } else if (pos.direction === 144) { // right
-      this.pos = {
-        x: pos.x + 36, y: pos.y,
-        hurtBoxX: pos.x + 36, hurtBoxY: pos.y + 24,
-        width: 48, height: 9, direction: 144
-      }
+      this.pos = { x: pos.x + 36, y: pos.y }
+      this.hitBox = { x: pos.x + 36, y: pos.y + 24, width: 48, height: 9 }
+      this.direction = 144;
     } else if (pos.direction === 0) { // down
-      this.pos = {
-        x: pos.x, y: pos.y + 36,
-        hurtBoxX: pos.x + 21, hurtBoxY: pos.y + 36,
-        width: 9, height: 48, direction: 0,
-      }
+      this.pos = { x: pos.x, y: pos.y + 36 }
+      this.hitBox = { x: pos.x + 21, y: pos.y + 36, width: 9, height: 48 }
+      this.direction = 0;
     } else if (pos.direction === 48) { // left
-      this.pos = {
-        x: pos.x - 36, y: pos.y,
-        hurtBoxX: pos.x - 36, hurtBoxY: pos.y + 24,
-        width: 48, height: 9, direction: 48
-      }
+      this.pos = { x: pos.x - 36, y: pos.y }
+      this.hitBox = { x: pos.x - 36, y: pos.y + 24, width: 48, height: 9 }
+      this.direction = 48;
     }
   }
 
@@ -41,7 +33,7 @@ class Sword {
   draw(ctx) {
     ctx.drawImage(
       this.sprite,
-      this.pos.direction,
+      this.direction,
       0,
       48,
       48,
@@ -54,10 +46,10 @@ class Sword {
       // hurtbox debugger //
       // ctx.fillStyle = 'red';
       // ctx.fillRect(
-      //   this.pos.hurtBoxX,
-      //   this.pos.hurtBoxY,
-      //   this.pos.width,
-      //   this.pos.height)
+      //   this.hitBox.x,
+      //   this.hitBox.y,
+      //   this.hitBox.width,
+      //   this.hitBox.height)
   }
 }
 

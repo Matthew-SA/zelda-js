@@ -55,9 +55,9 @@ class Game {
       }
       this.units[i].step();
       this.checkCollisionsAgainstPlayer(this.units[i])
-      for (let j = 0; j < this.player.attacks.length; j++) {
-        this.checkCollisionAgainstOther(this.player.attacks[j], this.units[i])
-      }
+
+      this.player.attacks.forEach(attack => this.checkCollisionAgainstOther(attack, this.units[i]))
+
       if (this.units[i] instanceof Spark && this.units[i].runCycle > 16) {
         this.units.splice(this.units.indexOf(this.units[i]), 1)
       }
@@ -86,16 +86,29 @@ class Game {
   }
 
   checkCollisionAgainstOther(attack, other) {
-    if (attack.pos.hurtBoxX < other.pos.x + other.pos.width &&
-      attack.pos.hurtBoxX + attack.pos.width > other.pos.x &&
-      attack.pos.hurtBoxY < other.pos.y + other.pos.height &&
-      attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
-      this.damageUnit(other);
-    }
+    // if (attack.pos.hurtBoxX < other.pos.x + other.pos.width &&
+    //   attack.pos.hurtBoxX + attack.pos.width > other.pos.x &&
+    //   attack.pos.hurtBoxY < other.pos.y + other.pos.height &&
+    //   attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
+    //   this.damageUnit(other);
+    // }
+    if (this.checkCollision(attack.hitbox, other.pos)) this.damageUnit(other)
   }
 
-  damageUnit(unit) {
-    unit.takeDamage();
+  checkCollision(object1, object2) {
+    if (
+      object1.x < object2.x + object2.width &&
+      object1.x + object1.width > object2.x &&
+      object1.y < object2.y + object2.height &&
+      object1.y + object1.height > object2.y
+      ) {
+        return true;
+    }
+    return false;
+  }
+
+  damageUnit(unit, damage) {
+    unit.takeDamage(damage);
     if (unit.hp <= 0) this.killUnit(unit)
     console.log(unit.hp)
   }
