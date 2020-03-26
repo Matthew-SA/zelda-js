@@ -469,9 +469,9 @@ class Game {
       }
       this.units[i].step();
       this.checkCollisionsAgainstPlayer(this.units[i])
-      for (let j = 0; j < this.player.attacks.length; j++) {
-        this.checkCollisionAgainstOther(this.player.attacks[j], this.units[i])
-      }
+
+      this.player.attacks.forEach(attack => this.checkCollisionAgainstOther(attack, this.units[i]))
+
       if (this.units[i] instanceof _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"] && this.units[i].runCycle > 16) {
         this.units.splice(this.units.indexOf(this.units[i]), 1)
       }
@@ -500,16 +500,29 @@ class Game {
   }
 
   checkCollisionAgainstOther(attack, other) {
-    if (attack.pos.hurtBoxX < other.pos.x + other.pos.width &&
-      attack.pos.hurtBoxX + attack.pos.width > other.pos.x &&
-      attack.pos.hurtBoxY < other.pos.y + other.pos.height &&
-      attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
-      this.damageUnit(other);
-    }
+    // if (attack.pos.hurtBoxX < other.pos.x + other.pos.width &&
+    //   attack.pos.hurtBoxX + attack.pos.width > other.pos.x &&
+    //   attack.pos.hurtBoxY < other.pos.y + other.pos.height &&
+    //   attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
+    //   this.damageUnit(other);
+    // }
+    if (this.checkCollision(attack.hitbox, other.pos)) this.damageUnit(other)
   }
 
-  damageUnit(unit) {
-    unit.takeDamage();
+  checkCollision(object1, object2) {
+    if (
+      object1.x < object2.x + object2.width &&
+      object1.x + object1.width > object2.x &&
+      object1.y < object2.y + object2.height &&
+      object1.y + object1.height > object2.y
+      ) {
+        return true;
+    }
+    return false;
+  }
+
+  damageUnit(unit, damage) {
+    unit.takeDamage(damage);
     if (unit.hp <= 0) this.killUnit(unit)
     console.log(unit.hp)
   }
@@ -1043,29 +1056,21 @@ class Sword {
     this.swordSfx.play()
 
     if (pos.direction === 96) { // up
-      this.pos = {
-        x: pos.x, y: pos.y - 36,
-        hurtBoxX: pos.x + 18, hurtBoxY: pos.y - 36,
-        width: 9, height: 48, direction: 96,
-      }
+      this.pos = { x: pos.x, y: pos.y - 36 }
+      this.hitBox = { x: pos.x + 18, y: pos.y - 36, width: 9, height: 48}
+      this.direction = 96;
     } else if (pos.direction === 144) { // right
-      this.pos = {
-        x: pos.x + 36, y: pos.y,
-        hurtBoxX: pos.x + 36, hurtBoxY: pos.y + 24,
-        width: 48, height: 9, direction: 144
-      }
+      this.pos = { x: pos.x + 36, y: pos.y }
+      this.hitBox = { x: pos.x + 36, y: pos.y + 24, width: 48, height: 9 }
+      this.direction = 144;
     } else if (pos.direction === 0) { // down
-      this.pos = {
-        x: pos.x, y: pos.y + 36,
-        hurtBoxX: pos.x + 21, hurtBoxY: pos.y + 36,
-        width: 9, height: 48, direction: 0,
-      }
+      this.pos = { x: pos.x, y: pos.y + 36 }
+      this.hitBox = { x: pos.x + 21, y: pos.y + 36, width: 9, height: 48 }
+      this.direction = 0;
     } else if (pos.direction === 48) { // left
-      this.pos = {
-        x: pos.x - 36, y: pos.y,
-        hurtBoxX: pos.x - 36, hurtBoxY: pos.y + 24,
-        width: 48, height: 9, direction: 48
-      }
+      this.pos = { x: pos.x - 36, y: pos.y }
+      this.hitBox = { x: pos.x - 36, y: pos.y + 24, width: 48, height: 9 }
+      this.direction = 48;
     }
   }
 
@@ -1078,7 +1083,7 @@ class Sword {
   draw(ctx) {
     ctx.drawImage(
       this.sprite,
-      this.pos.direction,
+      this.direction,
       0,
       48,
       48,
@@ -1091,10 +1096,10 @@ class Sword {
       // hurtbox debugger //
       // ctx.fillStyle = 'red';
       // ctx.fillRect(
-      //   this.pos.hurtBoxX,
-      //   this.pos.hurtBoxY,
-      //   this.pos.width,
-      //   this.pos.height)
+      //   this.hitBox.x,
+      //   this.hitBox.y,
+      //   this.hitBox.width,
+      //   this.hitBox.height)
   }
 }
 
@@ -1112,120 +1117,22 @@ class Sword {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/util */ "./src/util/util.js");
+/* harmony import */ var _unit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./unit */ "./src/units/unit.js");
 
 
-class Octorok {
+class Octorok extends _unit__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor(pixelPos, grid) {
-    this.sprite = new Image();
-    this.sprite.src = "./assets/images/units/overworld-enemies.png"
-    
-    this.ouch = new Audio("./assets/sfx/hit-enemy.wav");
-
-    this.grid = grid;
+    super(pixelPos, grid, 0)
     
     // unit stats
-    this.hp = 5;
+    this.hp = 2;
     this.ap = 1;
-
-    //position data
-    this.pos = { 
-      x: pixelPos[0], 
-      y: pixelPos[1], 
-      row: ((pixelPos[1] - 168) / 48),
-      col: (pixelPos[0] / 48), 
-      width: 48, 
-      height: 48 
-    }
-    
-    // frame data
-    this.frameData ={
-      run: 0,
-      action: 48,
-      direction: 0,
-      frame: 0,
-      invincibility: 0,
-    }
 
     this.speed = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](1,3)
     //start action cycle
     this.updateAction();
   }
   
-  takeDamage() {
-    if (this.frameData.invincibility) return;
-    this.hp -= 1;
-    this.frameData.invincibility = 20;
-    this.ouch.play();
-  }
-
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
-  }
-
-  step() {
-    console.log(this.frameData.invinciblity)
-    if (this.frameData.invincibility) this.frameData.invincibility--
-    if (this.frameData.action <= 0) this.updateAction();
-    
-    if (this.frameData.direction === 96) { // north
-      this.pos.y -= 1 * this.speed
-    } else if (this.frameData.direction === 144) { // east
-      this.pos.x += 1 * this.speed
-    } else if (this.frameData.direction === 0) { // south
-      this.pos.y += 1 * this.speed
-    } else if (this.frameData.direction === 48) { // west
-      this.pos.x -= 1 * this.speed
-    }
-    this.frameData.run += 1 * this.speed;
-    this.frameData.action -= 1 * this.speed;
-  }
-  
-  draw(ctx) {
-    if (this.frameData.run < 14) {
-      this.frameData.frame = 0;
-    } else {
-      this.frameData.frame = 48;
-    }
-    if (this.frameData.run > 25) this.frameData.run = 0;
-    if (this.attacking) this.frameData.frame = 153;
-    ctx.drawImage(
-      this.sprite,
-      this.frameData.direction,
-      this.frameData.frame,
-      48,
-      48,
-      this.pos.x,
-      this.pos.y,
-      48,
-      48
-      )
-    }
-
-  checkAvailableActions() {
-    let neighbors = [];
-    if (this.pos.row > 0 && this.grid[this.pos.row - 1][this.pos.col] === 1020) {
-      neighbors.push([96, 0, -1]); // north
-    }
-    if (this.grid[this.pos.row][this.pos.col + 1] === 1020) {
-      neighbors.push([144, 1, 0]); // east
-    }
-    if (this.pos.row < 10 && this.grid[this.pos.row + 1][this.pos.col] === 1020) {
-      neighbors.push([0, 0, 1]); // south
-    }
-    if (this.grid[this.pos.row][this.pos.col - 1] === 1020) {
-      neighbors.push([48, -1, 0]); // west
-    }
-    return neighbors;
-  }
-
-  updateAction() {
-    let possibleActions = this.checkAvailableActions();
-    this.frameData.action = 48;
-    let action = _util_util__WEBPACK_IMPORTED_MODULE_0__["sample"](possibleActions);
-    this.frameData.direction = action[0];
-    this.pos.col += action[1];
-    this.pos.row += action[2];
-  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Octorok);
@@ -1345,6 +1252,121 @@ class Spawn {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Spawn);
+
+/***/ }),
+
+/***/ "./src/units/unit.js":
+/*!***************************!*\
+  !*** ./src/units/unit.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/util */ "./src/util/util.js");
+
+
+class Unit {
+  constructor(pixelPos, grid, startFrame) {
+    this.sprite = new Image();
+    this.sprite.src = "./assets/images/units/overworld-enemies.png"
+    this.ouch = new Audio("./assets/sfx/hit-enemy.wav");
+
+    this.grid = grid;
+
+    this.pos = {
+      x: pixelPos[0],
+      y: pixelPos[1],
+      row: ((pixelPos[1] - 168) / 48),
+      col: (pixelPos[0] / 48),
+      width: 48,
+      height: 48
+    }
+
+    this.frameData = {
+      run: 0,
+      action: 48,
+      direction: 0,
+      frame: startFrame,
+      invincibility: 0,
+    }
+
+  }
+
+  takeDamage(damage = 1) {
+    if (this.frameData.invincibility) return;
+    this.hp -= damage;
+    this.frameData.invincibility = 20;
+    this.ouch.play();
+  }
+
+  clear(ctx) {
+    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  }
+
+  step() {
+    if (this.frameData.invincibility) this.frameData.invincibility--
+    if (this.frameData.action <= 0) this.updateAction();
+
+    if (this.frameData.direction === 96) { // north
+      this.pos.y -= 1 * this.speed
+    } else if (this.frameData.direction === 144) { // east
+      this.pos.x += 1 * this.speed
+    } else if (this.frameData.direction === 0) { // south
+      this.pos.y += 1 * this.speed
+    } else if (this.frameData.direction === 48) { // west
+      this.pos.x -= 1 * this.speed
+    }
+    this.frameData.run += 1 * this.speed;
+    this.frameData.action -= 1 * this.speed;
+  }
+
+  draw(ctx) {
+    let currentFrame = this.frameData.run < 14 ? this.frameData.frame : this.frameData.frame + 48;
+    if (this.frameData.run > 25) this.frameData.run = 0;
+    // if (this.attacking) this.frameData.frame = 153;
+    ctx.drawImage(
+      this.sprite,
+      this.frameData.direction,
+      currentFrame,
+      48,
+      48,
+      this.pos.x,
+      this.pos.y,
+      48,
+      48
+    )
+  }
+
+  checkAvailableActions() {
+    let neighbors = [];
+    if (this.pos.row > 0 && this.grid[this.pos.row - 1][this.pos.col] === 1020) {
+      neighbors.push([96, 0, -1]); // north
+    }
+    if (this.grid[this.pos.row][this.pos.col + 1] === 1020) {
+      neighbors.push([144, 1, 0]); // east
+    }
+    if (this.pos.row < 10 && this.grid[this.pos.row + 1][this.pos.col] === 1020) {
+      neighbors.push([0, 0, 1]); // south
+    }
+    if (this.grid[this.pos.row][this.pos.col - 1] === 1020) {
+      neighbors.push([48, -1, 0]); // west
+    }
+    return neighbors;
+  }
+
+  updateAction() {
+    let possibleActions = this.checkAvailableActions();
+    this.frameData.action = 48;
+    let action = _util_util__WEBPACK_IMPORTED_MODULE_0__["sample"](possibleActions);
+    this.frameData.direction = action[0];
+    this.pos.col += action[1];
+    this.pos.row += action[2];
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Unit);
 
 /***/ }),
 
