@@ -92,7 +92,7 @@ class Game {
     //   attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
     //   this.damageUnit(other);
     // }
-    if (this.checkCollision(attack.hitbox, other.pos)) this.damageUnit(other)
+    if (this.checkCollision(attack.hitBox, other.pos)) this.damageUnit(other)
   }
 
   checkCollision(object1, object2) {

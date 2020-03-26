@@ -506,7 +506,7 @@ class Game {
     //   attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
     //   this.damageUnit(other);
     // }
-    if (this.checkCollision(attack.hitbox, other.pos)) this.damageUnit(other)
+    if (this.checkCollision(attack.hitBox, other.pos)) this.damageUnit(other)
   }
 
   checkCollision(object1, object2) {
@@ -1055,22 +1055,20 @@ class Sword {
     this.swordSfx = new Audio("./assets/sfx/sword.wav");
     this.swordSfx.play()
 
-    if (pos.direction === 96) { // up
+    this.direction = pos.direction
+
+    if (this.direction === 96) { // up
       this.pos = { x: pos.x, y: pos.y - 36 }
       this.hitBox = { x: pos.x + 18, y: pos.y - 36, width: 9, height: 48}
-      this.direction = 96;
-    } else if (pos.direction === 144) { // right
+    } else if (this.direction === 144) { // right
       this.pos = { x: pos.x + 36, y: pos.y }
       this.hitBox = { x: pos.x + 36, y: pos.y + 24, width: 48, height: 9 }
-      this.direction = 144;
-    } else if (pos.direction === 0) { // down
+    } else if (this.direction === 0) { // down
       this.pos = { x: pos.x, y: pos.y + 36 }
       this.hitBox = { x: pos.x + 21, y: pos.y + 36, width: 9, height: 48 }
-      this.direction = 0;
-    } else if (pos.direction === 48) { // left
+    } else if (this.direction === 48) { // left
       this.pos = { x: pos.x - 36, y: pos.y }
       this.hitBox = { x: pos.x - 36, y: pos.y + 24, width: 48, height: 9 }
-      this.direction = 48;
     }
   }
 
