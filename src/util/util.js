@@ -38,6 +38,18 @@ export function random(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+export function checkCollision(hitbox1, hitbox2) {
+  if (
+    hitbox1.x < hitbox2.x + hitbox2.width &&
+    hitbox1.x + hitbox1.width > hitbox2.x &&
+    hitbox1.y < hitbox2.y + hitbox2.height &&
+    hitbox1.y + hitbox1.height > hitbox2.y
+  ) {
+    return true;
+  }
+  return false;
+}
+
 export function knockbackcheck(pixel1, pixel2) {
   let pixel1value = util.sumArr(pixel1)
   let pixel2value = util.sumArr(pixel2)

@@ -56,7 +56,9 @@ class Game {
       this.units[i].step();
       this.checkCollisionsAgainstPlayer(this.units[i])
 
-      this.player.attacks.forEach(attack => this.checkCollisionAgainstOther(attack, this.units[i]))
+      this.player.attacks.forEach(attack => {
+        if (util.checkCollision(attack.hitBox, this.units[i].pos)) this.damageUnit(this.units[i])
+      })
 
       if (this.units[i] instanceof Spark && this.units[i].runCycle > 16) {
         this.units.splice(this.units.indexOf(this.units[i]), 1)
@@ -71,46 +73,16 @@ class Game {
 
   checkCollisionsAgainstPlayer(other) {
     if (other instanceof Spawn || other instanceof Spark) return;
-    const playerHitbox = {
-      x: this.player.pos.x + 12,
-      y: this.player.pos.y + 12,
-      width: 24,
-      height: 24,
-    }
-    if (playerHitbox.x < other.pos.x + other.pos.width &&
-      playerHitbox.x + playerHitbox.width > other.pos.x &&
-      playerHitbox.y < other.pos.y + other.pos.height &&
-      playerHitbox.y + playerHitbox.height > other.pos.y) {
-      this.player.takeDamage();
-    }
-  }
-
-  checkCollisionAgainstOther(attack, other) {
-    // if (attack.pos.hurtBoxX < other.pos.x + other.pos.width &&
-    //   attack.pos.hurtBoxX + attack.pos.width > other.pos.x &&
-    //   attack.pos.hurtBoxY < other.pos.y + other.pos.height &&
-    //   attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
-    //   this.damageUnit(other);
-    // }
-    if (this.checkCollision(attack.hitBox, other.pos)) this.damageUnit(other)
-  }
-
-  checkCollision(object1, object2) {
-    if (
-      object1.x < object2.x + object2.width &&
-      object1.x + object1.width > object2.x &&
-      object1.y < object2.y + object2.height &&
-      object1.y + object1.height > object2.y
-      ) {
-        return true;
-    }
-    return false;
+    if (util.checkCollision(this.player.hitbox, other.pos)) this.damagePlayer();
   }
 
   damageUnit(unit, damage) {
     unit.takeDamage(damage);
     if (unit.hp <= 0) this.killUnit(unit)
-    console.log(unit.hp)
+  }
+
+  damagePlayer(damage) {
+    this.player.takeDamage()
   }
 
   killUnit(unit) {

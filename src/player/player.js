@@ -8,6 +8,8 @@ class Player {
 
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
 
+    this.hitbox = { x: this.pos.x + 12, y: this.pos.y + 12, width: 24, height: 24 }
+
     this.tracebox = {
       topLeft: [this.pos.x + 9, this.pos.y + 24],
       topRight: [this.pos.x + 39, this.pos.y + 24],
@@ -77,6 +79,8 @@ class Player {
   move(x,y) {
     this.pos.x += x;
     this.pos.y += y;
+    this.hitbox.x += x;
+    this.hitbox.y += y;
     this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y

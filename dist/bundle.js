@@ -470,7 +470,9 @@ class Game {
       this.units[i].step();
       this.checkCollisionsAgainstPlayer(this.units[i])
 
-      this.player.attacks.forEach(attack => this.checkCollisionAgainstOther(attack, this.units[i]))
+      this.player.attacks.forEach(attack => {
+        if (_util_util__WEBPACK_IMPORTED_MODULE_8__["checkCollision"](attack.hitBox, this.units[i].pos)) this.damageUnit(this.units[i])
+      })
 
       if (this.units[i] instanceof _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"] && this.units[i].runCycle > 16) {
         this.units.splice(this.units.indexOf(this.units[i]), 1)
@@ -485,46 +487,16 @@ class Game {
 
   checkCollisionsAgainstPlayer(other) {
     if (other instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] || other instanceof _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"]) return;
-    const playerHitbox = {
-      x: this.player.pos.x + 12,
-      y: this.player.pos.y + 12,
-      width: 24,
-      height: 24,
-    }
-    if (playerHitbox.x < other.pos.x + other.pos.width &&
-      playerHitbox.x + playerHitbox.width > other.pos.x &&
-      playerHitbox.y < other.pos.y + other.pos.height &&
-      playerHitbox.y + playerHitbox.height > other.pos.y) {
-      this.player.takeDamage();
-    }
-  }
-
-  checkCollisionAgainstOther(attack, other) {
-    // if (attack.pos.hurtBoxX < other.pos.x + other.pos.width &&
-    //   attack.pos.hurtBoxX + attack.pos.width > other.pos.x &&
-    //   attack.pos.hurtBoxY < other.pos.y + other.pos.height &&
-    //   attack.pos.hurtBoxY + attack.pos.height > other.pos.y) {
-    //   this.damageUnit(other);
-    // }
-    if (this.checkCollision(attack.hitBox, other.pos)) this.damageUnit(other)
-  }
-
-  checkCollision(object1, object2) {
-    if (
-      object1.x < object2.x + object2.width &&
-      object1.x + object1.width > object2.x &&
-      object1.y < object2.y + object2.height &&
-      object1.y + object1.height > object2.y
-      ) {
-        return true;
-    }
-    return false;
+    if (_util_util__WEBPACK_IMPORTED_MODULE_8__["checkCollision"](this.player.hitbox, other.pos)) this.damagePlayer();
   }
 
   damageUnit(unit, damage) {
     unit.takeDamage(damage);
     if (unit.hp <= 0) this.killUnit(unit)
-    console.log(unit.hp)
+  }
+
+  damagePlayer(damage) {
+    this.player.takeDamage()
   }
 
   killUnit(unit) {
@@ -947,6 +919,8 @@ class Player {
 
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
 
+    this.hitbox = { x: this.pos.x + 12, y: this.pos.y + 12, width: 24, height: 24 }
+
     this.tracebox = {
       topLeft: [this.pos.x + 9, this.pos.y + 24],
       topRight: [this.pos.x + 39, this.pos.y + 24],
@@ -1016,6 +990,8 @@ class Player {
   move(x,y) {
     this.pos.x += x;
     this.pos.y += y;
+    this.hitbox.x += x;
+    this.hitbox.y += y;
     this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
     this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
@@ -1410,7 +1386,7 @@ const VIEWHEIGHT = 528;
 /*!**************************!*\
   !*** ./src/util/util.js ***!
   \**************************/
-/*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, scanMapTile, sample, random, knockbackcheck */
+/*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, scanMapTile, sample, random, checkCollision, knockbackcheck */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1422,6 +1398,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scanMapTile", function() { return scanMapTile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sample", function() { return sample; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "random", function() { return random; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkCollision", function() { return checkCollision; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "knockbackcheck", function() { return knockbackcheck; });
 function equalArr(arr1,arr2) {
   for (let i = 0; i - arr1.length - 1; i++) {
@@ -1461,6 +1438,18 @@ function random(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function checkCollision(hitbox1, hitbox2) {
+  if (
+    hitbox1.x < hitbox2.x + hitbox2.width &&
+    hitbox1.x + hitbox1.width > hitbox2.x &&
+    hitbox1.y < hitbox2.y + hitbox2.height &&
+    hitbox1.y + hitbox1.height > hitbox2.y
+  ) {
+    return true;
+  }
+  return false;
 }
 
 function knockbackcheck(pixel1, pixel2) {
