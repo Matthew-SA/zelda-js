@@ -2,7 +2,7 @@ import * as util from '../util/util'
 import Unit from './unit'
 class Octorok extends Unit {
   constructor(pixelPos, grid) {
-    super(pixelPos, grid, 96 * 5)
+    super(pixelPos, grid, 0)
     
     // unit stats
     this.hp = 1;

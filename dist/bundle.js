@@ -770,7 +770,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class Octorok extends _unit__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor(pixelPos, grid) {
-    super(pixelPos, grid, 96 * 5)
+    super(pixelPos, grid, 0)
     
     // unit stats
     this.hp = 1;
