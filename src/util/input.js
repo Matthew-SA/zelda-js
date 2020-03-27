@@ -35,7 +35,6 @@ class Input {
         if (!this.fired) {
           this.attack = true; 
           this.fired = true;
-          console.log('space!')
         }
         break;
     }

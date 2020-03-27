@@ -1,4 +1,3 @@
-import key from 'keymaster'
 import Input from './util/input'
 import Menu from './menu/menu.js'
 import Player from './player/player'
@@ -31,9 +30,6 @@ class Game {
     this.grid = null; // collection of grid squares with color data of center 4 pixels.
     this.openSpaces = null; // Array of subarrays.  Each contain a x/y pixel position pair.
     this.enemyCount = 0;
-
-    // this.lastInput = { 'a': null, 'w': null, 'd': null, 's': null };
-    // this.currentInput = null;
 
     this.input = new Input;
   }
