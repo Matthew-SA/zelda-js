@@ -43,9 +43,7 @@ class Game {
   }
 
   stepUnits(collisionCtx) {
-    if (this.player.frames.knockback) {
-      this.getKnockedBackFrom(this.player.pos.direction, collisionCtx)
-    }
+    if (this.player.frames.knockback) this.getKnockedBackFrom(this.player.pos.direction, collisionCtx)
 
     this.units.forEach((unit, i) => {
       if (unit instanceof Spawn && unit.runCycle <= 0) {
@@ -65,9 +63,9 @@ class Game {
     })
   }
 
-  checkCollisionsAgainstPlayer(other) {
-    if (other instanceof Spawn || other instanceof Spark) return;
-    if (Util.checkCollision(this.player.hitbox, other.pos)) this.damagePlayer();
+  checkCollisionsAgainstPlayer(unit) {
+    if (unit instanceof Spawn || unit instanceof Spark) return;
+    if (Util.checkCollision(this.player.hitbox, unit.pos)) this.damagePlayer();
   }
 
   damageUnit(unit, damage) {

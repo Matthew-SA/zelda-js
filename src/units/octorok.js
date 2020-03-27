@@ -5,7 +5,7 @@ class Octorok extends Unit {
     super(pixelPos, grid, 0)
     
     // unit stats
-    this.hp = 2;
+    this.hp = 1;
     this.ap = 1;
 
     this.speed = util.random(1,3)
