@@ -149,9 +149,7 @@ class Game {
   }
 
   stepUnits(collisionCtx) {
-    if (this.player.frames.knockback) {
-      this.getKnockedBackFrom(this.player.pos.direction, collisionCtx)
-    }
+    if (this.player.frames.knockback) this.getKnockedBackFrom(this.player.pos.direction, collisionCtx)
 
     this.units.forEach((unit, i) => {
       if (unit instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] && unit.runCycle <= 0) {
@@ -171,9 +169,9 @@ class Game {
     })
   }
 
-  checkCollisionsAgainstPlayer(other) {
-    if (other instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] || other instanceof _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"]) return;
-    if (_util_util__WEBPACK_IMPORTED_MODULE_8__["checkCollision"](this.player.hitbox, other.pos)) this.damagePlayer();
+  checkCollisionsAgainstPlayer(unit) {
+    if (unit instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] || unit instanceof _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"]) return;
+    if (_util_util__WEBPACK_IMPORTED_MODULE_8__["checkCollision"](this.player.hitbox, unit.pos)) this.damagePlayer();
   }
 
   damageUnit(unit, damage) {
@@ -771,7 +769,7 @@ class Octorok extends _unit__WEBPACK_IMPORTED_MODULE_1__["default"] {
     super(pixelPos, grid, 0)
     
     // unit stats
-    this.hp = 2;
+    this.hp = 1;
     this.ap = 1;
 
     this.speed = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](1,3)
