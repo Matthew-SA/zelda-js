@@ -48,8 +48,9 @@ class GameView {
   step(spriteCtx, worldCtx, collisionCtx) {
     this.game.checkBorder(spriteCtx);
     this.game.scroll(worldCtx, collisionCtx);
-    this.game.getLastInput();
-    this.game.checkKey(collisionCtx);
+    this.game.movePlayer(collisionCtx);
+    // this.game.getLastInput();
+    // this.game.checkKey(collisionCtx);
     this.game.stepUnits(collisionCtx);
     this.game.stepAttacks();
     this.player.step();

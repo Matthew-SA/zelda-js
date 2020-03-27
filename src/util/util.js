@@ -57,3 +57,8 @@ export function knockbackcheck(pixel1, pixel2) {
   if (pixel2value === constants.WALL || pixel2value === constants.WATER) return true;
   return false;
 }
+
+export function removeElement(arr, el) {
+  let idx = arr.indexOf(el)
+  if (idx > -1) arr.splice(idx, 1)
+}

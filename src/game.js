@@ -1,4 +1,5 @@
 import key from 'keymaster'
+import Input from './util/input'
 import Menu from './menu/menu.js'
 import Player from './player/player'
 import Spawn from './units/spawn'
@@ -31,9 +32,10 @@ class Game {
     this.openSpaces = null; // Array of subarrays.  Each contain a x/y pixel position pair.
     this.enemyCount = 0;
 
-    this.lastInput = { 'a': null, 'w': null, 'd': null, 's': null };
-    this.currentInput = null;
+    // this.lastInput = { 'a': null, 'w': null, 'd': null, 's': null };
+    // this.currentInput = null;
 
+    this.input = new Input;
   }
   
   clearUnits(ctx) {
@@ -45,8 +47,8 @@ class Game {
   }
 
   stepUnits(collisionCtx) {
-    if (this.currentInput) this.player.frameData.run++;
-    if (this.player.frameData.knockback) {
+    if (this.currentInput) this.player.frames.run++;
+    if (this.player.frames.knockback) {
       this.getKnockedBackFrom(this.player.pos.direction, collisionCtx)
     }
     for (let i = 0; i < this.units.length; i++) {
@@ -92,7 +94,7 @@ class Game {
   }
 
   getKnockedBackFrom(direction, ctx) {
-    if (!this.player.frameData.knockback) return;
+    if (!this.player.frames.knockback) return;
     if (direction === 96 && this.player.pos.y < 634 && !this.impassableTerrain(0,ctx)) {
       this.player.move(0, 12)
     } else if (direction === 144 && this.player.pos.x > 14 && !this.impassableTerrain(48, ctx)) {
@@ -195,7 +197,7 @@ class Game {
   }
 
   impassableTerrain(direction, ctx) {
-    if (direction === 96) {
+    if (direction === 'up') {
       const topPixel = util.getMapPixel(
         ctx,
         this.player.tracebox.topLeft[0],
@@ -205,7 +207,7 @@ class Game {
         this.player.tracebox.topRight[0],
         this.player.tracebox.topRight[1] - 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 144) {
+    } else if (direction === 'right') {
       const topPixel = util.getMapPixel(
         ctx,
         this.player.tracebox.topRight[0] + 3,
@@ -215,7 +217,7 @@ class Game {
         this.player.tracebox.bottomRight[0] + 3,
         this.player.tracebox.bottomRight[1])
       return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 0) {
+    } else if (direction === 'down') {
       const topPixel = util.getMapPixel(
         ctx,
         this.player.tracebox.bottomLeft[0],
@@ -225,7 +227,7 @@ class Game {
         this.player.tracebox.bottomRight[0],
         this.player.tracebox.bottomRight[1] + 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
-    } else if (direction === 48) {
+    } else if (direction === 'left') {
       const topPixel = util.getMapPixel(
         ctx,
         this.player.tracebox.topLeft[0] - 3,
@@ -239,57 +241,31 @@ class Game {
   }
 
   // player input below
-  getLastInput() {
-    if (key.isPressed('w') && this.lastInput.w === null) {
-      this.lastInput.w = Date.now();
-    } else if (!key.isPressed('w') && this.lastInput.w !== null) {
-      this.lastInput.w = null;
-    }
 
-    if (key.isPressed('d') && this.lastInput.d === null) {
-      this.lastInput.d = Date.now();
-    } else if (!key.isPressed('d') && this.lastInput.d !== null) {
-      this.lastInput.d = null;
-    }
-
-    if (key.isPressed('s') && this.lastInput.s === null) {
-      this.lastInput.s = Date.now();
-    } else if (!key.isPressed('s') && this.lastInput.s !== null) {
-      this.lastInput.s = null;
-    }
-
-    if (key.isPressed('a') && this.lastInput.a === null) {
-      this.lastInput.a = Date.now();
-    } else if (!key.isPressed('a') && this.lastInput.a !== null) {
-      this.lastInput.a = null;
-    }
-  }
-
-  checkKey(ctx) {
+  movePlayer(ctx) {
     if (this.scrolling) return;
-    if (this.player.frameData.cooldown) return;
-
-    const entry = Object.entries(this.lastInput).reduce((accum, entry) => (entry[1] > accum[1] ? entry : accum), ['', null])
-    this.currentInput = entry[0]
-    if (key.isPressed('/')) {
-      this.player.attack();
-      this.currentInput = 'attack';
-    }
-    if ((this.currentInput === 'w')) {
-      this.player.pos.direction = 96 // 'up'
-      return this.impassableTerrain(96,ctx) ? null : this.player.move(0, -4)
-    }
-    if ((this.currentInput === 'd')) {
-      this.player.pos.direction = 144 // 'right'
-      return this.impassableTerrain(144, ctx) ? null : this.player.move(4, 0)
-    }
-    if ((this.currentInput === 's')) {
-      this.player.pos.direction = 0 // 'down'
-      return this.impassableTerrain(0, ctx) ? null : this.player.move(0, 4)
-    }
-    if ((this.currentInput === 'a')) {
-      this.player.pos.direction = 48 // 'left'
-      return this.impassableTerrain(48, ctx) ? null : this.player.move(-4, 0)
+    let direction = this.input.getInput()
+    let speed = null;
+    switch (direction) {
+      case 'attack':
+        this.player.attack();
+        return;
+      case 'up':
+        speed = this.impassableTerrain(direction, ctx) ? 0 : -4
+        this.player.move(0, speed, direction)
+        break;
+      case 'right':
+        speed = this.impassableTerrain(direction, ctx) ? 0 : 4
+        this.player.move(speed, 0, direction)
+        break;
+      case 'down':
+        speed = this.impassableTerrain(direction, ctx) ? 0 : 4
+        this.player.move(0, speed, direction)
+        break;
+      case 'left':
+        speed = this.impassableTerrain(direction, ctx) ? 0 : -4
+        this.player.move(speed, 0, direction)
+        break;
     }
   }
 }
