@@ -87,13 +87,13 @@ class Game {
 
   getKnockedBackFrom(direction, ctx) {
     if (!this.player.frames.knockback) return;
-    if (direction === 96 && this.player.pos.y < 634 && !this.impassableTerrain(0,ctx)) {
+    if (direction === 96 && this.player.pos.y < 634 && !this.impassableTerrain('down',ctx)) {
       this.player.move(0, 12)
-    } else if (direction === 144 && this.player.pos.x > 14 && !this.impassableTerrain(48, ctx)) {
+    } else if (direction === 144 && this.player.pos.x > 14 && !this.impassableTerrain('left', ctx)) {
       this.player.move(-12, 0)
-    } else if (direction === 0 && this.player.pos.y > 188 && !this.impassableTerrain(96, ctx)) {
+    } else if (direction === 0 && this.player.pos.y > 188 && !this.impassableTerrain('up', ctx)) {
       this.player.move(0, -12)
-    } else if (direction === 48 && this.player.pos.x < 706 && !this.impassableTerrain(144, ctx)) {
+    } else if (direction === 48 && this.player.pos.x < 706 && !this.impassableTerrain('right', ctx)) {
       this.player.move(12, 0)
     }
   }

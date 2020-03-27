@@ -104,23 +104,19 @@ class Player {
           
   takeDamage() {
     if (!this.frames.invincibility) {
-      // console.log(this.hp)
-      this.frames.invincibility = 45;
+      Object.assign(this.frames, {invincibility: 45, knockback: 8})
       this.ouch.play()
-      this.frames.cooldown = 8;
-      this.frames.knockback = 8;
       this.hp--
       this.attacks.pop()
     }
   }
 
   attack() {
-    if (this.frames.cooldown) return;
+    if (this.frames.cooldown || this.frames.knockback) return;
     this.frames.cooldown = 18;
     this.frames.attack = 15;
     this.attacks.push(new Sword(this.pos))
   }
-  
 }
 
 export default Player;
