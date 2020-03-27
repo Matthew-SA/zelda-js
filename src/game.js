@@ -43,7 +43,7 @@ class Game {
   }
 
   stepUnits(collisionCtx) {
-    if (this.player.frames.knockback) this.getKnockedBackFrom(this.player.pos.direction, collisionCtx)
+    if (this.player.frames.knockback) this.knockBackPlayer(collisionCtx)
 
     this.units.forEach((unit, i) => {
       if (unit instanceof Spawn && unit.runCycle <= 0) {
@@ -83,15 +83,19 @@ class Game {
     this.units.push(new Spark(unit.pos))
   }
 
-  getKnockedBackFrom(direction, ctx) {
-    if (!this.player.frames.knockback) return;
-    if (direction === 96 && this.player.pos.y < 634 && !this.impassableTerrain('down',ctx)) {
+  knockBackPlayer(ctx) {
+    // if (!this.player.frames.knockback) return;
+    let faceDirection = this.player.pos.direction
+    let x = this.player.pos.x
+    let y = this.player.pos.y
+
+    if (faceDirection === 96 && y < 634 && !this.impassableTerrain('down',ctx)) {
       this.player.move(0, 12)
-    } else if (direction === 144 && this.player.pos.x > 14 && !this.impassableTerrain('left', ctx)) {
+    } else if (faceDirection === 144 && x > 14 && !this.impassableTerrain('left', ctx)) {
       this.player.move(-12, 0)
-    } else if (direction === 0 && this.player.pos.y > 188 && !this.impassableTerrain('up', ctx)) {
+    } else if (faceDirection === 0 && y > 188 && !this.impassableTerrain('up', ctx)) {
       this.player.move(0, -12)
-    } else if (direction === 48 && this.player.pos.x < 706 && !this.impassableTerrain('right', ctx)) {
+    } else if (faceDirection === 48 && x < 706 && !this.impassableTerrain('right', ctx)) {
       this.player.move(12, 0)
     }
   }
@@ -136,20 +140,21 @@ class Game {
       this.scanGrid(collisionCtx);
       this.setSpawns();
     } else {
-      if (this.player.pos.direction === 96) {
-        this.overworld.pos[1] -= 8;
+      let playerDirection = this.player.pos.direction
+      if (playerDirection === 96) {
+        this.overworld.pos.y -= 8;
         if (this.scrollQueue > 48) this.player.move(0, 8)
       }
-      if (this.player.pos.direction === 144) {
-        this.overworld.pos[0] += 8;
+      if (playerDirection === 144) {
+        this.overworld.pos.x += 8;
         if (this.scrollQueue > 48) this.player.move(-8, 0)
       }
-      if (this.player.pos.direction === 0) {
-        this.overworld.pos[1] += 8;
+      if (playerDirection === 0) {
+        this.overworld.pos.y += 8;
         if (this.scrollQueue > 48) this.player.move(0, -8)
       }
-      if (this.player.pos.direction === 48) {
-        this.overworld.pos[0] -= 8;
+      if (playerDirection === 48) {
+        this.overworld.pos.x -= 8;
         if (this.scrollQueue > 48) this.player.move(8, 0)
       }
       this.scrollQueue -= 8;
@@ -174,7 +179,7 @@ class Game {
     this.clearUnits(ctx);
     this.units = [];
     // this.enemyCount = (Util.random(1, 6)) // reload enemy count for next screen.
-    this.enemyCount = 3// stress test!
+    this.enemyCount = 2// stress test!
   }
 
   // collision layer check below

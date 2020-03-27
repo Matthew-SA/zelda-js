@@ -13,17 +13,16 @@ class Overworld {
     // this.music.autoplay();
     // this.music.loop = true;
     // this.music.play();
-
-    this.lastPos = [5376, 3528];
-    this.pos = [5376,3528];
     
+    // this.pos = [5376,3528];
+    this.pos = { x: 5376, y: 3528 }
   }
 
   drawWorld(ctx) {
     ctx.drawImage(
       this.overworld,
-      this.pos[0], // x axis anchor point
-      this.pos[1], // y axis anchor point
+      this.pos.x, // x axis anchor point
+      this.pos.y, // y axis anchor point
       768,
       696,
       0,
@@ -36,8 +35,8 @@ class Overworld {
   drawCollisionMap(ctx) {
     ctx.drawImage(
       this.collisionMap,
-      this.pos[0], // x axis anchor point
-      this.pos[1], // y axis anchor point
+      this.pos.x, // x axis anchor point
+      this.pos.y, // y axis anchor point
       768,
       696,
       0,

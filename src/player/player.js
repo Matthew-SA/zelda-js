@@ -102,12 +102,13 @@ class Player {
   }
           
           
-  takeDamage() {
+  takeDamage(damage=1) {
     if (!this.frames.invincibility) {
       Object.assign(this.frames, {invincibility: 45, knockback: 8})
       this.ouch.play()
-      this.hp--
+      this.hp -= damage
       this.attacks.pop()
+      console.log(this.hp)
     }
   }
 

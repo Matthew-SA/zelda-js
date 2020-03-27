@@ -1,7 +1,6 @@
 class Menu {
   constructor() {
-    this.lastpos = [0,0]
-    this.pos = [0,0]
+    this.pos = { x: 0, y: 0 }
     this.image = new Image();
     this.image.src = "./assets/images/menu.png"
   }
@@ -13,8 +12,8 @@ class Menu {
       528,
       768,
       696,
-      this.pos[0],
-      this.pos[1],
+      this.pos.x,
+      this.pos.y,
       768,
       696
     )
