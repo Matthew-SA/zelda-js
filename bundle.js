@@ -193,13 +193,13 @@ class Game {
 
   getKnockedBackFrom(direction, ctx) {
     if (!this.player.frames.knockback) return;
-    if (direction === 96 && this.player.pos.y < 634 && !this.impassableTerrain(0,ctx)) {
+    if (direction === 96 && this.player.pos.y < 634 && !this.impassableTerrain('down',ctx)) {
       this.player.move(0, 12)
-    } else if (direction === 144 && this.player.pos.x > 14 && !this.impassableTerrain(48, ctx)) {
+    } else if (direction === 144 && this.player.pos.x > 14 && !this.impassableTerrain('left', ctx)) {
       this.player.move(-12, 0)
-    } else if (direction === 0 && this.player.pos.y > 188 && !this.impassableTerrain(96, ctx)) {
+    } else if (direction === 0 && this.player.pos.y > 188 && !this.impassableTerrain('up', ctx)) {
       this.player.move(0, -12)
-    } else if (direction === 48 && this.player.pos.x < 706 && !this.impassableTerrain(144, ctx)) {
+    } else if (direction === 48 && this.player.pos.x < 706 && !this.impassableTerrain('right', ctx)) {
       this.player.move(12, 0)
     }
   }
@@ -668,23 +668,19 @@ class Player {
           
   takeDamage() {
     if (!this.frames.invincibility) {
-      // console.log(this.hp)
-      this.frames.invincibility = 45;
+      Object.assign(this.frames, {invincibility: 45, knockback: 8})
       this.ouch.play()
-      this.frames.cooldown = 8;
-      this.frames.knockback = 8;
       this.hp--
       this.attacks.pop()
     }
   }
 
   attack() {
-    if (this.frames.cooldown) return;
+    if (this.frames.cooldown || this.frames.knockback) return;
     this.frames.cooldown = 18;
     this.frames.attack = 15;
     this.attacks.push(new _sword_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.pos))
   }
-  
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Player);
