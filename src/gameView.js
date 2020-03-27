@@ -1,4 +1,3 @@
-import key from 'keymaster'
 import Game from './game'
 import * as constants from './util/constants'
 import * as util from './util/util'
@@ -48,11 +47,8 @@ class GameView {
   step(spriteCtx, worldCtx, collisionCtx) {
     this.game.checkBorder(spriteCtx);
     this.game.scroll(worldCtx, collisionCtx);
-    this.game.movePlayer(collisionCtx);
-    // this.game.getLastInput();
-    // this.game.checkKey(collisionCtx);
+    this.game.processInput(collisionCtx);
     this.game.stepUnits(collisionCtx);
-    this.game.stepAttacks();
     this.player.step();
   }
 

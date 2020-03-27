@@ -6,7 +6,7 @@ import Spark from './units/spark'
 import Octorok from './units/octorok'
 import Overworld from './maps/overworld'
 import * as constants from './util/constants'
-import * as util from './util/util'
+import * as Util from './util/util'
 
 // gameView is 16 x 14.5 'tiles
 // gameplay is in 16 x 11 tiles
@@ -43,35 +43,31 @@ class Game {
   }
 
   stepUnits(collisionCtx) {
-    if (this.currentInput) this.player.frames.run++;
     if (this.player.frames.knockback) {
       this.getKnockedBackFrom(this.player.pos.direction, collisionCtx)
     }
-    for (let i = 0; i < this.units.length; i++) {
-      if (this.units[i] instanceof Spawn && this.units[i].runCycle <= 0) {
-        this.units[i] = new Octorok(this.units[i].pixelPos, this.grid);
+
+    this.units.forEach((unit, i) => {
+      if (unit instanceof Spawn && unit.runCycle <= 0) {
+        this.units[i] = new Octorok(unit.pixelPos, this.grid)
       }
-      this.units[i].step();
-      this.checkCollisionsAgainstPlayer(this.units[i])
+
+      unit.step();
+      this.checkCollisionsAgainstPlayer(unit);
 
       this.player.attacks.forEach(attack => {
-        if (util.checkCollision(attack.hitBox, this.units[i].pos)) this.damageUnit(this.units[i])
+        if (Util.checkCollision(attack.hitBox, unit.pos)) this.damageUnit(unit)
       })
 
-      if (this.units[i] instanceof Spark && this.units[i].runCycle > 16) {
-        this.units.splice(this.units.indexOf(this.units[i]), 1)
-      }
-    }
-  }
-
-  stepAttacks() {
-    for (let i = 0; i < this.player.attacks.length; i++) {
-    }
+      // if (unit instanceof Spark && unit.runCycle > 16) {
+      //   this.units.splice(this.units.indexOf(i), 1)
+      // }
+    })
   }
 
   checkCollisionsAgainstPlayer(other) {
     if (other instanceof Spawn || other instanceof Spark) return;
-    if (util.checkCollision(this.player.hitbox, other.pos)) this.damagePlayer();
+    if (Util.checkCollision(this.player.hitbox, other.pos)) this.damagePlayer();
   }
 
   damageUnit(unit, damage) {
@@ -116,7 +112,7 @@ class Game {
     for (let y = 168; y < 696; y += 48) {
       let row = [];
       for (let x = 0; x < 768; x += 48) {
-        let value = util.scanMapTile(ctx, x, y);
+        let value = Util.scanMapTile(ctx, x, y);
         row.push(value);
         if (value === 1020) openSpaces.push([x, y]);
       }
@@ -179,14 +175,14 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    // this.enemyCount = (util.random(1, 6)) // reload enemy count for next screen.
-    this.enemyCount = 1// stress test!
+    // this.enemyCount = (Util.random(1, 6)) // reload enemy count for next screen.
+    this.enemyCount = 3// stress test!
   }
 
   // collision layer check below
   checkIfBarrier(pixel1, pixel2) {
-    let pixel1value = util.sumArr(pixel1)
-    let pixel2value = util.sumArr(pixel2)
+    let pixel1value = Util.sumArr(pixel1)
+    let pixel2value = Util.sumArr(pixel2)
     if (pixel1value === constants.WALL || pixel1value === constants.WATER) return true;
     if (pixel2value === constants.WALL || pixel2value === constants.WATER) return true;
     return false;
@@ -194,41 +190,41 @@ class Game {
 
   impassableTerrain(direction, ctx) {
     if (direction === 'up') {
-      const topPixel = util.getMapPixel(
+      const topPixel = Util.getMapPixel(
         ctx,
         this.player.tracebox.topLeft[0],
         this.player.tracebox.topLeft[1] - 3)
-      const bottomPixel = util.getMapPixel(
+      const bottomPixel = Util.getMapPixel(
         ctx,
         this.player.tracebox.topRight[0],
         this.player.tracebox.topRight[1] - 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'right') {
-      const topPixel = util.getMapPixel(
+      const topPixel = Util.getMapPixel(
         ctx,
         this.player.tracebox.topRight[0] + 3,
         this.player.tracebox.topRight[1])
-      const bottomPixel = util.getMapPixel(
+      const bottomPixel = Util.getMapPixel(
         ctx,
         this.player.tracebox.bottomRight[0] + 3,
         this.player.tracebox.bottomRight[1])
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'down') {
-      const topPixel = util.getMapPixel(
+      const topPixel = Util.getMapPixel(
         ctx,
         this.player.tracebox.bottomLeft[0],
         this.player.tracebox.bottomLeft[1] + 3)
-      const bottomPixel = util.getMapPixel(
+      const bottomPixel = Util.getMapPixel(
         ctx,
         this.player.tracebox.bottomRight[0],
         this.player.tracebox.bottomRight[1] + 3)
       return this.checkIfBarrier(topPixel, bottomPixel)
     } else if (direction === 'left') {
-      const topPixel = util.getMapPixel(
+      const topPixel = Util.getMapPixel(
         ctx,
         this.player.tracebox.topLeft[0] - 3,
         this.player.tracebox.topRight[1])
-      const bottomPixel = util.getMapPixel(
+      const bottomPixel = Util.getMapPixel(
         ctx,
         this.player.tracebox.bottomLeft[0] - 3,
         this.player.tracebox.bottomLeft[1])
@@ -236,9 +232,7 @@ class Game {
     }
   }
 
-  // player input below
-
-  movePlayer(ctx) {
+  processInput(ctx) {
     if (this.scrolling) return;
     let direction = this.input.getInput()
     let speed = null;

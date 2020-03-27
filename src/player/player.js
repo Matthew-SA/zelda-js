@@ -70,27 +70,6 @@ class Player {
     }
   }
 
-  attack() {
-    if (this.frames.cooldown) return;
-    this.frames.cooldown = 20;
-    this.frames.attack = 15;
-    this.attacks.push(new Sword(this.pos))
-  }
-  
-  move(x, y, direction) {
-    if (this.frames.cooldown) return;
-    this.frames.run++
-    this.setDirection(direction)
-    this.pos.x += x;
-    this.pos.y += y;
-    this.hitbox.x += x;
-    this.hitbox.y += y;
-    this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
-    this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
-    this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
-    this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
-  }
-
   setDirection(direction) {
     switch (direction) {
       case 'up':
@@ -107,7 +86,22 @@ class Player {
         break;
     }
   }
-
+          
+  move(x, y, direction) {
+    if (this.frames.cooldown) return;
+    this.frames.run++
+    this.setDirection(direction)
+    this.pos.x += x;
+    this.pos.y += y;
+    this.hitbox.x += x;
+    this.hitbox.y += y;
+    this.tracebox.topLeft[0] += x, this.tracebox.topLeft[1] += y
+    this.tracebox.topRight[0] += x, this.tracebox.topRight[1] += y
+    this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
+    this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
+  }
+          
+          
   takeDamage() {
     if (!this.frames.invincibility) {
       // console.log(this.hp)
@@ -119,6 +113,14 @@ class Player {
       this.attacks.pop()
     }
   }
+
+  attack() {
+    if (this.frames.cooldown) return;
+    this.frames.cooldown = 18;
+    this.frames.attack = 15;
+    this.attacks.push(new Sword(this.pos))
+  }
+  
 }
 
 export default Player;
