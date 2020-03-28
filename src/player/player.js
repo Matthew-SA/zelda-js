@@ -1,7 +1,9 @@
 import Sword from './sword.js'
 
 class Player {
-  constructor() {
+  constructor(spriteCtx) {
+    this.ctx = spriteCtx;
+
     this.sprite = new Image();
     this.sprite.src = "./assets/images/player/link.png"
     this.ouch = new Audio("./assets/sfx/link-hurt.wav");
@@ -25,13 +27,13 @@ class Player {
       knockback: 0,
     }
 
-    this.hp = 3;
+    this.hp = 3.0;
 
     this.attacks = [];
   }
   
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
@@ -42,9 +44,9 @@ class Player {
     this.frames.attack ? this.frames.attack-- : this.attacks.splice(0,1)
   }
 
-  draw(ctx) {
+  render() {
     if (this.frames.attack) {
-      ctx.drawImage(
+      this.ctx.drawImage(
         this.sprite,
         this.frames.invincibility ? this.pos.direction + 240 : this.pos.direction,
         this.frames.invincibility ? 288 + (48 * (this.frames.invincibility % 3)) : 96, // attack sprite pose
@@ -56,7 +58,7 @@ class Player {
         48
       )
     } else {
-      ctx.drawImage(
+      this.ctx.drawImage(
         this.sprite,
         this.frames.invincibility ? this.pos.direction + 240 : this.pos.direction,
         this.frames.invincibility ? this.frames.run < 9 ? 0 + (48 * (this.frames.invincibility % 3)) : 144 + (48 * (this.frames.invincibility % 3)) : this.frames.run < 9 ? 0 : 48,
@@ -108,7 +110,6 @@ class Player {
       this.ouch.play()
       this.hp -= damage
       this.attacks.pop()
-      console.log(this.hp)
     }
   }
 

@@ -13,10 +13,10 @@ import * as Util from './util/util'
 // TODO: remove keymaster dependancy!
 
 class Game {
-  constructor(hudCtx) {
+  constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
     this.hud = new Hud(hudCtx);
-    this.player = new Player;
-    this.overworld = new Overworld;
+    this.player = new Player(spriteCtx);
+    this.overworld = new Overworld(worldCtx, collisionCtx);
 
     // game sounds
     this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");

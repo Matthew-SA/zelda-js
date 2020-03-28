@@ -8,7 +8,6 @@ class Hud {
     this.heartSprite.src = "./assets/images/items/hearts.png"
 
     this.maxHearts = 3;
-    this.hearts = 3;
     this.money = 0;
     this.keys = 0;
     this.bombs = 0;
@@ -16,7 +15,7 @@ class Hud {
     this.slotB = null;
   }
 
-  draw() {
+  render() {
     this.ctx.drawImage(
       this.image,
       0,
@@ -28,38 +27,24 @@ class Hud {
       768,
       696
     )
-    this.updateHearts(this.hearts)
+    this.updateHearts(3)
   }
 
   updateHearts(hp) {
     this.ctx.fillstyle = 'black'
     this.ctx.fillRect(528, 96, 192, 48)
     for (let i = 0; i < this.maxHearts; i++) {
-      if (i < hp) {
-        this.ctx.drawImage(
-          this.heartSprite,
-          24,
-          0,
-          24,
-          24,
-          528 + (24 * i),
-          96,
-          24,
-          24,
-        )
-      } else {
-        this.ctx.drawImage(
-          this.heartSprite,
-          72,
-          0,
-          24,
-          24,
-          528 + (24 * i),
-          96,
-          24,
-          24,
-        )
-      }
+      this.ctx.drawImage(
+        this.heartSprite,
+        i < hp ? 24 : 72,
+        0,
+        24,
+        24,
+        528 + (24 * i),
+        96,
+        24,
+        24,
+      )
     }
   }
 }

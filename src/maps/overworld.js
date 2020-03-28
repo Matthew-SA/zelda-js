@@ -3,7 +3,9 @@
 // world is a 16 x 8 grid
 
 class Overworld {
-  constructor() {
+  constructor(worldCtx, collisionCtx) {
+    this.worldCtx = worldCtx
+    this.collisionCtx = collisionCtx
     this.overworld = new Image();
     this.overworld.src = './assets/images/maps/overworld.png'
     this.collisionMap = new Image();
@@ -18,8 +20,13 @@ class Overworld {
     this.pos = { x: 5376, y: 3528 }
   }
 
-  drawWorld(ctx) {
-    ctx.drawImage(
+  render() {
+    this.drawWorld();
+    this.drawCollisionMap();
+  }
+
+  drawWorld() {
+    this.worldCtx.drawImage(
       this.overworld,
       this.pos.x, // x axis anchor point
       this.pos.y, // y axis anchor point
@@ -32,8 +39,8 @@ class Overworld {
     )
   }
 
-  drawCollisionMap(ctx) {
-    ctx.drawImage(
+  drawCollisionMap() {
+    this.collisionCtx.drawImage(
       this.collisionMap,
       this.pos.x, // x axis anchor point
       this.pos.y, // y axis anchor point

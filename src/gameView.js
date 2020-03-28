@@ -6,11 +6,9 @@ import Game from './game'
 class GameView {
   constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
     // this.lastTime;
-    this.hudCtx = hudCtx;
-    this.game = new Game(this.hudCtx);
     this.spriteCtx = spriteCtx;
-    this.worldCtx = worldCtx;
     this.collisionCtx = collisionCtx;
+    this.game = new Game(hudCtx, spriteCtx, worldCtx, collisionCtx);
     this.hud = this.game.hud;
     this.player = this.game.player;
     this.overworld = this.game.overworld;
@@ -18,10 +16,9 @@ class GameView {
 
   // start primary game loop
   init() {
-    this.overworld.drawWorld(this.worldCtx)
-    this.overworld.drawCollisionMap(this.collisionCtx)
-    this.hud.draw()
-    this.player.draw(this.spriteCtx);
+    this.overworld.render();
+    this.hud.render()
+    this.player.render();
     requestAnimationFrame(() => this.gameLoop())
   }
 
@@ -38,7 +35,7 @@ class GameView {
   clear(ctx) {
     this.game.clearUnits(ctx);
     this.game.clearAttacks(ctx);
-    this.game.player.clear(ctx)
+    this.game.player.clear()
   }
 
   step(spriteCtx, worldCtx, collisionCtx) {
@@ -52,7 +49,7 @@ class GameView {
   draw(ctx) {
     this.game.drawUnits(ctx);
     this.game.drawAttacks(ctx);
-    this.player.draw(ctx);
+    this.player.render();
   }
 }
 
