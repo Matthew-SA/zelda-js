@@ -32,6 +32,7 @@ class Input {
         if (!this.movement.includes('left')) this.movement.unshift('left')
         break;
       case 32:
+        event.preventDefault()
         if (!this.fired) {
           this.attack = true; 
           this.fired = true;
