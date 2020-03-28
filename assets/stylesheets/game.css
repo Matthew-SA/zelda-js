@@ -19,11 +19,10 @@ header {
 
 canvas {
   position: absolute;
-  /* top: 120px; */
   left: 0;
   right: 0;
   margin: auto;
-  border: 4px outset silver;
+  border: 1px solid silver;
   border-radius: 15px;
 }
 
