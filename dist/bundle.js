@@ -907,10 +907,11 @@ __webpack_require__.r(__webpack_exports__);
 
 class Octorok extends _unit__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor(pixelPos, grid) {
-    super(pixelPos, grid, (_util_util__WEBPACK_IMPORTED_MODULE_0__["random"](0,6) * 96))
+    let type = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](0, 2)
+    super(pixelPos, grid, (type * 96))
     
     // unit stats
-    this.hp = 1;
+    this.hp = type === 0 ? 1 : 2;
     // this.ap = 1;
 
     this.speed = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](1,3)
