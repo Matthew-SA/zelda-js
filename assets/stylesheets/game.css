@@ -10,6 +10,7 @@ html body {
 
 header {
   /* position: absolute; */
+  padding: 10px;
   height: 100px;
   width: 776px;
   left: 0;
@@ -29,6 +30,7 @@ canvas {
 }
 
 footer {
+  padding: 10px;
   height: 100px;
   width: 776px;
   bottom: 0;

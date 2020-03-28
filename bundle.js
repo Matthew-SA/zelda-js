@@ -242,6 +242,7 @@ class Game {
   scroll(worldCtx, collisionCtx) {
     if (!this.scrolling) return;
     if (this.scrollQueue <= 0) {
+      this.hud.updateMiniMap(this.overworld.getMapPos())
       this.scrolling = false;
       this.overworld.drawCollisionMap(collisionCtx)
       this.scanGrid(collisionCtx);
@@ -486,7 +487,7 @@ class Hud {
       696
     )
     this.updateHearts(3)
-    this.updateMiniMap({ x: 15, y: 7})
+    this.updateMiniMap({ x: 7, y: 7})
   }
 
   updateHearts(hp) {
@@ -515,7 +516,7 @@ class Hud {
     this.ctx.fillStyle = 'grey'
     this.ctx.fillRect(48, 48, 192, 96)
     // player dot
-    this.ctx.fillStyle = 'red'
+    this.ctx.fillStyle = '#80D010'
     this.ctx.fillRect(51 + (gridPos.x * 12),48 + (gridPos.y * 12),9,9)
   }
 }
@@ -553,6 +554,10 @@ class Overworld {
     
     // this.pos = [5376,3528];
     this.pos = { x: 5376, y: 3528 }
+  }
+
+  getMapPos() {
+    return { x: this.pos.x / 768, y: (this.pos.y + 168) / 528}
   }
 
   render() {
