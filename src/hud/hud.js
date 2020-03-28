@@ -10,6 +10,8 @@ class Hud {
     this.heartSprite.src = "./assets/images/items/hearts.png"
     this.numbers = new Image();
     this.numbers.src = "./assets/images/ui/numbers.png"
+    this.primaryitems = new Image();
+    this.primaryitems.src = './assets/images/items/primaryItems.png'
 
     this.maxHearts = 3;
     this.slotA = null;
@@ -32,7 +34,9 @@ class Hud {
     this.updateMiniMap({ x: 7, y: 7})
     this.updateMoney(0)
     this.updateKeys(0)
-    this.updateBombCount(0) 
+    this.updateBombCount(0)
+    this.updateSlotA(0)
+    this.updateSlotB()
   }
 
   updateHearts(hp) {
@@ -120,6 +124,30 @@ class Hud {
         24
       )
     })
+  }
+
+  updateSlotA(itemCode) {
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(456, 72, 24, 48)
+    this.ctx.drawImage(
+      this.primaryitems,
+      0 + (24 * itemCode),
+      0,
+      24,
+      48,
+      456,
+      72,
+      24,
+      48
+    )
+  }
+
+  updateSlotB(item) {
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(384, 72, 24, 48)
+    // this.ctx.drawImage(
+    //   this.primaryitems
+    // )
   }
 }
 
