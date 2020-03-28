@@ -1,5 +1,5 @@
 import Input from './util/input'
-import Menu from './menu/menu.js'
+import Hud from './hud/hud.js'
 import Player from './player/player'
 import Spawn from './units/spawn'
 import Spark from './units/spark'
@@ -13,8 +13,8 @@ import * as Util from './util/util'
 // TODO: remove keymaster dependancy!
 
 class Game {
-  constructor() {
-    this.menu = new Menu;
+  constructor(hudCtx) {
+    this.hud = new Hud(hudCtx);
     this.player = new Player;
     this.overworld = new Overworld;
 
@@ -74,7 +74,8 @@ class Game {
   }
 
   damagePlayer(damage) {
-    this.player.takeDamage()
+    this.player.takeDamage();
+    this.hud.updateHearts(this.player.hp)
   }
 
   killUnit(unit) {

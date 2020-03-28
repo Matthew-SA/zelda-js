@@ -96,7 +96,7 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_input__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util/input */ "./src/util/input.js");
-/* harmony import */ var _menu_menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./menu/menu.js */ "./src/menu/menu.js");
+/* harmony import */ var _hud_hud_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hud/hud.js */ "./src/hud/hud.js");
 /* harmony import */ var _player_player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./player/player */ "./src/player/player.js");
 /* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
 /* harmony import */ var _units_spark__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./units/spark */ "./src/units/spark.js");
@@ -119,8 +119,8 @@ __webpack_require__.r(__webpack_exports__);
 // TODO: remove keymaster dependancy!
 
 class Game {
-  constructor() {
-    this.menu = new _menu_menu_js__WEBPACK_IMPORTED_MODULE_1__["default"];
+  constructor(hudCtx) {
+    this.hud = new _hud_hud_js__WEBPACK_IMPORTED_MODULE_1__["default"](hudCtx);
     this.player = new _player_player__WEBPACK_IMPORTED_MODULE_2__["default"];
     this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_6__["default"];
 
@@ -180,7 +180,8 @@ class Game {
   }
 
   damagePlayer(damage) {
-    this.player.takeDamage()
+    this.player.takeDamage();
+    this.hud.updateHearts(this.player.hp)
   }
 
   killUnit(unit) {
@@ -386,25 +387,20 @@ class Game {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game */ "./src/game.js");
-/* harmony import */ var _util_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util/constants */ "./src/util/constants.js");
-/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util/util */ "./src/util/util.js");
-
-
-
 
 
 // gameView is 16 x 14.5 'tiles
 // gameplay is in 16 x 11 tiles
 
 class GameView {
-  constructor(menuCtx, spriteCtx, worldCtx, collisionCtx) {
+  constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
     // this.lastTime;
-    this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"];
-    this.menuCtx = menuCtx;
+    this.hudCtx = hudCtx;
+    this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"](this.hudCtx);
     this.spriteCtx = spriteCtx;
     this.worldCtx = worldCtx;
     this.collisionCtx = collisionCtx;
-    this.menu = this.game.menu;
+    this.hud = this.game.hud;
     this.player = this.game.player;
     this.overworld = this.game.overworld;
   }
@@ -413,7 +409,7 @@ class GameView {
   init() {
     this.overworld.drawWorld(this.worldCtx)
     this.overworld.drawCollisionMap(this.collisionCtx)
-    this.menu.draw(this.menuCtx)
+    this.hud.draw()
     this.player.draw(this.spriteCtx);
     requestAnimationFrame(() => this.gameLoop())
   }
@@ -451,6 +447,85 @@ class GameView {
 
 
 /* harmony default export */ __webpack_exports__["default"] = (GameView);
+
+/***/ }),
+
+/***/ "./src/hud/hud.js":
+/*!************************!*\
+  !*** ./src/hud/hud.js ***!
+  \************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Hud {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.pos = { x: 0, y: 0 }
+    this.image = new Image();
+    this.image.src = "./assets/images/menu.png"
+    this.heartSprite = new Image();
+    this.heartSprite.src = "./assets/images/items/hearts.png"
+
+    this.maxHearts = 3;
+    this.hearts = 3;
+    this.money = 0;
+    this.keys = 0;
+    this.bombs = 0;
+    this.slotA = null;
+    this.slotB = null;
+  }
+
+  draw() {
+    this.ctx.drawImage(
+      this.image,
+      0,
+      528,
+      768,
+      696,
+      this.pos.x,
+      this.pos.y,
+      768,
+      696
+    )
+    this.updateHearts(this.hearts)
+  }
+
+  updateHearts(hp) {
+    this.ctx.fillstyle = 'black'
+    this.ctx.fillRect(528, 96, 192, 48)
+    for (let i = 0; i < this.maxHearts; i++) {
+      if (i < hp) {
+        this.ctx.drawImage(
+          this.heartSprite,
+          24,
+          0,
+          24,
+          24,
+          528 + (24 * i),
+          96,
+          24,
+          24,
+        )
+      } else {
+        this.ctx.drawImage(
+          this.heartSprite,
+          72,
+          0,
+          24,
+          24,
+          528 + (24 * i),
+          96,
+          24,
+          24,
+        )
+      }
+    }
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Hud);
 
 /***/ }),
 
@@ -515,41 +590,6 @@ class Overworld {
 /* harmony default export */ __webpack_exports__["default"] = (Overworld);
 
 
-
-/***/ }),
-
-/***/ "./src/menu/menu.js":
-/*!**************************!*\
-  !*** ./src/menu/menu.js ***!
-  \**************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-class Menu {
-  constructor() {
-    this.pos = { x: 0, y: 0 }
-    this.image = new Image();
-    this.image.src = "./assets/images/menu.png"
-  }
-
-  draw(ctx) {
-    ctx.drawImage(
-      this.image,
-      0,
-      528,
-      768,
-      696,
-      this.pos.x,
-      this.pos.y,
-      768,
-      696
-    )
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Menu);
 
 /***/ }),
 

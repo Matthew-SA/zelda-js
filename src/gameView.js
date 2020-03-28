@@ -1,20 +1,17 @@
 import Game from './game'
-import * as constants from './util/constants'
-import * as util from './util/util'
-
 
 // gameView is 16 x 14.5 'tiles
 // gameplay is in 16 x 11 tiles
 
 class GameView {
-  constructor(menuCtx, spriteCtx, worldCtx, collisionCtx) {
+  constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
     // this.lastTime;
-    this.game = new Game;
-    this.menuCtx = menuCtx;
+    this.hudCtx = hudCtx;
+    this.game = new Game(this.hudCtx);
     this.spriteCtx = spriteCtx;
     this.worldCtx = worldCtx;
     this.collisionCtx = collisionCtx;
-    this.menu = this.game.menu;
+    this.hud = this.game.hud;
     this.player = this.game.player;
     this.overworld = this.game.overworld;
   }
@@ -23,7 +20,7 @@ class GameView {
   init() {
     this.overworld.drawWorld(this.worldCtx)
     this.overworld.drawCollisionMap(this.collisionCtx)
-    this.menu.draw(this.menuCtx)
+    this.hud.draw()
     this.player.draw(this.spriteCtx);
     requestAnimationFrame(() => this.gameLoop())
   }
