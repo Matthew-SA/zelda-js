@@ -44,6 +44,7 @@ footer {
 #logo {
   margin-top: 10px;
 }
+
 #game-container {
   position: relative;
   margin: 20px;
@@ -64,4 +65,16 @@ footer {
 
 #collision-canvas {
   z-index: 1;
+}
+
+#canvas-underlayer {
+  background-color: black;
+  height: 696px;
+  width: 768px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  border: 1px solid silver;
+  border-radius: 15px;
 }
