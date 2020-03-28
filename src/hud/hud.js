@@ -28,10 +28,11 @@ class Hud {
       696
     )
     this.updateHearts(3)
+    this.updateMiniMap({ x: 15, y: 7})
   }
 
   updateHearts(hp) {
-    this.ctx.fillstyle = 'black'
+    this.ctx.fillStyle = 'black'
     this.ctx.fillRect(528, 96, 192, 48)
     for (let i = 0; i < this.maxHearts; i++) {
       this.ctx.drawImage(
@@ -46,6 +47,18 @@ class Hud {
         24,
       )
     }
+  }
+
+  updateMiniMap(gridPos) {
+    // header
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(48, 24, 192, 48)
+    //  minimap
+    this.ctx.fillStyle = 'grey'
+    this.ctx.fillRect(48, 48, 192, 96)
+    // player dot
+    this.ctx.fillStyle = 'red'
+    this.ctx.fillRect(51 + (gridPos.x * 12),48 + (gridPos.y * 12),9,9)
   }
 }
 
