@@ -62,3 +62,12 @@ export function removeElement(arr, el) {
   let idx = arr.indexOf(el)
   if (idx > -1) arr.splice(idx, 1)
 }
+
+export function splitNum(num) {
+  let str = num.toString();
+  let arr = [];
+  for (let i = 0; i < str.length; i++) {
+    arr.push(parseInt(str[i]));
+  }
+  return arr;
+}

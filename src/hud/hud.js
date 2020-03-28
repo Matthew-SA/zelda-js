@@ -1,16 +1,17 @@
+import * as Util from '../util/util'
+
 class Hud {
   constructor(ctx) {
     this.ctx = ctx;
     this.pos = { x: 0, y: 0 }
     this.image = new Image();
-    this.image.src = "./assets/images/menu.png"
+    this.image.src = "./assets/images/ui/menu.png"
     this.heartSprite = new Image();
     this.heartSprite.src = "./assets/images/items/hearts.png"
+    this.numbers = new Image();
+    this.numbers.src = "./assets/images/ui/numbers.png"
 
     this.maxHearts = 3;
-    this.money = 0;
-    this.keys = 0;
-    this.bombs = 0;
     this.slotA = null;
     this.slotB = null;
   }
@@ -29,6 +30,9 @@ class Hud {
     )
     this.updateHearts(3)
     this.updateMiniMap({ x: 7, y: 7})
+    this.updateMoney(0)
+    this.updateKeys(0)
+    this.updateBombCount(0) 
   }
 
   updateHearts(hp) {
@@ -59,6 +63,63 @@ class Hud {
     // player dot
     this.ctx.fillStyle = '#80D010'
     this.ctx.fillRect(51 + (gridPos.x * 12),48 + (gridPos.y * 12),9,9)
+  }
+
+  updateMoney(money) {
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(312, 48, 48, 24)
+    let digits = Util.splitNum(money)
+    digits.forEach((digit, i) => {
+      this.ctx.drawImage(
+        this.numbers,
+        0 + (24 * digit),
+        0,
+        24,
+        24,
+        312 + (24 * i),
+        48,
+        24,
+        24
+      )
+    })
+  }
+
+  updateKeys(keys) {
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(312, 96, 48, 24)
+    let digits = Util.splitNum(keys)
+    digits.forEach((digit, i) => {
+      this.ctx.drawImage(
+        this.numbers,
+        0 + (24 * digit),
+        0,
+        24,
+        24,
+        312 + (24 * i),
+        96,
+        24,
+        24
+      )
+    })
+  }
+
+  updateBombCount(bombs) {
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(312, 120, 48, 24)
+    let digits = Util.splitNum(bombs)
+    digits.forEach((digit, i) => {
+      this.ctx.drawImage(
+        this.numbers,
+        0 + (24 * digit),
+        0,
+        24,
+        24,
+        312 + (24 * i),
+        120,
+        24,
+        24
+      )
+    })
   }
 }
 
