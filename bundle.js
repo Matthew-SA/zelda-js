@@ -457,19 +457,21 @@ class GameView {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/util */ "./src/util/util.js");
+
+
 class Hud {
   constructor(ctx) {
     this.ctx = ctx;
     this.pos = { x: 0, y: 0 }
     this.image = new Image();
-    this.image.src = "./assets/images/menu.png"
+    this.image.src = "./assets/images/ui/menu.png"
     this.heartSprite = new Image();
     this.heartSprite.src = "./assets/images/items/hearts.png"
+    this.numbers = new Image();
+    this.numbers.src = "./assets/images/ui/numbers.png"
 
     this.maxHearts = 3;
-    this.money = 0;
-    this.keys = 0;
-    this.bombs = 0;
     this.slotA = null;
     this.slotB = null;
   }
@@ -488,6 +490,9 @@ class Hud {
     )
     this.updateHearts(3)
     this.updateMiniMap({ x: 7, y: 7})
+    this.updateMoney(0)
+    this.updateKeys(0)
+    this.updateBombCount(0) 
   }
 
   updateHearts(hp) {
@@ -518,6 +523,63 @@ class Hud {
     // player dot
     this.ctx.fillStyle = '#80D010'
     this.ctx.fillRect(51 + (gridPos.x * 12),48 + (gridPos.y * 12),9,9)
+  }
+
+  updateMoney(money) {
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(312, 48, 48, 24)
+    let digits = _util_util__WEBPACK_IMPORTED_MODULE_0__["splitNum"](money)
+    digits.forEach((digit, i) => {
+      this.ctx.drawImage(
+        this.numbers,
+        0 + (24 * digit),
+        0,
+        24,
+        24,
+        312 + (24 * i),
+        48,
+        24,
+        24
+      )
+    })
+  }
+
+  updateKeys(keys) {
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(312, 96, 48, 24)
+    let digits = _util_util__WEBPACK_IMPORTED_MODULE_0__["splitNum"](keys)
+    digits.forEach((digit, i) => {
+      this.ctx.drawImage(
+        this.numbers,
+        0 + (24 * digit),
+        0,
+        24,
+        24,
+        312 + (24 * i),
+        96,
+        24,
+        24
+      )
+    })
+  }
+
+  updateBombCount(bombs) {
+    this.ctx.fillStyle = 'black'
+    this.ctx.fillRect(312, 120, 48, 24)
+    let digits = _util_util__WEBPACK_IMPORTED_MODULE_0__["splitNum"](bombs)
+    digits.forEach((digit, i) => {
+      this.ctx.drawImage(
+        this.numbers,
+        0 + (24 * digit),
+        0,
+        24,
+        24,
+        312 + (24 * i),
+        120,
+        24,
+        24
+      )
+    })
   }
 }
 
@@ -1186,7 +1248,7 @@ class Input {
 /*!**************************!*\
   !*** ./src/util/util.js ***!
   \**************************/
-/*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, scanMapTile, sample, random, checkCollision, knockbackcheck, removeElement */
+/*! exports provided: equalArr, sumArr, getMapPixel, sumMapPixel, scanMapTile, sample, random, checkCollision, knockbackcheck, removeElement, splitNum */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1201,6 +1263,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkCollision", function() { return checkCollision; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "knockbackcheck", function() { return knockbackcheck; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removeElement", function() { return removeElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "splitNum", function() { return splitNum; });
 function equalArr(arr1,arr2) {
   for (let i = 0; i - arr1.length - 1; i++) {
     if (arr1[i] !== arr2[i]) return false;
@@ -1264,6 +1327,15 @@ function knockbackcheck(pixel1, pixel2) {
 function removeElement(arr, el) {
   let idx = arr.indexOf(el)
   if (idx > -1) arr.splice(idx, 1)
+}
+
+function splitNum(num) {
+  let str = num.toString();
+  let arr = [];
+  for (let i = 0; i < str.length; i++) {
+    arr.push(parseInt(str[i]));
+  }
+  return arr;
 }
 
 /***/ }),
