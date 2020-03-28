@@ -180,8 +180,7 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    // this.enemyCount = (Util.random(1, 6)) // reload enemy count for next screen.
-    this.enemyCount = 2// stress test!
+    this.enemyCount = (Util.random(1, 6)) // reload enemy count for next screen.
   }
 
   // collision layer check below

@@ -286,8 +286,7 @@ class Game {
   destroyUnits(ctx) {
     this.clearUnits(ctx);
     this.units = [];
-    // this.enemyCount = (Util.random(1, 6)) // reload enemy count for next screen.
-    this.enemyCount = 2// stress test!
+    this.enemyCount = (_util_util__WEBPACK_IMPORTED_MODULE_8__["random"](1, 6)) // reload enemy count for next screen.
   }
 
   // collision layer check below
@@ -908,7 +907,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class Octorok extends _unit__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor(pixelPos, grid) {
-    super(pixelPos, grid, 0)
+    super(pixelPos, grid, (_util_util__WEBPACK_IMPORTED_MODULE_0__["random"](0,6) * 96))
     
     // unit stats
     this.hp = 1;
