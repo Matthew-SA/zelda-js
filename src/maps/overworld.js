@@ -20,6 +20,10 @@ class Overworld {
     this.pos = { x: 5376, y: 3528 }
   }
 
+  getMapPos() {
+    return { x: this.pos.x / 768, y: (this.pos.y + 168) / 528}
+  }
+
   render() {
     this.drawWorld();
     this.drawCollisionMap();

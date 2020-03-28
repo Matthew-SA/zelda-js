@@ -136,6 +136,7 @@ class Game {
   scroll(worldCtx, collisionCtx) {
     if (!this.scrolling) return;
     if (this.scrollQueue <= 0) {
+      this.hud.updateMiniMap(this.overworld.getMapPos())
       this.scrolling = false;
       this.overworld.drawCollisionMap(collisionCtx)
       this.scanGrid(collisionCtx);
