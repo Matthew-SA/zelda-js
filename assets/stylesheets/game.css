@@ -2,12 +2,14 @@ html body {
   margin: 0;
   text-align: center;
   overscroll-behavior-y: none;
+  min-width: 816px;
+  border: 6px solid silver;
 }
 
 header {
-  position: absolute;
-  height: 120px;
-  width: 976px;
+  /* position: absolute; */
+  height: 100px;
+  width: 776px;
   left: 0;
   right: 0;
   margin: auto;
@@ -17,32 +19,34 @@ header {
 
 canvas {
   position: absolute;
-  top: 140px;
+  /* top: 120px; */
   left: 0;
   right: 0;
   margin: auto;
-  border: 4px solid grey;
+  border: 4px outset silver;
   border-radius: 15px;
 }
 
 footer {
-  height: 70px;
-  width: 976px;
+  height: 100px;
+  width: 776px;
   bottom: 0;
   left: 0;
   right: 0;
   margin: auto;
-  margin-top: 120px;
   background-color: grey;
   border-radius: 15px 15px 0 0;
 }
 
 #logo {
-  /* margin: 10px 0 0 10px;  */
+  margin-top: 10px;
 }
 #game-container {
-  height: 744px;
+  position: relative;
+  margin: 20px;
+  height: 704px;
 }
+
 #menu-canvas {
   z-index: 4;
 }
