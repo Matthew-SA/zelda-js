@@ -119,10 +119,10 @@ __webpack_require__.r(__webpack_exports__);
 // TODO: remove keymaster dependancy!
 
 class Game {
-  constructor(hudCtx) {
+  constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
     this.hud = new _hud_hud_js__WEBPACK_IMPORTED_MODULE_1__["default"](hudCtx);
-    this.player = new _player_player__WEBPACK_IMPORTED_MODULE_2__["default"];
-    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_6__["default"];
+    this.player = new _player_player__WEBPACK_IMPORTED_MODULE_2__["default"](spriteCtx);
+    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_6__["default"](worldCtx, collisionCtx);
 
     // game sounds
     this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");
@@ -395,11 +395,9 @@ __webpack_require__.r(__webpack_exports__);
 class GameView {
   constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
     // this.lastTime;
-    this.hudCtx = hudCtx;
-    this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"](this.hudCtx);
     this.spriteCtx = spriteCtx;
-    this.worldCtx = worldCtx;
     this.collisionCtx = collisionCtx;
+    this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"](hudCtx, spriteCtx, worldCtx, collisionCtx);
     this.hud = this.game.hud;
     this.player = this.game.player;
     this.overworld = this.game.overworld;
@@ -407,10 +405,9 @@ class GameView {
 
   // start primary game loop
   init() {
-    this.overworld.drawWorld(this.worldCtx)
-    this.overworld.drawCollisionMap(this.collisionCtx)
-    this.hud.draw()
-    this.player.draw(this.spriteCtx);
+    this.overworld.render();
+    this.hud.render()
+    this.player.render();
     requestAnimationFrame(() => this.gameLoop())
   }
 
@@ -427,7 +424,7 @@ class GameView {
   clear(ctx) {
     this.game.clearUnits(ctx);
     this.game.clearAttacks(ctx);
-    this.game.player.clear(ctx)
+    this.game.player.clear()
   }
 
   step(spriteCtx, worldCtx, collisionCtx) {
@@ -441,7 +438,7 @@ class GameView {
   draw(ctx) {
     this.game.drawUnits(ctx);
     this.game.drawAttacks(ctx);
-    this.player.draw(ctx);
+    this.player.render();
   }
 }
 
@@ -469,7 +466,6 @@ class Hud {
     this.heartSprite.src = "./assets/images/items/hearts.png"
 
     this.maxHearts = 3;
-    this.hearts = 3;
     this.money = 0;
     this.keys = 0;
     this.bombs = 0;
@@ -477,7 +473,7 @@ class Hud {
     this.slotB = null;
   }
 
-  draw() {
+  render() {
     this.ctx.drawImage(
       this.image,
       0,
@@ -489,38 +485,24 @@ class Hud {
       768,
       696
     )
-    this.updateHearts(this.hearts)
+    this.updateHearts(3)
   }
 
   updateHearts(hp) {
     this.ctx.fillstyle = 'black'
     this.ctx.fillRect(528, 96, 192, 48)
     for (let i = 0; i < this.maxHearts; i++) {
-      if (i < hp) {
-        this.ctx.drawImage(
-          this.heartSprite,
-          24,
-          0,
-          24,
-          24,
-          528 + (24 * i),
-          96,
-          24,
-          24,
-        )
-      } else {
-        this.ctx.drawImage(
-          this.heartSprite,
-          72,
-          0,
-          24,
-          24,
-          528 + (24 * i),
-          96,
-          24,
-          24,
-        )
-      }
+      this.ctx.drawImage(
+        this.heartSprite,
+        i < hp ? 24 : 72,
+        0,
+        24,
+        24,
+        528 + (24 * i),
+        96,
+        24,
+        24,
+      )
     }
   }
 }
@@ -543,7 +525,9 @@ __webpack_require__.r(__webpack_exports__);
 // world is a 16 x 8 grid
 
 class Overworld {
-  constructor() {
+  constructor(worldCtx, collisionCtx) {
+    this.worldCtx = worldCtx
+    this.collisionCtx = collisionCtx
     this.overworld = new Image();
     this.overworld.src = './assets/images/maps/overworld.png'
     this.collisionMap = new Image();
@@ -558,8 +542,13 @@ class Overworld {
     this.pos = { x: 5376, y: 3528 }
   }
 
-  drawWorld(ctx) {
-    ctx.drawImage(
+  render() {
+    this.drawWorld();
+    this.drawCollisionMap();
+  }
+
+  drawWorld() {
+    this.worldCtx.drawImage(
       this.overworld,
       this.pos.x, // x axis anchor point
       this.pos.y, // y axis anchor point
@@ -572,8 +561,8 @@ class Overworld {
     )
   }
 
-  drawCollisionMap(ctx) {
-    ctx.drawImage(
+  drawCollisionMap() {
+    this.collisionCtx.drawImage(
       this.collisionMap,
       this.pos.x, // x axis anchor point
       this.pos.y, // y axis anchor point
@@ -606,7 +595,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Player {
-  constructor() {
+  constructor(spriteCtx) {
+    this.ctx = spriteCtx;
+
     this.sprite = new Image();
     this.sprite.src = "./assets/images/player/link.png"
     this.ouch = new Audio("./assets/sfx/link-hurt.wav");
@@ -630,13 +621,13 @@ class Player {
       knockback: 0,
     }
 
-    this.hp = 3;
+    this.hp = 3.0;
 
     this.attacks = [];
   }
   
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
@@ -647,9 +638,9 @@ class Player {
     this.frames.attack ? this.frames.attack-- : this.attacks.splice(0,1)
   }
 
-  draw(ctx) {
+  render() {
     if (this.frames.attack) {
-      ctx.drawImage(
+      this.ctx.drawImage(
         this.sprite,
         this.frames.invincibility ? this.pos.direction + 240 : this.pos.direction,
         this.frames.invincibility ? 288 + (48 * (this.frames.invincibility % 3)) : 96, // attack sprite pose
@@ -661,7 +652,7 @@ class Player {
         48
       )
     } else {
-      ctx.drawImage(
+      this.ctx.drawImage(
         this.sprite,
         this.frames.invincibility ? this.pos.direction + 240 : this.pos.direction,
         this.frames.invincibility ? this.frames.run < 9 ? 0 + (48 * (this.frames.invincibility % 3)) : 144 + (48 * (this.frames.invincibility % 3)) : this.frames.run < 9 ? 0 : 48,
@@ -713,7 +704,6 @@ class Player {
       this.ouch.play()
       this.hp -= damage
       this.attacks.pop()
-      console.log(this.hp)
     }
   }
 
