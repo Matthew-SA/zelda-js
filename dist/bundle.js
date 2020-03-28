@@ -174,15 +174,24 @@ class Game {
     if (_util_util__WEBPACK_IMPORTED_MODULE_8__["checkCollision"](this.player.hitbox, unit.pos)) this.damagePlayer();
   }
 
+  damagePlayer(damage) {
+    if (this.player.hp <= 0) return;
+    this.player.takeDamage();
+    this.hud.updateHearts(this.player.hp)
+    if (this.player.hp <= 0) this.killPlayer();
+  }
+
+  killPlayer() {
+    this.unitDeath.play();
+    this.units.push(new _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"](this.player.pos))
+    // Object.assign({x: null, y: null}, this.player.pos)
+  }
+
   damageUnit(unit, damage) {
     unit.takeDamage(damage);
     if (unit.hp <= 0) this.killUnit(unit)
   }
 
-  damagePlayer(damage) {
-    this.player.takeDamage();
-    this.hud.updateHearts(this.player.hp)
-  }
 
   killUnit(unit) {
     this.unitDeath.play();
@@ -746,6 +755,7 @@ class Player {
   }
 
   render() {
+    if (this.hp <= 0) return;
     if (this.frames.attack) {
       this.ctx.drawImage(
         this.sprite,
@@ -791,6 +801,7 @@ class Player {
   }
           
   move(x, y, direction) {
+    if (this.hp <= 0) return;
     if (this.frames.cooldown) return;
     this.frames.run++
     this.setDirection(direction)
@@ -806,6 +817,7 @@ class Player {
           
           
   takeDamage(damage=1) {
+    if (this.hp <= 0) return;
     if (!this.frames.invincibility) {
       Object.assign(this.frames, {invincibility: 45, knockback: 8})
       this.ouch.play()
@@ -815,6 +827,7 @@ class Player {
   }
 
   attack() {
+    if (this.hp <= 0) return;
     if (this.frames.cooldown || this.frames.knockback) return;
     this.frames.cooldown = 18;
     this.frames.attack = 15;

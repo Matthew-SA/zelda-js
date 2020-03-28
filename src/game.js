@@ -68,15 +68,24 @@ class Game {
     if (Util.checkCollision(this.player.hitbox, unit.pos)) this.damagePlayer();
   }
 
+  damagePlayer(damage) {
+    if (this.player.hp <= 0) return;
+    this.player.takeDamage();
+    this.hud.updateHearts(this.player.hp)
+    if (this.player.hp <= 0) this.killPlayer();
+  }
+
+  killPlayer() {
+    this.unitDeath.play();
+    this.units.push(new Spark(this.player.pos))
+    // Object.assign({x: null, y: null}, this.player.pos)
+  }
+
   damageUnit(unit, damage) {
     unit.takeDamage(damage);
     if (unit.hp <= 0) this.killUnit(unit)
   }
 
-  damagePlayer(damage) {
-    this.player.takeDamage();
-    this.hud.updateHearts(this.player.hp)
-  }
 
   killUnit(unit) {
     this.unitDeath.play();

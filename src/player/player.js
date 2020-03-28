@@ -45,6 +45,7 @@ class Player {
   }
 
   render() {
+    if (this.hp <= 0) return;
     if (this.frames.attack) {
       this.ctx.drawImage(
         this.sprite,
@@ -90,6 +91,7 @@ class Player {
   }
           
   move(x, y, direction) {
+    if (this.hp <= 0) return;
     if (this.frames.cooldown) return;
     this.frames.run++
     this.setDirection(direction)
@@ -105,6 +107,7 @@ class Player {
           
           
   takeDamage(damage=1) {
+    if (this.hp <= 0) return;
     if (!this.frames.invincibility) {
       Object.assign(this.frames, {invincibility: 45, knockback: 8})
       this.ouch.play()
@@ -114,6 +117,7 @@ class Player {
   }
 
   attack() {
+    if (this.hp <= 0) return;
     if (this.frames.cooldown || this.frames.knockback) return;
     this.frames.cooldown = 18;
     this.frames.attack = 15;
