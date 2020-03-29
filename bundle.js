@@ -141,7 +141,7 @@ class Game {
 
     this.live = false;
     document.addEventListener('keydown', e => {
-      if (e.keyCode === 13) {
+      if (e.keyCode === 13 && !this.live) {
         this.live = true;
         this.hud.clearStartPage();
       }
@@ -155,9 +155,8 @@ class Game {
   clearAttacks(ctx) {
     this.player.attacks.forEach(attack => attack.clear(ctx))
   }
-
+//boop
   stepUnits(collisionCtx) {
-    if (!this.live) return;
     if (this.player.frames.knockback) this.knockBackPlayer(collisionCtx)
 
     this.units.forEach((unit, i) => {

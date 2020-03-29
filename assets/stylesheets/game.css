@@ -1,6 +1,5 @@
 html body {
   margin: 0;
-  text-align: center;
   overscroll-behavior-y: none;
   min-width: 816px;
   border: 6px solid silver;
@@ -41,8 +40,23 @@ footer {
   border-radius: 15px 15px 0 0;
 }
 
+
+.fab {
+  color: silver;
+  text-decoration: none;
+  font-size: 35px;
+  float: right;
+  margin: 65px 5px 0 5px;
+}
+
+.fab:hover{
+  color: white;
+  cursor: pointer;
+}
+
 #logo {
   margin-top: 10px;
+  margin-left: 10px;
 }
 
 #game-container {
