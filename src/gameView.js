@@ -19,6 +19,7 @@ class GameView {
     this.overworld.render();
     this.hud.render()
     this.player.render();
+    this.hud.renderStartpage();
     requestAnimationFrame(() => this.gameLoop())
   }
 

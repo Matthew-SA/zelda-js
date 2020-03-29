@@ -32,6 +32,14 @@ class Game {
     this.enemyCount = 0;
 
     this.input = new Input;
+
+    this.live = false;
+    document.addEventListener('keydown', e => {
+      if (e.keyCode === 13) {
+        this.live = true;
+        this.hud.clearStartPage();
+      }
+    });
   }
   
   clearUnits(ctx) {
@@ -43,6 +51,7 @@ class Game {
   }
 
   stepUnits(collisionCtx) {
+    if (!this.live) return;
     if (this.player.frames.knockback) this.knockBackPlayer(collisionCtx)
 
     this.units.forEach((unit, i) => {
@@ -247,6 +256,7 @@ class Game {
 
   processInput(ctx) {
     if (this.scrolling) return;
+    if (!this.live) return;
     let direction = this.input.getInput()
     let speed = null;
     switch (direction) {

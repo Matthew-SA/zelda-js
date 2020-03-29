@@ -13,9 +13,23 @@ class Hud {
     this.primaryitems = new Image();
     this.primaryitems.src = './assets/images/items/primaryItems.png'
 
+    this.startPage = new Image();
+    this.startPage.src = './assets/images/ui/start.png'
+
     this.maxHearts = 3;
     this.slotA = null;
     this.slotB = null;
+  }
+
+  renderStartpage() {
+    this.ctx.drawImage(
+      this.startPage, 0, 0
+    )
+  }
+
+  clearStartPage() {
+    this.ctx.clearRect(0, 0, 768, 696)
+    this.render()
   }
 
   render() {
