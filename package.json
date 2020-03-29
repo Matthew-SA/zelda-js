@@ -19,9 +19,7 @@
     "url": "https://github.com/Matthew-SA/Zelda/issues"
   },
   "homepage": "https://github.com/Matthew-SA/Zelda#readme",
-  "dependencies": {
-    "keymaster": "^1.6.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
