@@ -1264,18 +1264,22 @@ class Input {
     switch(event.keyCode) {
       case 38:
       case 87:
+        event.preventDefault()
         if (!this.movement.includes('up')) this.movement.unshift('up')
         break;
       case 39:
       case 68:
+        event.preventDefault()
         if (!this.movement.includes('right')) this.movement.unshift('right')
         break;
       case 40:
       case 83:
+        event.preventDefault()
         if (!this.movement.includes('down')) this.movement.unshift('down')
         break;
       case 37:
       case 65:
+        event.preventDefault()
         if (!this.movement.includes('left')) this.movement.unshift('left')
         break;
       case 32:
