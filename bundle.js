@@ -138,6 +138,14 @@ class Game {
     this.enemyCount = 0;
 
     this.input = new _util_input__WEBPACK_IMPORTED_MODULE_0__["default"];
+
+    this.live = false;
+    document.addEventListener('keydown', e => {
+      if (e.keyCode === 13) {
+        this.live = true;
+        this.hud.clearStartPage();
+      }
+    });
   }
   
   clearUnits(ctx) {
@@ -149,6 +157,7 @@ class Game {
   }
 
   stepUnits(collisionCtx) {
+    if (!this.live) return;
     if (this.player.frames.knockback) this.knockBackPlayer(collisionCtx)
 
     this.units.forEach((unit, i) => {
@@ -353,6 +362,7 @@ class Game {
 
   processInput(ctx) {
     if (this.scrolling) return;
+    if (!this.live) return;
     let direction = this.input.getInput()
     let speed = null;
     switch (direction) {
@@ -417,6 +427,7 @@ class GameView {
     this.overworld.render();
     this.hud.render()
     this.player.render();
+    this.hud.renderStartpage();
     requestAnimationFrame(() => this.gameLoop())
   }
 
@@ -481,9 +492,23 @@ class Hud {
     this.primaryitems = new Image();
     this.primaryitems.src = './assets/images/items/primaryItems.png'
 
+    this.startPage = new Image();
+    this.startPage.src = './assets/images/ui/start.png'
+
     this.maxHearts = 3;
     this.slotA = null;
     this.slotB = null;
+  }
+
+  renderStartpage() {
+    this.ctx.drawImage(
+      this.startPage, 0, 0
+    )
+  }
+
+  clearStartPage() {
+    this.ctx.clearRect(0, 0, 768, 696)
+    this.render()
   }
 
   render() {
@@ -1238,15 +1263,19 @@ class Input {
 
   onKeyDown(event) {
     switch(event.keyCode) {
+      case 38:
       case 87:
         if (!this.movement.includes('up')) this.movement.unshift('up')
         break;
+      case 39:
       case 68:
         if (!this.movement.includes('right')) this.movement.unshift('right')
         break;
+      case 40:
       case 83:
         if (!this.movement.includes('down')) this.movement.unshift('down')
         break;
+      case 37:
       case 65:
         if (!this.movement.includes('left')) this.movement.unshift('left')
         break;
@@ -1262,15 +1291,19 @@ class Input {
 
   onKeyUp() {
     switch (event.keyCode) {
+      case 38:
       case 87:
         _util__WEBPACK_IMPORTED_MODULE_0__["removeElement"](this.movement, 'up')
         break;
+      case 39:
       case 68:
         _util__WEBPACK_IMPORTED_MODULE_0__["removeElement"](this.movement, 'right')
         break;
+      case 40:
       case 83:
         _util__WEBPACK_IMPORTED_MODULE_0__["removeElement"](this.movement, 'down')
         break;
+      case 37:
       case 65:
         _util__WEBPACK_IMPORTED_MODULE_0__["removeElement"](this.movement, 'left')
         break;
