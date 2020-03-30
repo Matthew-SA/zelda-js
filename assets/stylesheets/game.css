@@ -3,6 +3,7 @@ html body {
   overscroll-behavior-y: none;
   min-width: 816px;
   /* height: 1200px; */
+  background-color: grey;
   background-image: url('../images/ui/matte.png');
   background-repeat: repeat; 
 }
