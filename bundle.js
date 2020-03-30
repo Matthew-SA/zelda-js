@@ -123,6 +123,8 @@ class Game {
     this.hud = new _hud_hud_js__WEBPACK_IMPORTED_MODULE_1__["default"](hudCtx);
     this.player = new _player_player__WEBPACK_IMPORTED_MODULE_2__["default"](spriteCtx);
     this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_6__["default"](worldCtx, collisionCtx);
+    this.spriteCtx = spriteCtx;
+    this.collisionCtx = collisionCtx;
 
     // game sounds
     this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");
@@ -148,6 +150,43 @@ class Game {
     });
   }
   
+  init() {
+    this.overworld.render();
+    this.hud.render()
+    this.player.render();
+    this.hud.renderStartpage();
+    requestAnimationFrame(() => this.gameLoop())
+  }
+
+  gameLoop() {
+    // let now = Date.now();
+    // let dt = (now - lastTime) / 1000.0;
+    this.clear(this.spriteCtx)
+    this.step(this.spriteCtx, this.worldCtx, this.collisionCtx);
+    this.draw(this.spriteCtx)
+    requestAnimationFrame(() => this.gameLoop())
+  }
+
+  clear(ctx) {
+    this.clearUnits(ctx);
+    this.clearAttacks(ctx);
+    this.player.clear()
+  }
+
+  step(spriteCtx, worldCtx, collisionCtx) {
+    this.checkBorder(spriteCtx);
+    this.scroll(worldCtx, collisionCtx);
+    this.processInput(collisionCtx);
+    this.stepUnits(collisionCtx);
+    this.player.step();
+  }
+
+  draw(ctx) {
+    this.drawUnits(ctx);
+    this.drawAttacks(ctx);
+    this.player.render();
+  }
+
   clearUnits(ctx) {
     this.units.forEach(unit => unit.clear(ctx))
   }
@@ -392,77 +431,6 @@ class Game {
 
 
 /* harmony default export */ __webpack_exports__["default"] = (Game);
-
-/***/ }),
-
-/***/ "./src/gameView.js":
-/*!*************************!*\
-  !*** ./src/gameView.js ***!
-  \*************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game */ "./src/game.js");
-
-
-// gameView is 16 x 14.5 'tiles
-// gameplay is in 16 x 11 tiles
-
-class GameView {
-  constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
-    // this.lastTime;
-    this.spriteCtx = spriteCtx;
-    this.collisionCtx = collisionCtx;
-    this.game = new _game__WEBPACK_IMPORTED_MODULE_0__["default"](hudCtx, spriteCtx, worldCtx, collisionCtx);
-    this.hud = this.game.hud;
-    this.player = this.game.player;
-    this.overworld = this.game.overworld;
-  }
-
-  // start primary game loop
-  init() {
-    this.overworld.render();
-    this.hud.render()
-    this.player.render();
-    this.hud.renderStartpage();
-    requestAnimationFrame(() => this.gameLoop())
-  }
-
-  // primary game loop  TODO: add pixel /sec to ensure proper gameplay at all FPS
-  gameLoop() {
-    // let now = Date.now();
-    // let dt = (now - lastTime) / 1000.0;
-    this.clear(this.spriteCtx)
-    this.step(this.spriteCtx, this.worldCtx, this.collisionCtx);
-    this.draw(this.spriteCtx)
-    requestAnimationFrame(() => this.gameLoop())
-  }
-
-  clear(ctx) {
-    this.game.clearUnits(ctx);
-    this.game.clearAttacks(ctx);
-    this.game.player.clear()
-  }
-
-  step(spriteCtx, worldCtx, collisionCtx) {
-    this.game.checkBorder(spriteCtx);
-    this.game.scroll(worldCtx, collisionCtx);
-    this.game.processInput(collisionCtx);
-    this.game.stepUnits(collisionCtx);
-    this.player.step();
-  }
-
-  draw(ctx) {
-    this.game.drawUnits(ctx);
-    this.game.drawAttacks(ctx);
-    this.player.render();
-  }
-}
-
-
-/* harmony default export */ __webpack_exports__["default"] = (GameView);
 
 /***/ }),
 
@@ -1426,7 +1394,7 @@ function splitNum(num) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _src_gameView__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/gameView */ "./src/gameView.js");
+/* harmony import */ var _src_game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/game */ "./src/game.js");
 
 
 const menuCanvas = document.getElementById('menu-canvas');
@@ -1462,10 +1430,10 @@ collisionCanvas.height = 696
 // document.addEventListener('keyup', () => console.log('key up!'));
 // document.addEventListener('keydown', () => console.log('key down!'));
 
-const gameView = new _src_gameView__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, worldCtx, collisionCtx)
+const game = new _src_game__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, worldCtx, collisionCtx)
 
 window.addEventListener('load',() => {
-  gameView.init();
+  game.init();
 }, false);
 
 
