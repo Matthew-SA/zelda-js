@@ -2,7 +2,7 @@ html body {
   margin: 0;
   overscroll-behavior-y: none;
   min-width: 816px;
-  border: 6px solid silver;
+  /* height: 1200px; */
   background-image: url('../images/ui/matte.png');
   background-repeat: repeat; 
 }
