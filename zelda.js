@@ -1,4 +1,4 @@
-import GameView from './src/gameView'
+import Game from './src/game'
 
 const menuCanvas = document.getElementById('menu-canvas');
 const menuCtx = menuCanvas.getContext('2d');
@@ -33,8 +33,8 @@ collisionCanvas.height = 696
 // document.addEventListener('keyup', () => console.log('key up!'));
 // document.addEventListener('keydown', () => console.log('key down!'));
 
-const gameView = new GameView(menuCtx, spriteCtx, worldCtx, collisionCtx)
+const game = new Game(menuCtx, spriteCtx, worldCtx, collisionCtx)
 
 window.addEventListener('load',() => {
-  gameView.init();
+  game.init();
 }, false);

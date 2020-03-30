@@ -17,6 +17,8 @@ class Game {
     this.hud = new Hud(hudCtx);
     this.player = new Player(spriteCtx);
     this.overworld = new Overworld(worldCtx, collisionCtx);
+    this.spriteCtx = spriteCtx;
+    this.collisionCtx = collisionCtx;
 
     // game sounds
     this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");
@@ -42,6 +44,43 @@ class Game {
     });
   }
   
+  init() {
+    this.overworld.render();
+    this.hud.render()
+    this.player.render();
+    this.hud.renderStartpage();
+    requestAnimationFrame(() => this.gameLoop())
+  }
+
+  gameLoop() {
+    // let now = Date.now();
+    // let dt = (now - lastTime) / 1000.0;
+    this.clear(this.spriteCtx)
+    this.step(this.spriteCtx, this.worldCtx, this.collisionCtx);
+    this.draw(this.spriteCtx)
+    requestAnimationFrame(() => this.gameLoop())
+  }
+
+  clear(ctx) {
+    this.clearUnits(ctx);
+    this.clearAttacks(ctx);
+    this.player.clear()
+  }
+
+  step(spriteCtx, worldCtx, collisionCtx) {
+    this.checkBorder(spriteCtx);
+    this.scroll(worldCtx, collisionCtx);
+    this.processInput(collisionCtx);
+    this.stepUnits(collisionCtx);
+    this.player.step();
+  }
+
+  draw(ctx) {
+    this.drawUnits(ctx);
+    this.drawAttacks(ctx);
+    this.player.render();
+  }
+
   clearUnits(ctx) {
     this.units.forEach(unit => unit.clear(ctx))
   }
