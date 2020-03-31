@@ -22,7 +22,7 @@ Zelda-JS is built on raw javascript without extra dependencies or technologies.
 * Full UI - Players can utilize a functional minimap, inventory, and lifebar. <img width="759" alt="Screen Shot 2020-03-30 at 10 28 42 PM" src="https://user-images.githubusercontent.com/47997709/77990306-d5df4080-72d5-11ea-84af-56d10f4e5d1d.png">
 <br/> 
 
-* Full overworld - entirety of the original game's overworld is present and explorable in this recreation. Zelda-JS maps are scanned to contruct board data for the enemy AI and handle collision physics.<img width="1038" alt="maptransition" src="https://user-images.githubusercontent.com/47997709/77992507-0bd2f380-72db-11ea-9756-85b77d3cff88.png">
+* Full overworld - entirety of the original game's overworld is present and explorable in this recreation. Zelda-JS maps are scanned to contruct board data for the enemy AI and handle collision physics.<img width="1038" alt="splitmap" src="https://user-images.githubusercontent.com/47997709/77993527-2dcd7580-72dd-11ea-9916-48c3121c1910.png">
     ``` javascript
       # game.js
       scanGrid(ctx) {
