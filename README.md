@@ -18,8 +18,11 @@ Zelda-js is a raw javascript recreation of the classic NES title The Legend of Z
 **Javascript** <br/> 
 Zelda-JS is built on raw javascript without extra dependencies or technologies.
 
-**Custom bitmap collision algorithims** <br/>
-Zelda-JS maps are scanned to contruct board data for the enemy AI and handle collision physics.<img width="1038" alt="maptransition" src="https://user-images.githubusercontent.com/47997709/77992507-0bd2f380-72db-11ea-9756-85b77d3cff88.png">
+## Features
+* Full UI - Players can utilize a functional minimap, lifebar, and inventory. <img width="759" alt="Screen Shot 2020-03-30 at 10 28 42 PM" src="https://user-images.githubusercontent.com/47997709/77990306-d5df4080-72d5-11ea-84af-56d10f4e5d1d.png">
+<br/> 
+
+* Full overworld - entirety of the original game's overworld is present and explorable in this recreation. Zelda-JS maps are scanned to contruct board data for the enemy AI and handle collision physics.<img width="1038" alt="maptransition" src="https://user-images.githubusercontent.com/47997709/77992507-0bd2f380-72db-11ea-9756-85b77d3cff88.png">
 ``` javascript
   # game.js
   scanGrid(ctx) {
@@ -44,13 +47,6 @@ Zelda-JS maps are scanned to contruct board data for the enemy AI and handle col
   return sumArr(tile.data)
   }
 ```
-
-
-## Features
-* Full UI - Players can utilize a functional minimap, lifebar, and inventory. <img width="759" alt="Screen Shot 2020-03-30 at 10 28 42 PM" src="https://user-images.githubusercontent.com/47997709/77990306-d5df4080-72d5-11ea-84af-56d10f4e5d1d.png">
-<br/> 
-
-* Full overworld - entirety of the original game's overworld is present and explorable in this recreation. <img width="1029" alt="Screen Shot 2020-03-30 at 10 35 15 PM" src="https://user-images.githubusercontent.com/47997709/77990807-23a87880-72d7-11ea-84c1-ce7a899438ca.png">
 
 * Attackable enemies - Enemy octoroks have a random-acting AI and can be fought by the player. <img width="780" alt="Screen Shot 2020-03-30 at 10 40 11 PM" src="https://user-images.githubusercontent.com/47997709/77990950-7aae4d80-72d7-11ea-83de-a0a42cd01309.png">
 
