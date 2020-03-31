@@ -19,7 +19,7 @@ Zelda-js is a raw javascript recreation of the classic NES title The Legend of Z
 Zelda-JS is built on raw javascript without extra dependencies or technologies.
 
 **Custom bitmap collision algorithims** <br/>
-Zelda-JS maps are scanned to contruct board data for the enemy AI and handle collision physics.<img width="1043" alt="Screen Shot 2020-03-30 at 10 49 28 PM" src="https://user-images.githubusercontent.com/47997709/77991479-d4634780-72d8-11ea-817f-8917b6dff2a0.png">
+Zelda-JS maps are scanned to contruct board data for the enemy AI and handle collision physics.<img width="1038" alt="maptransition" src="https://user-images.githubusercontent.com/47997709/77992507-0bd2f380-72db-11ea-9756-85b77d3cff88.png">
 ``` javascript
   # game.js
   scanGrid(ctx) {
