@@ -121,7 +121,7 @@ class Player {
     if (this.frames.cooldown || this.frames.knockback) return;
     this.frames.cooldown = 18;
     this.frames.attack = 15;
-    this.attacks.push(new Sword(this.pos))
+    this.attacks.push(new Sword(this.pos, this.ctx))
   }
 }
 

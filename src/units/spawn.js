@@ -1,7 +1,8 @@
 import * as util from '../util/util'
 
 class Spawn {
-  constructor(pixelPos) {
+  constructor(pixelPos, ctx) {
+    this.ctx = ctx
     this.sprite = new Image();
     this.sprite.src = "./assets/images/effects.png"
     this.pos = {
@@ -21,16 +22,16 @@ class Spawn {
 
   takeDamage() {}
 
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
     this.runCycle --
   }
 
-  draw(ctx) {
-    ctx.drawImage(
+  draw() {
+    this.ctx.drawImage(
       this.sprite,
       this.runCycle >= 8 ? 0 : 48,
       0,

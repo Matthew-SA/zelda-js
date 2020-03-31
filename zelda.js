@@ -11,7 +11,7 @@ spriteCanvas.width = 768
 spriteCanvas.height = 696
 
 const mapCanvas = document.getElementById('map-canvas');
-const worldCtx = mapCanvas.getContext('2d')
+const boardCtx = mapCanvas.getContext('2d')
 mapCanvas.width = 768
 mapCanvas.height = 696
 
@@ -21,19 +21,7 @@ collisionCanvas.width = 768
 collisionCanvas.height = 696
 
 
-//TODO - truly split render logic.
-//TODO - drop keymaster dependancy.
-
-// const background = new Image();
-// background.src = "./images/board.jpg";
-
-// background.onload = function () {
-//   ctx.drawImage(background, 0, 0);
-// }
-// document.addEventListener('keyup', () => console.log('key up!'));
-// document.addEventListener('keydown', () => console.log('key down!'));
-
-const game = new Game(menuCtx, spriteCtx, worldCtx, collisionCtx)
+const game = new Game(menuCtx, spriteCtx, boardCtx, collisionCtx)
 
 window.addEventListener('load',() => {
   game.init();

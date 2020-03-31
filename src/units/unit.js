@@ -1,7 +1,8 @@
 import * as util from '../util/util'
 
 class Unit {
-  constructor(pixelPos, grid, startFrame) {
+  constructor(pixelPos, grid, startFrame, ctx) {
+    this.ctx = ctx;
     this.sprite = new Image();
     this.sprite.src = "./assets/images/units/overworld-enemies.png"
     this.ouch = new Audio("./assets/sfx/hit-enemy.wav");
@@ -34,8 +35,8 @@ class Unit {
     this.ouch.play();
   }
 
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
@@ -55,11 +56,11 @@ class Unit {
     this.frameData.action -= 1 * this.speed;
   }
 
-  draw(ctx) {
+  draw() {
     let currentFrame = this.frameData.run < 14 ? this.frameData.frame : this.frameData.frame + 48;
     if (this.frameData.run > 25) this.frameData.run = 0;
     // if (this.attacking) this.frameData.frame = 153;
-    ctx.drawImage(
+    this.ctx.drawImage(
       this.sprite,
       this.frameData.direction,
       currentFrame,

@@ -13,10 +13,10 @@ import * as Util from './util/util'
 // TODO: remove keymaster dependancy!
 
 class Game {
-  constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
+  constructor(hudCtx, spriteCtx, boardCtx, collisionCtx) {
     this.hud = new Hud(hudCtx);
     this.player = new Player(spriteCtx);
-    this.overworld = new Overworld(worldCtx, collisionCtx);
+    this.overworld = new Overworld(boardCtx, collisionCtx);
     this.spriteCtx = spriteCtx;
     this.collisionCtx = collisionCtx;
 
@@ -55,29 +55,29 @@ class Game {
   gameLoop() {
     // let now = Date.now();
     // let dt = (now - lastTime) / 1000.0;
-    this.clear(this.spriteCtx)
-    this.step(this.spriteCtx, this.worldCtx, this.collisionCtx);
-    this.draw(this.spriteCtx)
+    this.clear()
+    this.step(this.collisionCtx);
+    this.draw()
     requestAnimationFrame(() => this.gameLoop())
   }
 
-  clear(ctx) {
-    this.clearUnits(ctx);
-    this.clearAttacks(ctx);
-    this.player.clear()
+  clear() {
+    this.clearUnits();
+    this.clearAttacks();
+    this.player.clear();
   }
 
-  step(spriteCtx, worldCtx, collisionCtx) {
-    this.checkBorder(spriteCtx);
-    this.scroll(worldCtx, collisionCtx);
+  step(collisionCtx) {
+    this.checkBorder();
+    this.scroll(collisionCtx);
     this.processInput(collisionCtx);
     this.stepUnits(collisionCtx);
     this.player.step();
   }
 
-  draw(ctx) {
-    this.drawUnits(ctx);
-    this.drawAttacks(ctx);
+  draw() {
+    this.drawUnits();
+    this.drawAttacks();
     this.player.render();
   }
 
@@ -85,16 +85,16 @@ class Game {
     this.units.forEach(unit => unit.clear(ctx))
   }
 
-  clearAttacks(ctx) {
-    this.player.attacks.forEach(attack => attack.clear(ctx))
+  clearAttacks() {
+    this.player.attacks.forEach(attack => attack.clear())
   }
-//boop
+
   stepUnits(collisionCtx) {
     if (this.player.frames.knockback) this.knockBackPlayer(collisionCtx)
 
     this.units.forEach((unit, i) => {
       if (unit instanceof Spawn && unit.runCycle <= 0) {
-        this.units[i] = new Octorok(unit.pixelPos, this.grid)
+        this.units[i] = new Octorok(unit.pixelPos, this.grid, this.spriteCtx)
       }
 
       unit.step();
@@ -124,7 +124,7 @@ class Game {
 
   killPlayer() {
     this.unitDeath.play();
-    this.units.push(new Spark(this.player.pos))
+    this.units.push(new Spark(this.player.pos, this.spriteCtx))
     // Object.assign({x: null, y: null}, this.player.pos)
   }
 
@@ -137,7 +137,7 @@ class Game {
   killUnit(unit) {
     this.unitDeath.play();
     this.units.splice(this.units.indexOf(unit), 1)
-    this.units.push(new Spark(unit.pos))
+    this.units.push(new Spark(unit.pos, this.spriteCtx))
   }
 
   knockBackPlayer(ctx) {
@@ -157,12 +157,12 @@ class Game {
     }
   }
 
-  drawUnits(ctx) {
-    this.units.forEach(unit => unit.draw(ctx))
+  drawUnits() {
+    this.units.forEach(unit => unit.draw())
   }
 
-  drawAttacks(ctx) {
-    this.player.attacks.forEach(attack => attack.draw(ctx))
+  drawAttacks() {
+    this.player.attacks.forEach(attack => attack.draw())
   }
 
   scanGrid(ctx) {
@@ -184,12 +184,12 @@ class Game {
   setSpawns() {
     for (let i = 0; i < this.enemyCount; i++) {
       let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
-      this.units.push(new Spawn(pixelPos));
+      this.units.push(new Spawn(pixelPos, this.spriteCtx));
     }
   }
   
   // Scrolling logic below
-  scroll(worldCtx, collisionCtx) {
+  scroll(collisionCtx) {
     if (!this.scrolling) return;
     if (this.scrollQueue <= 0) {
       this.hud.updateMiniMap(this.overworld.getMapPos())
@@ -216,25 +216,25 @@ class Game {
         if (this.scrollQueue > 48) this.player.move(8, 0)
       }
       this.scrollQueue -= 8;
-      this.overworld.drawWorld(worldCtx)
+      this.overworld.drawWorld()
     }
   }
 
-  checkBorder(ctx) {
+  checkBorder() {
     if (this.player.pos.y < constants.BORDERTOP || this.player.pos.y > constants.BORDERBOTTOM) {
       this.scrolling = true;
-      this.destroyUnits(ctx)
+      this.destroyUnits()
       this.scrollQueue = 528;
     }
     if (this.player.pos.x > constants.BORDERRIGHT || this.player.pos.x < constants.BORDERLEFT) {
       this.scrolling = true;
-      this.destroyUnits(ctx)
+      this.destroyUnits()
       this.scrollQueue = 768;
     }
   }
 
-  destroyUnits(ctx) {
-    this.clearUnits(ctx);
+  destroyUnits() {
+    this.clearUnits();
     this.units = [];
     this.enemyCount = (Util.random(1, 6)) // reload enemy count for next screen.
   }

@@ -1,9 +1,9 @@
 import * as Util from '../util/util'
 import Unit from './unit'
 class Octorok extends Unit {
-  constructor(pixelPos, grid) {
+  constructor(pixelPos, grid, ctx) {
     let type = Util.random(0, 2)
-    super(pixelPos, grid, (type * 96))
+    super(pixelPos, grid, (type * 96), ctx)
     
     // unit stats
     this.hp = type === 0 ? 1 : 2;

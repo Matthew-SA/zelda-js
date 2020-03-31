@@ -1,5 +1,6 @@
 class Sword {
-  constructor(pos) {
+  constructor(pos, ctx) {
+    this.ctx = ctx
     this.sprite = new Image();
     this.sprite.src = "./assets/images/player/attacks.png"
     this.swordSfx = new Audio("./assets/sfx/sword.wav");
@@ -22,14 +23,14 @@ class Sword {
     }
   }
 
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {}
 
-  draw(ctx) {
-    ctx.drawImage(
+  draw() {
+    this.ctx.drawImage(
       this.sprite,
       this.direction,
       0,
