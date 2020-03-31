@@ -119,10 +119,10 @@ __webpack_require__.r(__webpack_exports__);
 // TODO: remove keymaster dependancy!
 
 class Game {
-  constructor(hudCtx, spriteCtx, worldCtx, collisionCtx) {
+  constructor(hudCtx, spriteCtx, boardCtx, collisionCtx) {
     this.hud = new _hud_hud_js__WEBPACK_IMPORTED_MODULE_1__["default"](hudCtx);
     this.player = new _player_player__WEBPACK_IMPORTED_MODULE_2__["default"](spriteCtx);
-    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_6__["default"](worldCtx, collisionCtx);
+    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_6__["default"](boardCtx, collisionCtx);
     this.spriteCtx = spriteCtx;
     this.collisionCtx = collisionCtx;
 
@@ -161,29 +161,29 @@ class Game {
   gameLoop() {
     // let now = Date.now();
     // let dt = (now - lastTime) / 1000.0;
-    this.clear(this.spriteCtx)
-    this.step(this.spriteCtx, this.worldCtx, this.collisionCtx);
-    this.draw(this.spriteCtx)
+    this.clear()
+    this.step(this.collisionCtx);
+    this.draw()
     requestAnimationFrame(() => this.gameLoop())
   }
 
-  clear(ctx) {
-    this.clearUnits(ctx);
-    this.clearAttacks(ctx);
-    this.player.clear()
+  clear() {
+    this.clearUnits();
+    this.clearAttacks();
+    this.player.clear();
   }
 
-  step(spriteCtx, worldCtx, collisionCtx) {
-    this.checkBorder(spriteCtx);
-    this.scroll(worldCtx, collisionCtx);
+  step(collisionCtx) {
+    this.checkBorder();
+    this.scroll(collisionCtx);
     this.processInput(collisionCtx);
     this.stepUnits(collisionCtx);
     this.player.step();
   }
 
-  draw(ctx) {
-    this.drawUnits(ctx);
-    this.drawAttacks(ctx);
+  draw() {
+    this.drawUnits();
+    this.drawAttacks();
     this.player.render();
   }
 
@@ -191,16 +191,16 @@ class Game {
     this.units.forEach(unit => unit.clear(ctx))
   }
 
-  clearAttacks(ctx) {
-    this.player.attacks.forEach(attack => attack.clear(ctx))
+  clearAttacks() {
+    this.player.attacks.forEach(attack => attack.clear())
   }
-//boop
+
   stepUnits(collisionCtx) {
     if (this.player.frames.knockback) this.knockBackPlayer(collisionCtx)
 
     this.units.forEach((unit, i) => {
       if (unit instanceof _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"] && unit.runCycle <= 0) {
-        this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_5__["default"](unit.pixelPos, this.grid)
+        this.units[i] = new _units_octorok__WEBPACK_IMPORTED_MODULE_5__["default"](unit.pixelPos, this.grid, this.spriteCtx)
       }
 
       unit.step();
@@ -230,7 +230,7 @@ class Game {
 
   killPlayer() {
     this.unitDeath.play();
-    this.units.push(new _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"](this.player.pos))
+    this.units.push(new _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"](this.player.pos, this.spriteCtx))
     // Object.assign({x: null, y: null}, this.player.pos)
   }
 
@@ -243,7 +243,7 @@ class Game {
   killUnit(unit) {
     this.unitDeath.play();
     this.units.splice(this.units.indexOf(unit), 1)
-    this.units.push(new _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"](unit.pos))
+    this.units.push(new _units_spark__WEBPACK_IMPORTED_MODULE_4__["default"](unit.pos, this.spriteCtx))
   }
 
   knockBackPlayer(ctx) {
@@ -263,12 +263,12 @@ class Game {
     }
   }
 
-  drawUnits(ctx) {
-    this.units.forEach(unit => unit.draw(ctx))
+  drawUnits() {
+    this.units.forEach(unit => unit.draw())
   }
 
-  drawAttacks(ctx) {
-    this.player.attacks.forEach(attack => attack.draw(ctx))
+  drawAttacks() {
+    this.player.attacks.forEach(attack => attack.draw())
   }
 
   scanGrid(ctx) {
@@ -290,12 +290,12 @@ class Game {
   setSpawns() {
     for (let i = 0; i < this.enemyCount; i++) {
       let pixelPos = this.openSpaces[Math.floor(Math.random() * this.openSpaces.length)];
-      this.units.push(new _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"](pixelPos));
+      this.units.push(new _units_spawn__WEBPACK_IMPORTED_MODULE_3__["default"](pixelPos, this.spriteCtx));
     }
   }
   
   // Scrolling logic below
-  scroll(worldCtx, collisionCtx) {
+  scroll(collisionCtx) {
     if (!this.scrolling) return;
     if (this.scrollQueue <= 0) {
       this.hud.updateMiniMap(this.overworld.getMapPos())
@@ -322,25 +322,25 @@ class Game {
         if (this.scrollQueue > 48) this.player.move(8, 0)
       }
       this.scrollQueue -= 8;
-      this.overworld.drawWorld(worldCtx)
+      this.overworld.drawWorld()
     }
   }
 
-  checkBorder(ctx) {
+  checkBorder() {
     if (this.player.pos.y < _util_constants__WEBPACK_IMPORTED_MODULE_7__["BORDERTOP"] || this.player.pos.y > _util_constants__WEBPACK_IMPORTED_MODULE_7__["BORDERBOTTOM"]) {
       this.scrolling = true;
-      this.destroyUnits(ctx)
+      this.destroyUnits()
       this.scrollQueue = 528;
     }
     if (this.player.pos.x > _util_constants__WEBPACK_IMPORTED_MODULE_7__["BORDERRIGHT"] || this.player.pos.x < _util_constants__WEBPACK_IMPORTED_MODULE_7__["BORDERLEFT"]) {
       this.scrolling = true;
-      this.destroyUnits(ctx)
+      this.destroyUnits()
       this.scrollQueue = 768;
     }
   }
 
-  destroyUnits(ctx) {
-    this.clearUnits(ctx);
+  destroyUnits() {
+    this.clearUnits();
     this.units = [];
     this.enemyCount = (_util_util__WEBPACK_IMPORTED_MODULE_8__["random"](1, 6)) // reload enemy count for next screen.
   }
@@ -823,7 +823,7 @@ class Player {
     if (this.frames.cooldown || this.frames.knockback) return;
     this.frames.cooldown = 18;
     this.frames.attack = 15;
-    this.attacks.push(new _sword_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.pos))
+    this.attacks.push(new _sword_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.pos, this.ctx))
   }
 }
 
@@ -841,7 +841,8 @@ class Player {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 class Sword {
-  constructor(pos) {
+  constructor(pos, ctx) {
+    this.ctx = ctx
     this.sprite = new Image();
     this.sprite.src = "./assets/images/player/attacks.png"
     this.swordSfx = new Audio("./assets/sfx/sword.wav");
@@ -864,14 +865,14 @@ class Sword {
     }
   }
 
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {}
 
-  draw(ctx) {
-    ctx.drawImage(
+  draw() {
+    this.ctx.drawImage(
       this.sprite,
       this.direction,
       0,
@@ -911,9 +912,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Octorok extends _unit__WEBPACK_IMPORTED_MODULE_1__["default"] {
-  constructor(pixelPos, grid) {
+  constructor(pixelPos, grid, ctx) {
     let type = _util_util__WEBPACK_IMPORTED_MODULE_0__["random"](0, 2)
-    super(pixelPos, grid, (type * 96))
+    super(pixelPos, grid, (type * 96), ctx)
     
     // unit stats
     this.hp = type === 0 ? 1 : 2;
@@ -940,7 +941,8 @@ class Octorok extends _unit__WEBPACK_IMPORTED_MODULE_1__["default"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 class Spark {
-  constructor(pos) {
+  constructor(pos, ctx) {
+    this.ctx = ctx
     this.sprite = new Image();
     this.sprite.src = "./assets/images/effects.png"
 
@@ -959,16 +961,16 @@ class Spark {
 
   takeDamage() {}
 
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
     this.frameData.run++
   }
 
-  draw(ctx) {
-    ctx.drawImage(
+  draw() {
+    this.ctx.drawImage(
       this.sprite,
       96 + (48 * Math.floor(this.frameData.run / 2)),
       0,
@@ -999,7 +1001,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Spawn {
-  constructor(pixelPos) {
+  constructor(pixelPos, ctx) {
+    this.ctx = ctx
     this.sprite = new Image();
     this.sprite.src = "./assets/images/effects.png"
     this.pos = {
@@ -1019,16 +1022,16 @@ class Spawn {
 
   takeDamage() {}
 
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
     this.runCycle --
   }
 
-  draw(ctx) {
-    ctx.drawImage(
+  draw() {
+    this.ctx.drawImage(
       this.sprite,
       this.runCycle >= 8 ? 0 : 48,
       0,
@@ -1059,7 +1062,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Unit {
-  constructor(pixelPos, grid, startFrame) {
+  constructor(pixelPos, grid, startFrame, ctx) {
+    this.ctx = ctx;
     this.sprite = new Image();
     this.sprite.src = "./assets/images/units/overworld-enemies.png"
     this.ouch = new Audio("./assets/sfx/hit-enemy.wav");
@@ -1092,8 +1096,8 @@ class Unit {
     this.ouch.play();
   }
 
-  clear(ctx) {
-    ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
+  clear() {
+    this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
@@ -1113,11 +1117,11 @@ class Unit {
     this.frameData.action -= 1 * this.speed;
   }
 
-  draw(ctx) {
+  draw() {
     let currentFrame = this.frameData.run < 14 ? this.frameData.frame : this.frameData.frame + 48;
     if (this.frameData.run > 25) this.frameData.run = 0;
     // if (this.attacking) this.frameData.frame = 153;
-    ctx.drawImage(
+    this.ctx.drawImage(
       this.sprite,
       this.frameData.direction,
       currentFrame,
@@ -1408,7 +1412,7 @@ spriteCanvas.width = 768
 spriteCanvas.height = 696
 
 const mapCanvas = document.getElementById('map-canvas');
-const worldCtx = mapCanvas.getContext('2d')
+const boardCtx = mapCanvas.getContext('2d')
 mapCanvas.width = 768
 mapCanvas.height = 696
 
@@ -1418,19 +1422,7 @@ collisionCanvas.width = 768
 collisionCanvas.height = 696
 
 
-//TODO - truly split render logic.
-//TODO - drop keymaster dependancy.
-
-// const background = new Image();
-// background.src = "./images/board.jpg";
-
-// background.onload = function () {
-//   ctx.drawImage(background, 0, 0);
-// }
-// document.addEventListener('keyup', () => console.log('key up!'));
-// document.addEventListener('keydown', () => console.log('key down!'));
-
-const game = new _src_game__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, worldCtx, collisionCtx)
+const game = new _src_game__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, boardCtx, collisionCtx)
 
 window.addEventListener('load',() => {
   game.init();
