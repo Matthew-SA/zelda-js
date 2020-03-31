@@ -1,7 +1,7 @@
 # Zelda-JS
 [Zelda-JS live link!](https://matthew-sa.github.io/zelda-js/)
 </br>
-<img width="791" alt="Screen Shot 2020-03-30 at 10 17 57 PM" src="https://user-images.githubusercontent.com/47997709/77992946-f7432b00-72db-11ea-9f26-3ca3f1cc47c0.png">
+<img width="788" alt="Screen Shot 2020-03-30 at 10 17 57 PM" src="https://user-images.githubusercontent.com/47997709/77993203-7afd1780-72dc-11ea-9aad-ccc394c0a9cb.png">
 
 ## Table of Contents
 1. [Introduction](#introduction)
