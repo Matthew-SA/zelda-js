@@ -2,7 +2,7 @@
 // map screens are 768 x 528 (256 x 176)
 // world is a 16 x 8 grid
 
-class Overworld {
+class Board {
   constructor(worldCtx, collisionCtx) {
     this.worldCtx = worldCtx
     this.collisionCtx = collisionCtx
@@ -58,5 +58,5 @@ class Overworld {
   }
 }
 
-export default Overworld;
+export default Board;
 

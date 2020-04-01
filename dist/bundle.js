@@ -86,6 +86,81 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/board.js":
+/*!**********************!*\
+  !*** ./src/board.js ***!
+  \**********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// Hud height is scaled up: 168
+// map screens are 768 x 528 (256 x 176)
+// world is a 16 x 8 grid
+
+class Board {
+  constructor(worldCtx, collisionCtx) {
+    this.worldCtx = worldCtx
+    this.collisionCtx = collisionCtx
+    this.overworld = new Image();
+    this.overworld.src = './assets/images/maps/overworld.png'
+    this.collisionMap = new Image();
+    this.collisionMap.src = './assets/images/maps/overworld-collision.png'
+    
+    // this.music = new Audio("./assets/sfx/overworld.mp3");
+    // this.music.autoplay();
+    // this.music.loop = true;
+    // this.music.play();
+    
+    // this.pos = [5376,3528];
+    this.pos = { x: 5376, y: 3528 }
+  }
+
+  getMapPos() {
+    return { x: this.pos.x / 768, y: (this.pos.y + 168) / 528}
+  }
+
+  render() {
+    this.drawWorld();
+    this.drawCollisionMap();
+  }
+
+  drawWorld() {
+    this.worldCtx.drawImage(
+      this.overworld,
+      this.pos.x, // x axis anchor point
+      this.pos.y, // y axis anchor point
+      768,
+      696,
+      0,
+      0,
+      768,
+      696
+    )
+  }
+
+  drawCollisionMap() {
+    this.collisionCtx.drawImage(
+      this.collisionMap,
+      this.pos.x, // x axis anchor point
+      this.pos.y, // y axis anchor point
+      768,
+      696,
+      0,
+      0,
+      768,
+      696
+    )
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Board);
+
+
+
+/***/ }),
+
 /***/ "./src/game.js":
 /*!*********************!*\
   !*** ./src/game.js ***!
@@ -101,7 +176,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _units_spawn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./units/spawn */ "./src/units/spawn.js");
 /* harmony import */ var _units_spark__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./units/spark */ "./src/units/spark.js");
 /* harmony import */ var _units_octorok__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./units/octorok */ "./src/units/octorok.js");
-/* harmony import */ var _maps_overworld__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./maps/overworld */ "./src/maps/overworld.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./board */ "./src/board.js");
 /* harmony import */ var _util_constants__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./util/constants */ "./src/util/constants.js");
 /* harmony import */ var _util_util__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./util/util */ "./src/util/util.js");
 
@@ -122,7 +197,7 @@ class Game {
   constructor(hudCtx, spriteCtx, boardCtx, collisionCtx) {
     this.hud = new _hud_hud_js__WEBPACK_IMPORTED_MODULE_1__["default"](hudCtx);
     this.player = new _player_player__WEBPACK_IMPORTED_MODULE_2__["default"](spriteCtx);
-    this.overworld = new _maps_overworld__WEBPACK_IMPORTED_MODULE_6__["default"](boardCtx, collisionCtx);
+    this.board = new _board__WEBPACK_IMPORTED_MODULE_6__["default"](boardCtx, collisionCtx);
     this.spriteCtx = spriteCtx;
     this.collisionCtx = collisionCtx;
 
@@ -151,7 +226,7 @@ class Game {
   }
   
   init() {
-    this.overworld.render();
+    this.board.render();
     this.hud.render()
     this.player.render();
     this.hud.renderStartpage();
@@ -187,8 +262,8 @@ class Game {
     this.player.render();
   }
 
-  clearUnits(ctx) {
-    this.units.forEach(unit => unit.clear(ctx))
+  clearUnits() {
+    this.units.forEach(unit => unit.clear())
   }
 
   clearAttacks() {
@@ -298,31 +373,31 @@ class Game {
   scroll(collisionCtx) {
     if (!this.scrolling) return;
     if (this.scrollQueue <= 0) {
-      this.hud.updateMiniMap(this.overworld.getMapPos())
+      this.hud.updateMiniMap(this.board.getMapPos())
       this.scrolling = false;
-      this.overworld.drawCollisionMap(collisionCtx)
+      this.board.drawCollisionMap(collisionCtx)
       this.scanGrid(collisionCtx);
       this.setSpawns();
     } else {
       let playerDirection = this.player.pos.direction
       if (playerDirection === 96) {
-        this.overworld.pos.y -= 8;
+        this.board.pos.y -= 8;
         if (this.scrollQueue > 48) this.player.move(0, 8)
       }
       if (playerDirection === 144) {
-        this.overworld.pos.x += 8;
+        this.board.pos.x += 8;
         if (this.scrollQueue > 48) this.player.move(-8, 0)
       }
       if (playerDirection === 0) {
-        this.overworld.pos.y += 8;
+        this.board.pos.y += 8;
         if (this.scrollQueue > 48) this.player.move(0, -8)
       }
       if (playerDirection === 48) {
-        this.overworld.pos.x -= 8;
+        this.board.pos.x -= 8;
         if (this.scrollQueue > 48) this.player.move(8, 0)
       }
       this.scrollQueue -= 8;
-      this.overworld.drawWorld()
+      this.board.drawWorld()
     }
   }
 
@@ -612,81 +687,6 @@ class Hud {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Hud);
-
-/***/ }),
-
-/***/ "./src/maps/overworld.js":
-/*!*******************************!*\
-  !*** ./src/maps/overworld.js ***!
-  \*******************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// Hud height is scaled up: 168
-// map screens are 768 x 528 (256 x 176)
-// world is a 16 x 8 grid
-
-class Overworld {
-  constructor(worldCtx, collisionCtx) {
-    this.worldCtx = worldCtx
-    this.collisionCtx = collisionCtx
-    this.overworld = new Image();
-    this.overworld.src = './assets/images/maps/overworld.png'
-    this.collisionMap = new Image();
-    this.collisionMap.src = './assets/images/maps/overworld-collision.png'
-    
-    // this.music = new Audio("./assets/sfx/overworld.mp3");
-    // this.music.autoplay();
-    // this.music.loop = true;
-    // this.music.play();
-    
-    // this.pos = [5376,3528];
-    this.pos = { x: 5376, y: 3528 }
-  }
-
-  getMapPos() {
-    return { x: this.pos.x / 768, y: (this.pos.y + 168) / 528}
-  }
-
-  render() {
-    this.drawWorld();
-    this.drawCollisionMap();
-  }
-
-  drawWorld() {
-    this.worldCtx.drawImage(
-      this.overworld,
-      this.pos.x, // x axis anchor point
-      this.pos.y, // y axis anchor point
-      768,
-      696,
-      0,
-      0,
-      768,
-      696
-    )
-  }
-
-  drawCollisionMap() {
-    this.collisionCtx.drawImage(
-      this.collisionMap,
-      this.pos.x, // x axis anchor point
-      this.pos.y, // y axis anchor point
-      768,
-      696,
-      0,
-      0,
-      768,
-      696
-    )
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Overworld);
-
-
 
 /***/ }),
 

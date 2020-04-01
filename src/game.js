@@ -4,7 +4,7 @@ import Player from './player/player'
 import Spawn from './units/spawn'
 import Spark from './units/spark'
 import Octorok from './units/octorok'
-import Overworld from './maps/overworld'
+import Board from './board'
 import * as constants from './util/constants'
 import * as Util from './util/util'
 
@@ -16,7 +16,7 @@ class Game {
   constructor(hudCtx, spriteCtx, boardCtx, collisionCtx) {
     this.hud = new Hud(hudCtx);
     this.player = new Player(spriteCtx);
-    this.overworld = new Overworld(boardCtx, collisionCtx);
+    this.board = new Board(boardCtx, collisionCtx);
     this.spriteCtx = spriteCtx;
     this.collisionCtx = collisionCtx;
 
@@ -45,7 +45,7 @@ class Game {
   }
   
   init() {
-    this.overworld.render();
+    this.board.render();
     this.hud.render()
     this.player.render();
     this.hud.renderStartpage();
@@ -81,8 +81,8 @@ class Game {
     this.player.render();
   }
 
-  clearUnits(ctx) {
-    this.units.forEach(unit => unit.clear(ctx))
+  clearUnits() {
+    this.units.forEach(unit => unit.clear())
   }
 
   clearAttacks() {
@@ -192,31 +192,31 @@ class Game {
   scroll(collisionCtx) {
     if (!this.scrolling) return;
     if (this.scrollQueue <= 0) {
-      this.hud.updateMiniMap(this.overworld.getMapPos())
+      this.hud.updateMiniMap(this.board.getMapPos())
       this.scrolling = false;
-      this.overworld.drawCollisionMap(collisionCtx)
+      this.board.drawCollisionMap(collisionCtx)
       this.scanGrid(collisionCtx);
       this.setSpawns();
     } else {
       let playerDirection = this.player.pos.direction
       if (playerDirection === 96) {
-        this.overworld.pos.y -= 8;
+        this.board.pos.y -= 8;
         if (this.scrollQueue > 48) this.player.move(0, 8)
       }
       if (playerDirection === 144) {
-        this.overworld.pos.x += 8;
+        this.board.pos.x += 8;
         if (this.scrollQueue > 48) this.player.move(-8, 0)
       }
       if (playerDirection === 0) {
-        this.overworld.pos.y += 8;
+        this.board.pos.y += 8;
         if (this.scrollQueue > 48) this.player.move(0, -8)
       }
       if (playerDirection === 48) {
-        this.overworld.pos.x -= 8;
+        this.board.pos.x -= 8;
         if (this.scrollQueue > 48) this.player.move(8, 0)
       }
       this.scrollQueue -= 8;
-      this.overworld.drawWorld()
+      this.board.drawWorld()
     }
   }
 
