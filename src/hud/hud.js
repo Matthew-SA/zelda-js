@@ -21,7 +21,7 @@ class Hud {
     this.slotB = null;
   }
 
-  renderStartpage() {
+  renderStartPage() {
     this.ctx.drawImage(
       this.startPage, 0, 0
     )

@@ -17,13 +17,6 @@ class Board {
     // this.music.play();
     
     this.pos = { x: 5376, y: 3528 }
-
-    // game scroll logic
-    this.scrolling = false;
-    this.scrollQueue = 0;
-
-    // game sounds
-    this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");
   }
 
   setLocation(playerPos, worldPos, map, collisionMap) {
@@ -33,8 +26,6 @@ class Board {
   scroll(direction) {
 
   }
-
-
 
 
   getMapPos() {

@@ -1,7 +1,7 @@
 import Game from './src/game'
 
 const menuCanvas = document.getElementById('menu-canvas');
-const menuCtx = menuCanvas.getContext('2d');
+const hudCtx = menuCanvas.getContext('2d');
 menuCanvas.width = 768
 menuCanvas.height = 696
 
@@ -21,7 +21,7 @@ collisionCanvas.width = 768
 collisionCanvas.height = 696
 
 
-const game = new Game(menuCtx, spriteCtx, boardCtx, collisionCtx)
+const game = new Game(hudCtx, spriteCtx, boardCtx, collisionCtx)
 
 window.addEventListener('load',() => {
   game.init();

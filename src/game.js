@@ -48,7 +48,7 @@ class Game {
     this.board.render();
     this.hud.render()
     this.player.render();
-    this.hud.renderStartpage();
+    this.hud.renderStartPage();
     requestAnimationFrame(() => this.gameLoop())
   }
 
