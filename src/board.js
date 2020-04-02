@@ -16,9 +16,26 @@ class Board {
     // this.music.loop = true;
     // this.music.play();
     
-    // this.pos = [5376,3528];
     this.pos = { x: 5376, y: 3528 }
+
+    // game scroll logic
+    this.scrolling = false;
+    this.scrollQueue = 0;
+
+    // game sounds
+    this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");
   }
+
+  setLocation(playerPos, worldPos, map, collisionMap) {
+
+  }
+
+  scroll(direction) {
+
+  }
+
+
+
 
   getMapPos() {
     return { x: this.pos.x / 768, y: (this.pos.y + 168) / 528}
