@@ -37,7 +37,7 @@ class Player {
   }
 
   step() {
-    if (this.frames.run > 15) this.frames.run = 0;
+    if (this.frames.run <= 0) this.frames.run = 16;
     if (this.frames.cooldown) this.frames.cooldown--
     if (this.frames.knockback) this.frames.knockback--
     if (this.frames.invincibility) this.frames.invincibility--
@@ -93,7 +93,7 @@ class Player {
   move(x, y, direction) {
     if (this.hp <= 0) return;
     if (this.frames.cooldown) return;
-    this.frames.run++
+    this.frames.run--
     this.setDirection(direction)
     this.pos.x += x;
     this.pos.y += y;
