@@ -42,13 +42,14 @@ class Game {
         this.hud.clearStartPage();
       }
       if (this.player.hp <= 0 && e.keyCode === 13) {
-        console.log('reload!')
         this.destroyUnits();
         this.player.reset();
         this.board.pos = { x: 5376, y: 3528 }
         this.board.render();
         this.hud.render()
         this.player.render();
+        this.hud.clearStartPage();
+        this.hud.death = false;
       }
     });
   }
@@ -85,6 +86,9 @@ class Game {
   }
 
   draw() {
+    if (this.player.hp <= 0) {
+      this.hud.renderDeathPage();
+    }
     this.drawUnits();
     this.drawAttacks();
     this.player.render();

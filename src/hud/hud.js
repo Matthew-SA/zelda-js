@@ -16,15 +16,29 @@ class Hud {
     this.startPage = new Image();
     this.startPage.src = './assets/images/ui/start.png'
 
+    this.deathPage = new Image();
+    this.deathPage.src = './assets/images/ui/deathpage.png'
+
     this.maxHearts = 3;
     this.slotA = null;
     this.slotB = null;
+
+    this.death = false;
   }
 
   renderStartPage() {
     this.ctx.drawImage(
       this.startPage, 0, 0
     )
+  }
+
+  renderDeathPage() {
+    if (this.death === false) {
+      this.ctx.drawImage(
+        this.deathPage, 0, 0
+      )
+      this.death = true;
+    }
   }
 
   clearStartPage() {
