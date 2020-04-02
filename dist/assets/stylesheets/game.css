@@ -74,7 +74,7 @@ footer {
 }
 
 #map-canvas {
-  z-index: 2;
+  z-index: -1;
 }
 
 #collision-canvas {

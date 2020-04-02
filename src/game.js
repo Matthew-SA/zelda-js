@@ -41,6 +41,15 @@ class Game {
         this.live = true;
         this.hud.clearStartPage();
       }
+      if (this.player.hp <= 0 && e.keyCode === 13) {
+        console.log('reload!')
+        this.destroyUnits();
+        this.player.reset();
+        this.board.pos = { x: 5376, y: 3528 }
+        this.board.render();
+        this.hud.render()
+        this.player.render();
+      }
     });
   }
   

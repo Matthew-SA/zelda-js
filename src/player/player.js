@@ -32,6 +32,26 @@ class Player {
     this.attacks = [];
   }
   
+  reset() {
+    this.hp = 3.0;
+    this.attacks = [];
+    this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
+    this.hitbox = { x: this.pos.x + 12, y: this.pos.y + 12, width: 24, height: 24 }
+    this.tracebox = {
+      topLeft: [this.pos.x + 9, this.pos.y + 24],
+      topRight: [this.pos.x + 39, this.pos.y + 24],
+      bottomLeft: [this.pos.x + 9, this.pos.y + 45],
+      bottomRight: [this.pos.x + 39, this.pos.y + 45],
+    }
+    this.frames = {
+      run: 0,
+      attack: 0,
+      cooldown: 0,
+      invincibility: 0,
+      knockback: 0,
+    }
+  }
+
   clear() {
     this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
