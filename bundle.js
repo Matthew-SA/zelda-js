@@ -113,9 +113,17 @@ class Board {
     // this.music.loop = true;
     // this.music.play();
     
-    // this.pos = [5376,3528];
     this.pos = { x: 5376, y: 3528 }
   }
+
+  setLocation(playerPos, worldPos, map, collisionMap) {
+
+  }
+
+  scroll(direction) {
+
+  }
+
 
   getMapPos() {
     return { x: this.pos.x / 768, y: (this.pos.y + 168) / 528}
@@ -222,6 +230,15 @@ class Game {
         this.live = true;
         this.hud.clearStartPage();
       }
+      if (this.player.hp <= 0 && e.keyCode === 13) {
+        console.log('reload!')
+        this.destroyUnits();
+        this.player.reset();
+        this.board.pos = { x: 5376, y: 3528 }
+        this.board.render();
+        this.hud.render()
+        this.player.render();
+      }
     });
   }
   
@@ -229,7 +246,7 @@ class Game {
     this.board.render();
     this.hud.render()
     this.player.render();
-    this.hud.renderStartpage();
+    this.hud.renderStartPage();
     requestAnimationFrame(() => this.gameLoop())
   }
 
@@ -542,7 +559,7 @@ class Hud {
     this.slotB = null;
   }
 
-  renderStartpage() {
+  renderStartPage() {
     this.ctx.drawImage(
       this.startPage, 0, 0
     )
@@ -734,12 +751,32 @@ class Player {
     this.attacks = [];
   }
   
+  reset() {
+    this.hp = 3.0;
+    this.attacks = [];
+    this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
+    this.hitbox = { x: this.pos.x + 12, y: this.pos.y + 12, width: 24, height: 24 }
+    this.tracebox = {
+      topLeft: [this.pos.x + 9, this.pos.y + 24],
+      topRight: [this.pos.x + 39, this.pos.y + 24],
+      bottomLeft: [this.pos.x + 9, this.pos.y + 45],
+      bottomRight: [this.pos.x + 39, this.pos.y + 45],
+    }
+    this.frames = {
+      run: 0,
+      attack: 0,
+      cooldown: 0,
+      invincibility: 0,
+      knockback: 0,
+    }
+  }
+
   clear() {
     this.ctx.clearRect(this.pos.x, this.pos.y, 48, 48);
   }
 
   step() {
-    if (this.frames.run > 15) this.frames.run = 0;
+    if (this.frames.run <= 0) this.frames.run = 16;
     if (this.frames.cooldown) this.frames.cooldown--
     if (this.frames.knockback) this.frames.knockback--
     if (this.frames.invincibility) this.frames.invincibility--
@@ -795,7 +832,7 @@ class Player {
   move(x, y, direction) {
     if (this.hp <= 0) return;
     if (this.frames.cooldown) return;
-    this.frames.run++
+    this.frames.run--
     this.setDirection(direction)
     this.pos.x += x;
     this.pos.y += y;
@@ -1402,7 +1439,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const menuCanvas = document.getElementById('menu-canvas');
-const menuCtx = menuCanvas.getContext('2d');
+const hudCtx = menuCanvas.getContext('2d');
 menuCanvas.width = 768
 menuCanvas.height = 696
 
@@ -1422,7 +1459,7 @@ collisionCanvas.width = 768
 collisionCanvas.height = 696
 
 
-const game = new _src_game__WEBPACK_IMPORTED_MODULE_0__["default"](menuCtx, spriteCtx, boardCtx, collisionCtx)
+const game = new _src_game__WEBPACK_IMPORTED_MODULE_0__["default"](hudCtx, spriteCtx, boardCtx, collisionCtx)
 
 window.addEventListener('load',() => {
   game.init();
