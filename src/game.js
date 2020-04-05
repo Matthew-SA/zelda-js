@@ -20,6 +20,14 @@ class Game {
     this.spriteCtx = spriteCtx;
     this.collisionCtx = collisionCtx;
 
+    this.startmusic = new Audio("./assets/sfx/overworldstart.ogg")
+    this.startmusic.volume = 0.2
+    this.music = new Audio("./assets/sfx/overworld.ogg");
+    this.music.volume = 0.2;
+    // this.music.autoplay();
+    // this.music.loop = true;
+    // this.music.play();
+
     // game sounds
     this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");
 
@@ -35,11 +43,19 @@ class Game {
 
     this.input = new Input;
 
+    this.muted = false;
     this.live = false;
     document.addEventListener('keydown', e => {
       if (e.keyCode === 13 && !this.live) {
         this.live = true;
         this.hud.clearStartPage();
+        this.startmusic.play();
+        setTimeout(() => {
+          this.music.play();
+          this.music.loop = true;
+        }, 6410);
+        // this.music.play();
+        // this.music.loop = true;
       }
       if (this.player.hp <= 0 && e.keyCode === 13) {
         this.destroyUnits();
@@ -50,6 +66,23 @@ class Game {
         this.player.render();
         this.hud.clearStartPage();
         this.hud.death = false;
+        this.startmusic.play();
+        setTimeout(() => {
+          this.music.play();
+          this.music.loop = true;
+        }, 6410);
+      }
+      if (e.keyCode === 77) {
+        if (this.muted) {
+          this.startmusic.volume = .2
+          this.music.volume = .2
+          this.muted = false;
+        } else {
+          console.log('unmuted!')
+          this.startmusic.volume = 0
+          this.music.volume = 0
+          this.muted = true;
+        }
       }
     });
   }
@@ -88,6 +121,8 @@ class Game {
   draw() {
     if (this.player.hp <= 0) {
       this.hud.renderDeathPage();
+      this.music.pause();
+      this.music.currentTime = 0;
     }
     this.drawUnits();
     this.drawAttacks();

@@ -209,6 +209,14 @@ class Game {
     this.spriteCtx = spriteCtx;
     this.collisionCtx = collisionCtx;
 
+    this.startmusic = new Audio("./assets/sfx/overworldstart.ogg")
+    this.startmusic.volume = 0.2
+    this.music = new Audio("./assets/sfx/overworld.ogg");
+    this.music.volume = 0.2;
+    // this.music.autoplay();
+    // this.music.loop = true;
+    // this.music.play();
+
     // game sounds
     this.unitDeath = new Audio("./assets/sfx/destroy-enemy.wav");
 
@@ -224,11 +232,19 @@ class Game {
 
     this.input = new _util_input__WEBPACK_IMPORTED_MODULE_0__["default"];
 
+    this.muted = false;
     this.live = false;
     document.addEventListener('keydown', e => {
       if (e.keyCode === 13 && !this.live) {
         this.live = true;
         this.hud.clearStartPage();
+        this.startmusic.play();
+        setTimeout(() => {
+          this.music.play();
+          this.music.loop = true;
+        }, 6410);
+        // this.music.play();
+        // this.music.loop = true;
       }
       if (this.player.hp <= 0 && e.keyCode === 13) {
         this.destroyUnits();
@@ -239,6 +255,23 @@ class Game {
         this.player.render();
         this.hud.clearStartPage();
         this.hud.death = false;
+        this.startmusic.play();
+        setTimeout(() => {
+          this.music.play();
+          this.music.loop = true;
+        }, 6410);
+      }
+      if (e.keyCode === 77) {
+        if (this.muted) {
+          this.startmusic.volume = .2
+          this.music.volume = .2
+          this.muted = false;
+        } else {
+          console.log('unmuted!')
+          this.startmusic.volume = 0
+          this.music.volume = 0
+          this.muted = true;
+        }
       }
     });
   }
@@ -277,6 +310,8 @@ class Game {
   draw() {
     if (this.player.hp <= 0) {
       this.hud.renderDeathPage();
+      this.music.pause();
+      this.music.currentTime = 0;
     }
     this.drawUnits();
     this.drawAttacks();
@@ -561,7 +596,7 @@ class Hud {
     this.deathPage = new Image();
     this.deathPage.src = './assets/images/ui/deathpage.png'
 
-    this.maxHearts = 3;
+    this.maxHearts = 6;
     this.slotA = null;
     this.slotB = null;
 
@@ -600,7 +635,7 @@ class Hud {
       768,
       696
     )
-    this.updateHearts(3)
+    this.updateHearts(6)
     this.updateMiniMap({ x: 7, y: 7})
     this.updateMoney(0)
     this.updateKeys(0)
@@ -745,6 +780,9 @@ class Player {
     this.sprite.src = "./assets/images/player/link.png"
     this.ouch = new Audio("./assets/sfx/link-hurt.wav");
 
+    // setInterval(() => {
+    //   this.ouch.play()
+    // }, 1);
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
 
     this.hitbox = { x: this.pos.x + 12, y: this.pos.y + 12, width: 24, height: 24 }
@@ -764,7 +802,7 @@ class Player {
       knockback: 0,
     }
 
-    this.hp = 3.0;
+    this.hp = 6.0;
 
     this.attacks = [];
   }

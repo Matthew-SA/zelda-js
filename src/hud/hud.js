@@ -19,7 +19,7 @@ class Hud {
     this.deathPage = new Image();
     this.deathPage.src = './assets/images/ui/deathpage.png'
 
-    this.maxHearts = 3;
+    this.maxHearts = 6;
     this.slotA = null;
     this.slotB = null;
 
@@ -58,7 +58,7 @@ class Hud {
       768,
       696
     )
-    this.updateHearts(3)
+    this.updateHearts(6)
     this.updateMiniMap({ x: 7, y: 7})
     this.updateMoney(0)
     this.updateKeys(0)
