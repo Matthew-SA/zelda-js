@@ -78,7 +78,6 @@ class Game {
           this.music.volume = .2
           this.muted = false;
         } else {
-          console.log('unmuted!')
           this.startmusic.volume = 0
           this.music.volume = 0
           this.muted = true;
