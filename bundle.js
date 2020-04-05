@@ -808,7 +808,7 @@ class Player {
   }
   
   reset() {
-    this.hp = 3.0;
+    this.hp = 6.0;
     this.attacks = [];
     this.pos = { x: 336, y: 432, width: 48, height: 48, direction: 0, }
     this.hitbox = { x: this.pos.x + 12, y: this.pos.y + 12, width: 24, height: 24 }
