@@ -34,7 +34,7 @@ class Player {
 
     this.attacks = [];
   }
-  
+
   reset() {
     this.hp = 6.0;
     this.attacks = [];
@@ -64,36 +64,38 @@ class Player {
     if (this.frames.cooldown) this.frames.cooldown--
     if (this.frames.knockback) this.frames.knockback--
     if (this.frames.invincibility) this.frames.invincibility--
-    this.frames.attack ? this.frames.attack-- : this.attacks.splice(0,1)
+    this.frames.attack ? this.frames.attack-- : this.attacks.splice(0, 1)
   }
 
   render() {
     if (this.hp <= 0) return;
-    if (this.frames.attack) {
-      this.ctx.drawImage(
-        this.sprite,
-        this.frames.invincibility ? this.pos.direction + 240 : this.pos.direction,
-        this.frames.invincibility ? 288 + (48 * (this.frames.invincibility % 3)) : 96, // attack sprite pose
-        48,
-        48,
-        this.pos.x,
-        this.pos.y,
-        48,
-        48
-      )
-    } else {
-      this.ctx.drawImage(
-        this.sprite,
-        this.frames.invincibility ? this.pos.direction + 240 : this.pos.direction,
-        this.frames.invincibility ? this.frames.run < 9 ? 0 + (48 * (this.frames.invincibility % 3)) : 144 + (48 * (this.frames.invincibility % 3)) : this.frames.run < 9 ? 0 : 48,
-        48,
-        48,
-        this.pos.x,
-        this.pos.y,
-        48,
-        48
-      )
+    if (this.frames.attack && this.frames.invincibility) {
+      this.drawImage(this.pos.direction + 240, 288 + (48 * (this.frames.invincibility % 3)));
+    } else if (this.frames.attack && !this.frames.invincibility) {
+      this.drawImage(this.pos.direction, 96);
+    } else if (!this.frames.attack && this.frames.invincibility && this.frames.run < 9) {
+      this.drawImage(this.pos.direction + 240, 0 + 48 * ((this.frames.invincibility % 3)));
+    } else if (!this.frames.attack && this.frames.invincibility && this.frames.run >= 9) {
+      this.drawImage(this.pos.direction + 240, 144);
+    } else if (!this.frames.attack && !this.frames.invincibility && this.frames.run < 9) {
+      this.drawImage(this.pos.direction, 0);
+    } else if (!this.frames.attack && !this.frames.invincibility && this.frames.run >= 9) {
+      this.drawImage(this.pos.direction, 48);
     }
+  }
+
+  drawImage(sourceX, sourceY) {
+    this.ctx.drawImage(
+      this.sprite,
+      sourceX,
+      sourceY,
+      48,
+      48,
+      this.pos.x,
+      this.pos.y,
+      48,
+      48
+    )
   }
 
   setDirection(direction) {
@@ -112,7 +114,7 @@ class Player {
         break;
     }
   }
-          
+
   move(x, y, direction) {
     if (this.hp <= 0) return;
     if (this.frames.cooldown) return;
@@ -127,12 +129,12 @@ class Player {
     this.tracebox.bottomLeft[0] += x, this.tracebox.bottomLeft[1] += y
     this.tracebox.bottomRight[0] += x, this.tracebox.bottomRight[1] += y
   }
-          
-          
-  takeDamage(damage=1) {
+
+
+  takeDamage(damage = 1) {
     if (this.hp <= 0) return;
     if (!this.frames.invincibility) {
-      Object.assign(this.frames, {invincibility: 45, knockback: 8})
+      Object.assign(this.frames, { invincibility: 45, knockback: 8 })
       this.ouch.play()
       this.hp -= damage
       this.attacks.pop()
