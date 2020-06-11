@@ -11,7 +11,7 @@
 
 ## Introduction
 
-Zelda-js is a raw javascript recreation of the classic NES title The Legend of Zelda.  This project includes the original's overworld, collision logic, minimap, and health system. Underground areas are not currently accessable.
+Zelda-js is a raw javascript concept based on the classic NES title The Legend of Zelda.  This project includes the original's overworld, movement logic, basic enemies, minimap, and health system. Cave and underground areas are not currently accessable.
 
 ## Technologies
 
@@ -48,7 +48,7 @@ Zelda-JS is built on raw javascript without extra dependencies or technologies.
       }
     ```
 
-* Attackable enemies - Enemy octoroks have a random-acting AI and can be fought by the player. <img width="780" alt="Screen Shot 2020-03-30 at 10 40 11 PM" src="https://user-images.githubusercontent.com/47997709/77990950-7aae4d80-72d7-11ea-83de-a0a42cd01309.png">
+* Attackable enemies - Enemies have a random-acting AI and can be fought by the player. <img width="780" alt="Screen Shot 2020-03-30 at 10 40 11 PM" src="https://user-images.githubusercontent.com/47997709/77990950-7aae4d80-72d7-11ea-83de-a0a42cd01309.png">
     ``` javascript
     updateAction() {
         let possibleActions = this.checkAvailableActions();
@@ -61,6 +61,6 @@ Zelda-JS is built on raw javascript without extra dependencies or technologies.
     ```
 ## Future Direction
 * Collectable Items
-* New enemies
+* Additional enemy types
 * Underground Areas
 * Custom maps
