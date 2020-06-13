@@ -63,4 +63,3 @@ Zelda-JS is built on raw javascript without extra dependencies or technologies.
 * Collectable Items
 * Additional enemy types
 * Underground Areas
-* Custom maps
